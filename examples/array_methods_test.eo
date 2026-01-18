@@ -1,0 +1,20 @@
+// array_methods_test.eo - 数组方法测试
+
+// 数组字面量和基本操作
+let numbers: [int] = [1, 2, 3, 4, 5]
+
+// 索引访问
+let first: int = numbers[0]
+
+// 长度获取
+let length: int = len(numbers)
+
+// 数组方法测试（目前是概念验证，未来需要运行时库）
+numbers.push(6)        // 添加元素到末尾
+let last: int = numbers.pop()     // 移除并返回最后一个元素
+numbers.insert(1, 99)  // 在位置1插入99
+numbers.remove(2)      // 移除位置2的元素
+
+// 输出结果
+print first    // 1
+print length   // 5

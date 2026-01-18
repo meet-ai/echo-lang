@@ -1,0 +1,47 @@
+// error_handling_test.eo - 错误处理测试
+
+// 定义一个可能失败的函数
+func divide(x: int, y: int) -> Result[int, string] {
+    if y == 0 {
+        return Err("division by zero")
+    }
+    return Ok(x / y)
+}
+
+// 使用错误传播操作符
+func processDivision(a: int, b: int) -> Result[int, string] {
+    let result: int = divide(a, b)?  // 如果出错，这里会自动返回错误
+    return Ok(result * 2)
+}
+
+// 测试错误处理
+func testErrorHandling() -> void {
+    // 成功情况
+    match divide(10, 2) {
+        Ok(value) => print "Success: " + value
+        Err(msg) => print "Error: " + msg
+    }
+
+    // 失败情况
+    match divide(10, 0) {
+        Ok(value) => print "Success: " + value
+        Err(msg) => print "Error: " + msg
+    }
+
+    // 错误传播测试
+    match processDivision(20, 4) {
+        Ok(value) => print "Process Success: " + value
+        Err(msg) => print "Process Error: " + msg
+    }
+
+    match processDivision(20, 0) {
+        Ok(value) => print "Process Success: " + value
+        Err(msg) => print "Process Error: " + msg
+    }
+}
+
+// 主函数
+func main() -> void {
+    testErrorHandling()
+    print "Error handling test completed"
+}

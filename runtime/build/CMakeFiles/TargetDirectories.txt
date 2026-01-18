@@ -1,0 +1,16 @@
+/Users/meetai/source/echo-lang/runtime/build/CMakeFiles/echo_runtime.dir
+/Users/meetai/source/echo-lang/runtime/build/CMakeFiles/async_await_example.dir
+/Users/meetai/source/echo-lang/runtime/build/CMakeFiles/basic_usage_example.dir
+/Users/meetai/source/echo-lang/runtime/build/CMakeFiles/performance_comparison_example.dir
+/Users/meetai/source/echo-lang/runtime/build/CMakeFiles/runtime_test.dir
+/Users/meetai/source/echo-lang/runtime/build/CMakeFiles/advanced_memory_pool_test.dir
+/Users/meetai/source/echo-lang/runtime/build/CMakeFiles/industrial_memory_pool_test.dir
+/Users/meetai/source/echo-lang/runtime/build/CMakeFiles/async_memory_pool_test.dir
+/Users/meetai/source/echo-lang/runtime/build/CMakeFiles/gc_test.dir
+/Users/meetai/source/echo-lang/runtime/build/CMakeFiles/test.dir
+/Users/meetai/source/echo-lang/runtime/build/CMakeFiles/edit_cache.dir
+/Users/meetai/source/echo-lang/runtime/build/CMakeFiles/rebuild_cache.dir
+/Users/meetai/source/echo-lang/runtime/build/CMakeFiles/list_install_components.dir
+/Users/meetai/source/echo-lang/runtime/build/CMakeFiles/install.dir
+/Users/meetai/source/echo-lang/runtime/build/CMakeFiles/install/local.dir
+/Users/meetai/source/echo-lang/runtime/build/CMakeFiles/install/strip.dir

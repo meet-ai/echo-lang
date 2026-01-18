@@ -1,0 +1,72 @@
+// trait_associated_types_test.eo - Trait关联类型测试
+
+// 定义带有关联类型的Trait
+trait Iterator {
+    type Item;
+    func next() -> int;
+}
+
+// 实现带有关联类型的Trait
+@impl Iterator
+
+struct IntIterator {
+    values: [int];
+    index: int;
+
+    type Item = int;  // 关联类型实现
+}
+
+func (it IntIterator) next() -> Option[int] {
+    if it.index < len(it.values) {
+        let result = it.values[it.index];
+        it.index = it.index + 1;
+        return Some(result);
+    }
+    return None();
+}
+
+@impl Container
+
+struct StringArray {
+    data: [string];
+}
+
+type Element = string;  // 关联类型实现
+
+func (sa StringArray) get(index: int) -> Option[string] {
+    if index >= 0 && index < len(sa.data) {
+        return Some(sa.data[index]);
+    }
+    return None();
+}
+
+func (sa StringArray) len() -> int {
+    return len(sa.data);
+}
+
+// 使用带有关联类型的Trait
+func sumIterator[T: Iterator](iter: T) -> int {
+    let sum = 0;
+    loop {
+        let item = iter.next();
+        match item {
+            Some(val) => sum = sum + val;
+            None() => break;
+        }
+    }
+    return sum;
+}
+
+// 测试函数
+func main() -> void {
+    let values: [int] = [1, 2, 3, 4, 5];
+    let iter: IntIterator = {values: values, index: 0};
+
+    let total = sumIterator[IntIterator](iter);
+    print total;  // 输出: 15
+
+    let strings: [string] = ["hello", "world"];
+    let container: StringArray = {data: strings};
+
+    print container.len();  // 输出: 2
+}

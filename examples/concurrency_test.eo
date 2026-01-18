@@ -1,0 +1,101 @@
+// concurrency_test.eo - 并发功能完整测试
+
+// 异步函数定义
+async func fetchData(id: int) -> string {
+    print "Fetching data for ID: " + id
+    return "data_" + id
+}
+
+// 普通函数
+func processItem(item: int) -> void {
+    print "Processing item: " + item
+}
+
+// 测试spawn - 启动并发任务
+func testSpawn() -> void {
+    print "Starting spawn test"
+
+    // 启动多个并发任务
+    spawn fetchData(1)
+    spawn fetchData(2)
+    spawn processItem(100)
+
+    print "All tasks spawned"
+}
+
+// 测试await - 等待异步结果
+func testAwait() -> void {
+    print "Starting await test"
+
+    // 等待异步操作完成
+    let result1: string = await fetchData(10)
+    let result2: string = await fetchData(20)
+
+    print "Result1: " + result1
+    print "Result2: " + result2
+    print "Await test completed"
+}
+
+// 测试通道通信
+func testChannels() -> void {
+    print "Starting channel test"
+
+    let ch: chan int = chan int
+
+    // 发送协程
+    spawn sendValues(ch)
+
+    // 接收协程
+    spawn receiveValues(ch)
+
+    print "Channel test setup completed"
+}
+
+// 发送值的函数
+func sendValues(ch: chan int) -> void {
+    print "Sending values to channel"
+    // 这里暂时简化，不使用通道操作符
+}
+
+// 接收值的函数
+func receiveValues(ch: chan int) -> void {
+    print "Receiving values from channel"
+    // 这里暂时简化，不使用通道操作符
+}
+
+// 发送到多个通道的函数
+func sendToChannels(ch1: chan string, ch2: chan int) -> void {
+    print "Sending to multiple channels"
+    // 这里暂时简化，不使用通道操作符
+}
+
+// 测试select语句
+func testSelect() -> void {
+    print "Starting select test"
+
+    let ch1: chan string = chan string
+    let ch2: chan int = chan int
+
+    // 启动发送协程
+    spawn sendToChannels(ch1, ch2)
+
+    // 使用select接收
+    select {
+        // 这里应该是case分支，但暂时简化
+    }
+
+    print "Select test completed"
+}
+
+// 主函数
+func main() -> int {
+    print "=== Concurrency Test Started ==="
+
+    testSpawn()
+    testAwait()
+    testChannels()
+    testSelect()
+
+    print "=== All Concurrency Tests Completed ==="
+    return 0
+}

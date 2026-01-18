@@ -1,0 +1,85 @@
+// trait_inheritance_test.eo - Trait继承测试
+
+// 基Trait
+trait Display {
+    func display() -> void;
+}
+
+// 扩展Trait，继承Display
+trait Printable: Display {
+    func print() -> void;
+}
+
+// 另一个扩展Trait，继承Display
+trait Formattable: Display {
+    func format() -> string;
+}
+
+// 多重继承的Trait
+trait AdvancedPrintable: Printable, Formattable {
+    func advancedPrint() -> void;
+}
+
+// 实现基Trait
+@impl Display
+
+struct SimpleDisplay {
+    value: string
+}
+
+func (sd SimpleDisplay) display() -> void {
+    print "Display: " + sd.value
+}
+
+// 实现扩展Trait
+@impl Printable
+
+struct SimplePrinter {
+    value: string
+}
+
+func (sp SimplePrinter) display() -> void {
+    print "Display: " + sp.value
+}
+
+func (sp SimplePrinter) print() -> void {
+    print "Print: " + sp.value
+}
+
+// 实现多重继承Trait
+@impl AdvancedPrintable
+
+struct AdvancedPrinter {
+    value: string
+}
+
+func (ap AdvancedPrinter) display() -> void {
+    print "Advanced Display: " + ap.value
+}
+
+func (ap AdvancedPrinter) print() -> void {
+    print "Advanced Print: " + ap.value
+}
+
+func (ap AdvancedPrinter) format() -> string {
+    return "Formatted: " + ap.value
+}
+
+func (ap AdvancedPrinter) advancedPrint() -> void {
+    print "Advanced: " + ap.value
+}
+
+// 测试函数
+func main() -> void {
+    let display: SimpleDisplay = {value: "Hello"}
+    display.display()
+
+    let printer: SimplePrinter = {value: "World"}
+    printer.display()
+    printer.print()
+
+    let advanced: AdvancedPrinter = {value: "Echo"}
+    advanced.display()
+    advanced.print()
+    advanced.advancedPrint()
+}

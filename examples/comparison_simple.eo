@@ -1,0 +1,5 @@
+// comparison_simple.eo - 简单比较运算测试
+let x: int = 5
+let y: int = 10
+print (x < y)  // 应该输出1（true）
+print (x > y)  // 应该输出0（false）

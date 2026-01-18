@@ -1,0 +1,108 @@
+// async_await_test.eo - 测试async函数和await表达式
+// 这个文件专门测试异步函数的定义和await表达式的使用
+
+// 简单的异步函数，返回字符串
+async func getMessage() -> string {
+    print "Async function getMessage() called"
+    return "Hello from async function!"
+}
+
+// 带参数的异步函数
+async func processNumber(num: int) -> int {
+    print "Processing number: " + num
+    return num * 2
+}
+
+// 异步函数返回计算结果
+async func calculateSum(a: int, b: int) -> int {
+    print "Calculating sum of " + a + " and " + b
+    return a + b
+}
+
+// 嵌套异步函数示例（在全局作用域定义）
+async func nestedAsync() -> string {
+    let num: int = await processNumber(100)
+    let message: string = await getMessage()
+    return "Nested result: " + num + " - " + message
+}
+
+// 测试await的基本使用
+func testBasicAwait() -> void {
+    print "=== Testing Basic Await ==="
+
+    // 等待异步函数完成并获取结果
+    let message: string = await getMessage()
+    print "Received message: " + message
+
+    // 等待带参数的异步函数
+    let result: int = await processNumber(42)
+    print "Processed result: " + result
+
+    print "Basic await test completed"
+}
+
+// 测试多个await调用
+func testMultipleAwaits() -> void {
+    print "=== Testing Multiple Awaits ==="
+
+    // 同时等待多个异步操作
+    let msg1: string = await getMessage()
+    let num1: int = await processNumber(10)
+    let sum1: int = await calculateSum(5, 15)
+
+    print "All results received:"
+    print "Message: " + msg1
+    print "Number: " + num1
+    print "Sum: " + sum1
+
+    print "Multiple awaits test completed"
+}
+
+// 测试await在表达式中的使用
+func testAwaitInExpressions() -> void {
+    print "=== Testing Await in Expressions ==="
+
+    // await可以用在表达式中
+    let processedNum: int = await processNumber(21)
+    let doubled: int = processedNum + 10
+    print "Doubled and added: " + doubled
+
+    // 多个await调用
+    let msg: string = await getMessage()
+    let num: int = await processNumber(7)
+    let combined: string = msg + " Result: " + num
+    print "Combined result: " + combined
+
+    print "Await in expressions test completed"
+}
+
+// 测试嵌套的异步调用
+func testNestedAsync() -> void {
+    print "=== Testing Nested Async Calls ==="
+
+    // 异步函数可以调用其他异步函数（通过全局定义的nestedAsync）
+    let nestedResult: string = await nestedAsync()
+    print nestedResult
+
+    print "Nested async test completed"
+}
+
+// 主函数
+func main() -> int {
+    print "=== Async/Await Test Suite Started ==="
+
+    testBasicAwait()
+    print ""
+
+    testMultipleAwaits()
+    print ""
+
+    testAwaitInExpressions()
+    print ""
+
+    testNestedAsync()
+    print ""
+
+    print "=== All Async/Await Tests Completed ==="
+    return 0
+}

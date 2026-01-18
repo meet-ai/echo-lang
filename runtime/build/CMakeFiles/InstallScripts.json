@@ -1,0 +1,7 @@
+{
+	"InstallScripts" : 
+	[
+		"/Users/meetai/source/echo-lang/runtime/build/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

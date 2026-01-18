@@ -1,0 +1,42 @@
+// trait_constraints_test.eo - Trait约束测试
+
+// 泛型Trait定义
+trait Printable[T] {
+    func print(value: T) -> void
+}
+
+// Trait实现
+@impl Printable[int]
+
+struct IntPrinter {
+    prefix: string
+}
+
+func (ip IntPrinter) print(value: int) -> void {
+    print ip.prefix + "int: " + value
+}
+
+@impl Printable[string]
+
+struct StringPrinter {
+    suffix: string
+}
+
+func (sp StringPrinter) print(value: string) -> void {
+    print value + sp.suffix
+}
+
+// 泛型函数使用Trait约束
+func printValue[T: Printable](value: T, printer: Printable[T]) -> void {
+    printer.print(value)
+}
+
+// 测试函数
+func main() -> void {
+    // 测试泛型函数
+    let intPrinter: IntPrinter = {prefix: "Number: "}
+    printValue[int](42, intPrinter)
+
+    let strPrinter: StringPrinter = {suffix: "!!!"}
+    printValue[string]("Hello", strPrinter)
+}

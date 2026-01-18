@@ -1,0 +1,38 @@
+// dynamic_dispatch_test.eo - 动态分发基础测试
+
+// 定义Trait
+trait Drawable {
+    func draw() -> void;
+}
+
+// 实现Trait的结构体
+@impl Drawable
+
+struct Circle {
+    radius: int
+}
+
+func (c Circle) draw() -> void {
+    print "Drawing a circle with radius " + c.radius
+}
+
+@impl Drawable
+
+struct Rectangle {
+    width: int
+    height: int
+}
+
+func (r Rectangle) draw() -> void {
+    print "Drawing a rectangle " + r.width + "x" + r.height
+}
+
+// 基础测试函数
+func main() -> void {
+    let circle: Circle = {radius: 5}
+    let rectangle: Rectangle = {width: 10, height: 20}
+
+    // 直接调用（静态分发）
+    circle.draw()
+    rectangle.draw()
+}

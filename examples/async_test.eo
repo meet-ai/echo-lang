@@ -1,0 +1,42 @@
+// async_test.eo - 异步功能测试
+
+// 异步函数定义
+async func fetchData(url: string) -> string {
+    print "Fetching data from: " + url
+    return "data from " + url
+}
+
+// Future类型函数
+func processData() -> Future[string] {
+    return await fetchData("http://api.example.com")
+}
+
+// await表达式测试
+func testAwait() -> void {
+    let result: string = await fetchData("http://test.com")
+    print "Result: " + result
+}
+
+// spawn表达式测试
+func testSpawn() -> void {
+    spawn fetchData("http://background.com")
+    print "Spawned background task"
+}
+
+// 通道操作测试
+func testChannels() -> void {
+    let ch: chan string = chan string
+    spawn func() -> void {
+        ch <- "Hello from goroutine"
+    }()
+    let msg: string = <- ch
+    print "Received: " + msg
+}
+
+// 主函数
+func main() -> void {
+    testAwait()
+    testSpawn()
+    testChannels()
+    print "Async test completed"
+}

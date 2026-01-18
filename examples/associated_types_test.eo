@@ -1,0 +1,38 @@
+// associated_types_test.eo - 关联类型测试
+
+// 定义具有关联类型的Trait
+trait Container {
+    type Item;  // 关联类型声明
+    func get() -> Item;  // 使用关联类型
+}
+
+// 实现Container Trait（关联类型会被推断为int）
+@impl Container
+
+struct IntBox {
+    value: int
+}
+
+func (box IntBox) get() -> int {
+    return box.value
+}
+
+// 实现Container Trait（关联类型会被推断为string）
+@impl Container
+
+struct StringBox {
+    value: string
+}
+
+func (box StringBox) get() -> string {
+    return box.value
+}
+
+// 测试函数
+func main() -> void {
+    let intBox: IntBox = {value: 42}
+    let strBox: StringBox = {value: "Hello"}
+
+    print intBox.get()   // 输出: 42
+    print strBox.get()   // 输出: Hello
+}

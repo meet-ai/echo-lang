@@ -1,0 +1,366 @@
+context: core-gc
+version: '1.0'
+description: 核心GC上下文处理流程 - 并发标记清扫
+
+entry_points:
+  - id: check_trigger
+    name: 【入口】检查GC触发条件
+    trigger: continuous_monitoring
+    code:
+      handler: internal/modules/core-gc/application/services/gc_scheduler.go#CheckTriggerConditions
+      query: internal/modules/core-gc/application/queries/get_heap_status.go
+    business_rules:
+      - 堆使用率 >= 配置触发阈值
+      - 内存分配压力过大
+      - 分配速率异常
+    success_criteria:
+      - 返回是否需要触发GC
+      - 提供触发原因和优先级
+
+  - id: trigger_gc
+    name: 【入口】触发GC周期
+    trigger: condition_met
+    code:
+      handler: internal/modules/core-gc/application/commands/trigger_gc_command.go
+      aggregate: internal/modules/core-gc/domain/aggregates/garbage_collector.go
+    implementation_chain:
+      - validate_trigger_condition
+      - create_gc_cycle
+      - update_gc_status
+      - publish_gc_triggered_event
+    business_rules:
+      - 确保GC当前处于闲置状态
+      - 记录触发原因和时间戳
+      - 初始化GC周期统计信息
+    success_criteria:
+      - GC状态变为执行中
+      - 创建新的GC周期记录
+      - 发布GCTriggered事件
+
+  - id: concurrent_mark
+    name: 【核心】并发标记阶段
+    trigger: gc_started
+    code:
+      handler: internal/modules/core-gc/domain/services/mark_service.go
+      aggregate: internal/modules/core-gc/domain/aggregates/heap.go
+    implementation_chain:
+      - prepare_mark_phase
+      - scan_root_objects
+      - start_concurrent_workers
+      - process_work_queue
+      - wait_for_completion
+      - finalize_mark_phase
+    technical_details:
+      - 使用三色标记算法
+      - 混合写屏障维护不变性
+      - 工作窃取负载均衡
+      - 位图标记状态记录
+    business_rules:
+      - 所有可达对象必须被正确标记
+      - 并发标记不能影响应用线程
+      - 标记阶段时间控制在目标范围内
+    success_criteria:
+      - 所有可达对象被标记
+      - 标记位图正确更新
+      - 发布MarkPhaseCompleted事件
+
+  - id: concurrent_sweep
+    name: 【核心】并发清扫阶段
+    trigger: mark_completed
+    code:
+      handler: internal/modules/core-gc/domain/services/sweep_service.go
+      aggregate: internal/modules/core-gc/domain/aggregates/heap.go
+    implementation_chain:
+      - prepare_sweep_phase
+      - identify_unmarked_objects
+      - reclaim_memory_blocks
+      - update_free_lists
+      - coalesce_free_blocks
+      - finalize_sweep_phase
+    technical_details:
+      - 并发遍历堆内存
+      - 安全回收未标记对象
+      - 内存块合并减少碎片
+      - 统计回收内存量
+    business_rules:
+      - 只回收未标记对象
+      - 确保内存安全回收
+      - 更新堆统计信息
+    success_criteria:
+      - 未标记对象被完全回收
+      - 空闲内存链表正确更新
+      - 发布SweepPhaseCompleted事件
+
+  - id: finalize_cycle
+    name: 【出口】完成GC周期
+    trigger: sweep_completed
+    code:
+      handler: internal/modules/core-gc/application/commands/complete_gc_command.go
+      aggregate: internal/modules/core-gc/domain/aggregates/garbage_collector.go
+    implementation_chain:
+      - validate_gc_completion
+      - calculate_final_statistics
+      - update_gc_status
+      - cleanup_cycle_resources
+      - publish_gc_completed_event
+    business_rules:
+      - 验证GC周期完整执行
+      - 计算并记录最终统计信息
+      - 重置GC状态为闲置
+    success_criteria:
+      - GC状态变为闲置
+      - 统计信息正确更新
+      - 发布GCCycleCompleted事件
+
+domain_services:
+  - id: mark_service
+    name: 标记服务
+    responsibility: 执行并发标记算法
+    methods:
+      - StartConcurrentMark(): 启动并发标记
+      - ProcessWorkQueue(): 处理标记工作队列
+      - FinalizeMarkPhase(): 完成标记阶段
+    dependencies:
+      - heap_aggregate: 访问堆进行标记
+      - write_barrier: 维护标记不变性
+
+  - id: sweep_service
+    name: 清扫服务
+    responsibility: 执行并发清扫算法
+    methods:
+      - StartConcurrentSweep(): 启动并发清扫
+      - ReclaimUnmarkedObjects(): 回收未标记对象
+      - UpdateFreeLists(): 更新空闲链表
+    dependencies:
+      - heap_aggregate: 访问堆进行清扫
+      - allocator: 更新分配器状态
+
+application_services:
+  - id: gc_scheduler
+    name: GC调度服务
+    responsibility: 监控GC触发条件
+    methods:
+      - CheckTriggerConditions(): 检查是否需要触发GC
+      - CalculateTriggerPriority(): 计算触发优先级
+      - ScheduleGC(): 安排GC执行
+    dependencies:
+      - heap_repository: 查询堆状态
+      - gc_repository: 检查GC状态
+
+domain_events:
+  - id: gc_triggered
+    name: GC已触发
+    payload:
+      - gcId: string
+      - triggerReason: string
+      - heapUsage: float64
+      - timestamp: time.Time
+    subscribers:
+      - adaptive_gc_context: 启动工作负载分析
+      - monitoring_gc_context: 开始性能监控
+
+  - id: mark_phase_completed
+    name: 标记阶段已完成
+    payload:
+      - gcId: string
+      - phaseId: string
+      - markedObjects: int64
+      - duration: time.Duration
+      - timestamp: time.Time
+    subscribers:
+      - core_gc_context: 启动清扫阶段
+      - monitoring_gc_context: 记录标记性能
+
+  - id: sweep_phase_completed
+    name: 清扫阶段已完成
+    payload:
+      - gcId: string
+      - phaseId: string
+      - memoryReclaimed: int64
+      - duration: time.Duration
+      - timestamp: time.Time
+    subscribers:
+      - core_gc_context: 完成GC周期
+      - monitoring_gc_context: 记录清扫性能
+
+  - id: gc_cycle_completed
+    name: GC周期已完成
+    payload:
+      - gcId: string
+      - totalDuration: time.Duration
+      - pauseTime: time.Duration
+      - memoryReclaimed: int64
+      - objectsCollected: int64
+      - statistics: GCStats
+      - timestamp: time.Time
+    subscribers:
+      - adaptive_gc_context: 评估GC效果
+      - monitoring_gc_context: 收集完整性能指标
+
+repositories:
+  - id: garbage_collector_repository
+    name: 垃圾回收器仓储
+    interface: GarbageCollectorRepository
+    methods:
+      - FindByID(id): 按ID查找GC实例
+      - Save(gc): 保存GC状态
+      - FindActive(): 查找活跃的GC实例
+    implementation: SQL-based
+
+  - id: heap_repository
+    name: 堆仓储
+    interface: HeapRepository
+    methods:
+      - GetCurrentHeap(): 获取当前堆实例
+      - UpdateHeapStats(stats): 更新堆统计信息
+      - GetHeapConfiguration(): 获取堆配置
+    implementation: In-memory
+
+value_objects:
+  - id: gc_configuration
+    name: GC配置
+    properties:
+      - triggerRatio: float64
+      - targetPauseTime: time.Duration
+      - maxPauseTime: time.Duration
+      - initialHeapSize: int64
+      - maxHeapSize: int64
+    validation_rules:
+      - triggerRatio ∈ (0, 1)
+      - targetPauseTime > 0
+      - maxPauseTime >= targetPauseTime
+
+  - id: performance_metrics
+    name: 性能指标
+    properties:
+      - pauseTimeP95: time.Duration
+      - throughputLoss: float64
+      - memoryReclaimed: int64
+      - heapUsageRatio: float64
+    derived_properties:
+      - survivalRate: 计算存活率
+      - memoryEfficiency: 计算内存效率
+
+  - id: gc_execution_stats
+    name: GC执行统计
+    properties:
+      - totalCycles: int64
+      - totalGCTime: time.Duration
+      - totalMemoryReclaimed: int64
+      - lastCompletedAt: *time.Time
+    methods:
+      - Merge(other): 合并统计信息
+      - OverallEfficiency(): 计算整体效率
+
+business_rules:
+  - id: BR-GC-CORE-001
+    name: GC触发时机
+    condition: heap_usage_ratio >= gc_config.trigger_ratio
+    action: trigger_gc
+    priority: high
+    description: 当堆使用率达到触发阈值时启动GC
+
+  - id: BR-GC-CORE-002
+    name: 紧急GC触发
+    condition: memory_pressure == critical OR allocation_failed
+    action: trigger_emergency_gc
+    priority: critical
+    description: 内存压力极大或分配失败时立即触发GC
+
+  - id: BR-GC-CORE-003
+    name: 标记完整性
+    condition: all_reachable_objects_marked
+    action: proceed_to_sweep
+    priority: critical
+    description: 确保所有可达对象都被正确标记
+
+  - id: BR-GC-CORE-004
+    name: 清扫安全性
+    condition: only_unmarked_objects_reclaimed
+    action: complete_gc_cycle
+    priority: critical
+    description: 只回收未标记对象，确保内存安全
+
+  - id: BR-GC-CORE-005
+    name: 统计准确性
+    condition: gc_stats_consistent_with_actual_execution
+    action: publish_gc_completed_event
+    priority: high
+    description: 确保统计信息反映实际GC执行情况
+
+error_handling:
+  - error_type: mark_phase_failure
+    description: 标记阶段执行失败
+    recovery_strategy: abort_gc_and_log_error
+    max_retry_attempts: 0
+    fallback_action: emergency_heap_dump
+
+  - error_type: sweep_phase_failure
+    description: 清扫阶段执行失败
+    recovery_strategy: partial_recovery_and_continue
+    max_retry_attempts: 1
+    fallback_action: conservative_gc_mode
+
+  - error_type: configuration_error
+    description: GC配置无效
+    recovery_strategy: use_default_configuration
+    max_retry_attempts: 0
+    fallback_action: log_warning_and_continue
+
+  - error_type: heap_integrity_error
+    description: 堆完整性检查失败
+    recovery_strategy: emergency_gc_and_validate
+    max_retry_attempts: 0
+    fallback_action: abort_process
+
+monitoring_points:
+  - point_id: heap_usage_monitoring
+    name: 堆使用率监控
+    metrics: [heap_usage_ratio, allocation_rate]
+    frequency: continuous
+    threshold: heap_usage_ratio >= 0.75
+    action: trigger_gc_analysis
+
+  - point_id: gc_phase_monitoring
+    name: GC阶段监控
+    metrics: [phase_duration, objects_processed, memory_processed]
+    frequency: per_phase
+    threshold: phase_duration > target_pause_time
+    action: log_performance_warning
+
+  - point_id: gc_completion_monitoring
+    name: GC完成监控
+    metrics: [total_duration, memory_reclaimed, pause_time_p95]
+    frequency: per_cycle
+    threshold: pause_time_p95 > max_pause_time
+    action: trigger_adaptive_adjustment
+
+testing_requirements:
+  - test_type: unit_tests
+    coverage_target: 90%
+    focus_areas:
+      - 三色标记算法正确性
+      - 写屏障不变性维护
+      - 统计信息准确性
+      - 配置验证逻辑
+
+  - test_type: integration_tests
+    scenarios:
+      - 完整GC周期执行
+      - 并发标记清扫协同
+      - 内存分配回收平衡
+      - 配置动态调整
+
+  - test_type: performance_tests
+    benchmarks:
+      - GC暂停时间分布
+      - 内存回收效率
+      - 并发处理吞吐量
+      - 堆大小扩展性能
+
+  - test_type: stress_tests
+    conditions:
+      - 高分配压力场景
+      - 大对象频繁分配
+      - 内存碎片化场景
+      - 长时间运行稳定性

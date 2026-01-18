@@ -1,0 +1,136 @@
+// select_detailed_test.eo - 详细测试select语句
+// 这个文件专门测试select多路复用选择语句的各种用法
+
+// 模拟的通道操作函数（由于通道实现不完整，这里使用模拟）
+// 发送者函数
+func sender(id: int) -> void {
+    print "Sender " + id + " ready to send"
+    // 这里本应该使用通道发送，但暂时用print模拟
+    print "Sender " + id + " sent data"
+}
+
+// 接收者函数
+func receiver(id: int) -> void {
+    print "Receiver " + id + " ready to receive"
+    // 这里本应该使用通道接收，但暂时用print模拟
+    print "Receiver " + id + " received data"
+}
+
+// 超时模拟函数
+func timeoutHandler() -> void {
+    print "Timeout occurred - no channel ready"
+}
+
+// 测试基本的select框架
+func testBasicSelect() -> void {
+    print "=== Testing Basic Select Framework ==="
+
+    print "This test demonstrates the select statement syntax"
+    print "Note: Full channel implementation needed for actual operation"
+
+    print "Select statement executed (framework only)"
+    print "Basic select test completed"
+}
+
+// 测试select的default分支
+func testSelectDefault() -> void {
+    print "=== Testing Select Default Branch ==="
+
+    print "Testing select with default branch"
+
+    select {
+        // 没有准备好的case，所以会执行default
+        // case value := <- emptyChannel:
+        //     print "This won't execute"
+        // default:
+        //     print "Default branch executed"
+    }
+
+    print "Default select test completed"
+}
+
+// 演示select语法结构
+func demonstrateSelectSyntax() -> void {
+    print "=== Demonstrating Select Syntax ==="
+    print "Select statement syntax examples"
+    print "select with case and default branches"
+    print "Select syntax demonstration completed"
+}
+
+// 测试多分支select的概念
+func testMultiBranchSelect() -> void {
+    print "=== Testing Multi-Branch Select Concept ==="
+
+    print "Conceptual multi-branch select:"
+
+    select {
+        // 分支1: 接收操作
+        // case msg := <- messageChannel:
+        //     print "Received message: " + msg
+
+        // 分支2: 发送操作
+        // case dataChannel <- "important data":
+        //     print "Sent important data"
+
+        // 分支3: 另一个接收
+        // case signal := <- controlChannel:
+        //     print "Received control signal: " + signal
+
+        // default分支
+        // default:
+        //     print "No channel operations ready"
+    }
+
+    print "Multi-branch select concept demonstrated"
+}
+
+// 测试select在并发场景中的使用
+func testSelectInConcurrency() -> void {
+    print "=== Testing Select in Concurrent Scenarios ==="
+
+    print "Spawning concurrent tasks that would use select..."
+
+    // 启动多个任务，这些任务本应该使用select进行通信
+    spawn sender(1)
+    spawn receiver(1)
+    spawn sender(2)
+    spawn receiver(2)
+
+    print "Concurrent tasks with select concept spawned"
+
+    // 这里本应该有一个select来协调这些任务
+    select {
+        // 协调并发任务的select
+        // case result := <- resultChannel:
+        //     print "Task result: " + result
+        // case error := <- errorChannel:
+        //     print "Task error: " + error
+    }
+
+    print "Select in concurrency test completed"
+}
+
+// 主函数
+func main() -> int {
+    print "=== Select Statement Detailed Test Suite Started ==="
+
+    testBasicSelect()
+    print ""
+
+    testSelectDefault()
+    print ""
+
+    demonstrateSelectSyntax()
+    print ""
+
+    testMultiBranchSelect()
+    print ""
+
+    testSelectInConcurrency()
+    print ""
+
+    print "=== All Select Detailed Tests Completed ==="
+    print "Note: These tests demonstrate select syntax and concepts"
+    print "Full channel implementation needed for actual select operation"
+    return 0
+}

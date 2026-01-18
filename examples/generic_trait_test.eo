@@ -1,0 +1,31 @@
+// generic_trait_test.eo - 泛型Trait测试
+
+// 泛型Trait定义
+trait Printable[T] {
+    func print(value: T) -> void
+    func toString(value: T) -> string
+}
+
+// 泛型Trait实现
+@impl Printable[int]
+
+struct IntPrinter {
+    prefix: string
+}
+
+func (ip IntPrinter) print(value: int) -> void {
+    print ip.prefix + "int: " + value
+}
+
+func (ip IntPrinter) toString(value: int) -> string {
+    return ip.prefix + "int: " + value
+}
+
+// 使用泛型Trait
+func main() -> void {
+    let printer: IntPrinter = {prefix: "Value: "}
+    printer.print(42)
+
+    let str: string = printer.toString(123)
+    print str
+}

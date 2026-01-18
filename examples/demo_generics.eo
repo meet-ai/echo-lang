@@ -1,0 +1,50 @@
+// Echo 泛型系统演示
+// 展示完整的泛型功能：泛型函数、泛型结构体、泛型方法、复杂约束
+
+// 泛型函数示例
+func identity[T](value: T) -> T {
+    return value
+}
+
+// 泛型结构体
+struct Container[T] {
+    value: T
+}
+
+// 泛型方法 - 泛型接收者
+func (c Container[T]) get() -> T {
+    return c.value
+}
+
+// 泛型方法 - 方法级泛型参数
+func (c Container[T]) transform[U](mapper: func(T) -> U) -> Container[U] {
+    return {value: mapper(c.value)}
+}
+
+// 带约束的泛型结构体
+struct Processor[T: Printable + Serializable] {
+    data: T
+}
+
+// 带约束的泛型方法
+func (p Processor[T]) process[U: Displayable](additional: U) -> string {
+    return p.data.toString() + " + " + additional.display()
+}
+
+// 测试函数
+func main() -> void {
+    // 泛型函数调用
+    let num: int = identity[int](42)
+    let str: string = identity[string]("hello")
+
+    // 泛型结构体
+    let container: Container[int] = {value: 100}
+    let value: int = container.get()
+
+    // 泛型方法调用
+    let stringContainer: Container[string] = container.transform[string](func(x: int) -> string {
+        return "Number: " + x.toString()
+    })
+
+    print "Generic functions and methods work!"
+}

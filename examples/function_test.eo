@@ -1,0 +1,6 @@
+// function_test.eo - 函数定义测试
+func add() -> int {
+return 5
+}
+
+print 8

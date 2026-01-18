@@ -1,0 +1,56 @@
+// Echo 异步编程演示
+// 展示完整的异步编程功能
+
+// 异步函数定义
+async func fetchUserData[T](userId: int) -> Result[T] {
+    print "Fetching user data for ID: " + userId
+    // 模拟异步操作
+    return Ok("user_data" as T)
+}
+
+// 异步函数调用和await
+async func processUser(userId: int) -> Result[string] {
+    // await异步操作结果
+    let userData: Result[string] = await fetchUserData[string](userId)
+
+    match userData {
+        Ok(data) => return Ok("Processed: " + data)
+        Err(error) => return Err("Failed to fetch user: " + error)
+    }
+}
+
+// 主函数展示异步编程
+func main() -> void {
+    // 通道类型和字面量
+    let messageChannel: chan string = chan string
+    let resultChannel: chan Result[string] = chan Result[string]
+
+    // spawn并发任务
+    spawn processUserAsync(messageChannel, resultChannel)
+
+    // 发送数据到通道
+    messageChannel <- "Hello from main!"
+
+    // 从通道接收数据
+    let received: string = <- messageChannel
+    print "Received: " + received
+
+    // 异步调用
+    let result: Result[string] = await processUser(123)
+    match result {
+        Ok(msg) => print "Success: " + msg
+        Err(err) => print "Error: " + err
+    }
+}
+
+// 辅助异步函数
+async func processUserAsync(input: chan string, output: chan Result[string]) -> void {
+    // 接收输入
+    let message: string = <- input
+
+    // 处理消息
+    let processed: string = "Processed: " + message
+
+    // 发送结果
+    output <- Ok(processed)
+}

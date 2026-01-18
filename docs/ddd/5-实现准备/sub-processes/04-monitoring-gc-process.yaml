@@ -1,0 +1,445 @@
+context: monitoring-gc
+version: '1.0'
+description: 监控GC上下文处理流程 - 可观测性和诊断
+
+entry_points:
+  - id: collect_metrics
+    name: 【入口】收集性能指标
+    trigger: gc_cycle_completed_event OR scheduled
+    code:
+      handler: internal/modules/monitoring-gc/domain/services/metrics_collector.go
+      aggregate: internal/modules/monitoring-gc/domain/aggregates/monitoring_service.go
+    implementation_chain:
+      - gather_gc_execution_data
+      - calculate_performance_metrics
+      - collect_system_resource_usage
+      - aggregate_time_series_data
+      - store_metrics_snapshot
+    business_rules:
+      - 收集所有关键性能指标
+      - 确保指标数据完整性和准确性
+      - 维护时间序列数据的一致性
+    success_criteria:
+      - 所有必需指标成功收集
+      - 指标值在合理范围内
+      - 数据成功存储并可查询
+
+  - id: detect_anomalies
+    name: 【核心】异常情况检测
+    trigger: metrics_collected OR continuous
+    code:
+      handler: internal/modules/monitoring-gc/domain/services/anomaly_detector.go
+      aggregate: internal/modules/monitoring-gc/domain/aggregates/monitoring_service.go
+    implementation_chain:
+      - analyze_metric_trends
+      - apply_statistical_models
+      - check_threshold_violations
+      - correlate_related_metrics
+      - generate_anomaly_reports
+    technical_details:
+      - 统计分析方法（移动平均、标准差）
+      - 机器学习模型（简单规则-based）
+      - 阈值配置管理
+      - 异常关联分析
+    business_rules:
+      - 使用统计方法而非复杂ML
+      - 基于历史数据建立基线
+      - 多维度关联分析异常
+    success_criteria:
+      - 准确识别性能异常
+      - 提供异常的根本原因分析
+      - 生成可操作的修复建议
+
+  - id: generate_reports
+    name: 【核心】生成诊断报告
+    trigger: anomaly_detected OR scheduled
+    code:
+      handler: internal/modules/monitoring-gc/domain/services/report_generator.go
+      aggregate: internal/modules/monitoring-gc/domain/aggregates/monitoring_service.go
+    implementation_chain:
+      - aggregate_historical_data
+      - analyze_performance_trends
+      - identify_optimization_opportunities
+      - generate_recommendations
+      - format_and_deliver_report
+    business_rules:
+      - 报告内容基于数据分析而非主观判断
+      - 提供具体的优化建议和预期效果
+      - 报告格式适合不同受众（开发/运维）
+    success_criteria:
+      - 报告包含完整的历史分析
+      - 优化建议具有可操作性
+      - 报告及时送达相关方
+
+  - id: handle_alerts
+    name: 【响应】处理告警通知
+    trigger: anomaly_detected OR threshold_exceeded
+    code:
+      handler: internal/modules/monitoring-gc/application/commands/process_alert_command.go
+      aggregate: internal/modules/monitoring-gc/domain/aggregates/monitoring_service.go
+    implementation_chain:
+      - evaluate_alert_severity
+      - determine_notification_channels
+      - format_alert_message
+      - send_notifications
+      - record_alert_history
+    business_rules:
+      - 根据告警严重程度选择通知方式
+      - 避免告警疲劳（去重和抑制）
+      - 维护告警历史用于趋势分析
+    success_criteria:
+      - 告警及时送达相关人员
+      - 告警信息清晰准确
+      - 告警历史完整记录
+
+  - id: maintain_baselines
+    name: 【维护】维护性能基线
+    trigger: scheduled OR significant_change
+    code:
+      handler: internal/modules/monitoring-gc/domain/services/baseline_maintainer.go
+      aggregate: internal/modules/monitoring-gc/domain/aggregates/monitoring_service.go
+    implementation_chain:
+      - collect_stable_period_data
+      - update_statistical_baselines
+      - validate_baseline_accuracy
+      - archive_old_baselines
+      - notify_baseline_changes
+    business_rules:
+      - 只在系统稳定期更新基线
+      - 使用统计方法建立可靠基线
+      - 保留基线历史用于对比分析
+    success_criteria:
+      - 基线反映系统正常性能水平
+      - 基线更新过程不影响监控准确性
+      - 基线变更及时通知相关方
+
+domain_services:
+  - id: metrics_collector
+    name: 指标收集器
+    responsibility: 从各个GC上下文收集性能指标
+    methods:
+      - CollectGCMetrics(): 收集GC相关指标
+      - CollectSystemMetrics(): 收集系统资源指标
+      - AggregateMetrics(): 聚合多维度指标
+      - ValidateMetrics(): 验证指标数据质量
+    dependencies:
+      - event_bus: 订阅GC事件
+      - system_monitor: 系统资源监控
+      - metrics_storage: 指标数据存储
+
+  - id: anomaly_detector
+    name: 异常检测器
+    responsibility: 检测GC性能异常情况
+    methods:
+      - AnalyzeMetricTrends(): 分析指标趋势
+      - DetectThresholdViolations(): 检测阈值违反
+      - CorrelateAnomalies(): 关联异常事件
+      - CalculateSeverity(): 计算异常严重程度
+    dependencies:
+      - metrics_repository: 历史指标数据
+      - baseline_repository: 性能基线数据
+      - correlation_rules: 异常关联规则
+
+  - id: report_generator
+    name: 报告生成器
+    responsibility: 生成GC性能分析报告
+    methods:
+      - AnalyzePerformanceTrends(): 分析性能趋势
+      - IdentifyBottlenecks(): 识别性能瓶颈
+      - GenerateRecommendations(): 生成优化建议
+      - FormatReport(): 格式化报告内容
+    dependencies:
+      - historical_data: 历史性能数据
+      - baseline_data: 性能基线
+      - optimization_rules: 优化规则库
+
+  - id: alert_manager
+    name: 告警管理器
+    responsibility: 管理告警的生成和通知
+    methods:
+      - EvaluateAlertConditions(): 评估告警条件
+      - DetermineNotificationStrategy(): 确定通知策略
+      - SendNotifications(): 发送通知
+      - ManageAlertLifecycle(): 管理告警生命周期
+    dependencies:
+      - notification_channels: 通知渠道配置
+      - alert_templates: 告警模板
+      - escalation_rules: 告警升级规则
+
+application_services:
+  - id: monitoring_dashboard
+    name: 监控仪表板服务
+    responsibility: 提供监控数据的查询和展示接口
+    methods:
+      - QueryMetrics(): 查询指标数据
+      - GetDashboardData(): 获取仪表板数据
+      - ExportMetrics(): 导出指标数据
+      - ConfigureAlerts(): 配置告警规则
+    dependencies:
+      - metrics_query_service: 指标查询服务
+      - dashboard_renderer: 仪表板渲染器
+
+domain_events:
+  - id: metrics_collected
+    name: 指标已收集
+    payload:
+      - collectionId: string
+      - metrics: PerformanceMetrics
+      - systemMetrics: SystemMetrics
+      - timestamp: time.Time
+    subscribers:
+      - adaptive_gc_context: 用于工作负载分析
+      - monitoring_gc_context: 用于趋势分析
+
+  - id: anomaly_detected
+    name: 异常已检测
+    payload:
+      - anomalyId: string
+      - type: AnomalyType
+      - severity: SeverityLevel
+      - description: string
+      - evidence: AnomalyEvidence
+      - timestamp: time.Time
+    subscribers:
+      - monitoring_gc_context: 生成告警
+      - adaptive_gc_context: 触发紧急调整
+
+  - id: alert_triggered
+    name: 告警已触发
+    payload:
+      - alertId: string
+      - type: AlertType
+      - severity: SeverityLevel
+      - message: string
+      - recipients: []string
+      - timestamp: time.Time
+    subscribers:
+      - monitoring_gc_context: 记录告警历史
+      - notification_service: 发送通知
+
+  - id: report_generated
+    name: 报告已生成
+    payload:
+      - reportId: string
+      - type: ReportType
+      - period: TimeRange
+      - keyFindings: []string
+      - recommendations: []string
+      - timestamp: time.Time
+    subscribers:
+      - monitoring_gc_context: 存档报告
+      - notification_service: 分发报告
+
+repositories:
+  - id: metrics_repository
+    name: 指标仓储
+    interface: MetricsRepository
+    methods:
+      - SaveMetrics(metrics): 保存指标数据
+      - QueryMetrics(query): 查询指标数据
+      - AggregateMetrics(aggregation): 聚合指标数据
+      - GetMetricHistory(metricId, timeRange): 获取指标历史
+    implementation: Time-series database (e.g., Prometheus, InfluxDB)
+
+  - id: alert_repository
+    name: 告警仓储
+    interface: AlertRepository
+    methods:
+      - SaveAlert(alert): 保存告警记录
+      - QueryAlerts(query): 查询告警记录
+      - UpdateAlertStatus(alertId, status): 更新告警状态
+      - GetActiveAlerts(): 获取活跃告警
+    implementation: Relational database
+
+  - id: baseline_repository
+    name: 基线仓储
+    interface: BaselineRepository
+    methods:
+      - SaveBaseline(baseline): 保存性能基线
+      - GetBaseline(metricType): 获取性能基线
+      - UpdateBaseline(metricType, newBaseline): 更新性能基线
+      - GetBaselineHistory(metricType, timeRange): 获取基线历史
+    implementation: Configuration store with versioning
+
+value_objects:
+  - id: performance_metrics
+    name: 性能指标
+    properties:
+      - pauseTimeP95: time.Duration
+      - throughputLoss: float64
+      - memoryReclaimed: int64
+      - heapUsageRatio: float64
+      - fragmentationRatio: float64
+      - allocationRate: int64
+    derived_properties:
+      - efficiencyScore: 综合效率评分
+      - healthScore: 系统健康评分
+
+  - id: anomaly_evidence
+    name: 异常证据
+    properties:
+      - metricName: string
+      - expectedValue: interface{}
+      - actualValue: interface{}
+      - deviation: float64
+      - timeWindow: time.Duration
+      - confidence: float64
+    methods:
+      - IsSignificant(): 判断异常是否显著
+      - GetSeverityScore(): 获取严重程度评分
+
+  - id: alert_condition
+    name: 告警条件
+    properties:
+      - metricName: string
+      - operator: ComparisonOperator
+      - threshold: interface{}
+      - duration: time.Duration
+      - severity: SeverityLevel
+    methods:
+      - Evaluate(currentValue): 评估条件是否满足
+      - GetDescription(): 获取条件描述
+
+  - id: baseline_statistics
+    name: 基线统计
+    properties:
+      - metricName: string
+      - mean: float64
+      - stdDev: float64
+      - percentile95: float64
+      - percentile99: float64
+      - sampleCount: int64
+      - lastUpdated: time.Time
+    methods:
+      - IsOutlier(value): 判断值是否为异常值
+      - GetConfidenceInterval(): 获取置信区间
+
+business_rules:
+  - id: BR-MONITOR-001
+    name: 指标数据完整性
+    condition: all_required_metrics_collected
+    action: accept_metrics_snapshot
+    priority: critical
+    description: 确保所有关键指标都成功收集
+
+  - id: BR-MONITOR-002
+    name: 异常检测准确性
+    condition: anomaly_confidence > 0.8
+    action: trigger_alert
+    priority: high
+    description: 只有高置信度的异常才触发告警
+
+  - id: BR-MONITOR-003
+    name: 告警抑制机制
+    condition: similar_alert_recently_sent
+    action: suppress_duplicate_alert
+    priority: medium
+    description: 避免短时间内发送重复告警
+
+  - id: BR-MONITOR-004
+    name: 基线更新稳定性
+    condition: system_in_stable_state
+    action: update_performance_baseline
+    priority: medium
+    description: 只在系统稳定期更新性能基线
+
+  - id: BR-MONITOR-005
+    name: 报告生成及时性
+    condition: report_generation_time < 300000  // 5分钟
+    action: deliver_report
+    priority: medium
+    description: 确保报告及时生成和分发
+
+error_handling:
+  - error_type: metrics_collection_failure
+    description: 指标收集失败
+    recovery_strategy: retry_with_backoff
+    max_retry_attempts: 3
+    fallback_action: use_default_values
+
+  - error_type: anomaly_detection_failure
+    description: 异常检测失败
+    recovery_strategy: skip_detection_cycle
+    max_retry_attempts: 0
+    fallback_action: log_warning_and_continue
+
+  - error_type: alert_delivery_failure
+    description: 告警发送失败
+    recovery_strategy: retry_with_exponential_backoff
+    max_retry_attempts: 5
+    fallback_action: escalate_to_manual_intervention
+
+  - error_type: baseline_update_failure
+    description: 基线更新失败
+    recovery_strategy: rollback_to_previous_baseline
+    max_retry_attempts: 1
+    fallback_action: keep_current_baseline
+
+monitoring_points:
+  - point_id: metrics_collection_monitoring
+    name: 指标收集监控
+    metrics: [collection_success_rate, collection_latency, data_quality_score]
+    frequency: per_collection_cycle
+    threshold: collection_success_rate < 0.95
+    action: investigate_collection_failures
+
+  - point_id: anomaly_detection_monitoring
+    name: 异常检测监控
+    metrics: [false_positive_rate, detection_latency, anomaly_confidence_avg]
+    frequency: per_detection_cycle
+    threshold: false_positive_rate > 0.1
+    action: tune_detection_algorithms
+
+  - point_id: alert_system_monitoring
+    name: 告警系统监控
+    metrics: [alert_delivery_rate, mean_time_to_acknowledge, alert_volume]
+    frequency: per_alert_cycle
+    threshold: alert_delivery_rate < 0.99
+    action: check_notification_channels
+
+  - point_id: baseline_accuracy_monitoring
+    name: 基线准确性监控
+    metrics: [baseline_drift, prediction_accuracy, update_frequency]
+    frequency: daily
+    threshold: prediction_accuracy < 0.8
+    action: review_baseline_algorithm
+
+testing_requirements:
+  - test_type: unit_tests
+    coverage_target: 85%
+    focus_areas:
+      - 指标计算逻辑正确性
+      - 异常检测算法准确性
+      - 告警条件评估逻辑
+      - 基线统计计算准确性
+      - 报告生成内容完整性
+
+  - test_type: integration_tests
+    scenarios:
+      - 完整监控数据流：收集→检测→告警→报告
+      - 多GC上下文指标聚合
+      - 告警通知渠道集成
+      - 历史数据查询和分析
+      - 基线自动更新流程
+
+  - test_type: performance_tests
+    benchmarks:
+      - 指标收集延迟：< 10ms
+      - 异常检测延迟：< 50ms
+      - 报告生成时间：< 5分钟
+      - 告警发送延迟：< 1秒
+      - 查询响应时间：< 100ms
+
+  - test_type: reliability_tests
+    conditions:
+      - 监控系统可用性：> 99.9%
+      - 数据持久化可靠性：零数据丢失
+      - 告警送达可靠性：> 99.5%
+      - 基线数据一致性：无数据损坏
+
+  - test_type: scalability_tests
+    conditions:
+      - 支持100+ GC实例并发监控
+      - 处理10万+ 指标数据点/分钟
+      - 存储1年历史监控数据
+      - 支持实时告警处理

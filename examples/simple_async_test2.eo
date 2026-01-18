@@ -1,0 +1,9 @@
+// simple_async_test2.eo - 更简单的异步测试
+async func getMessage() -> string {
+    return "Hello from async!"
+}
+
+func main() -> void {
+    let msg: string = await getMessage()
+    print msg
+}

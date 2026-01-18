@@ -1,0 +1,7 @@
+// if_else_test.eo - 测试else分支
+let x: int = 3
+if x > 5 {
+print 1
+} else {
+print 0
+}

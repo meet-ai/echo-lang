@@ -1,0 +1,391 @@
+package services
+
+import (
+	"fmt"
+	"strings"
+
+	"github.com/meetai/echo-lang/internal/modules/frontend/domain/entities"
+)
+
+// CodeGenerator 代码生成器接口
+type CodeGenerator interface {
+	// GenerateOCaml 生成代码
+	GenerateOCaml(program *entities.Program) string
+
+	// GenerateExecutableOCaml 生成可执行代码
+	GenerateExecutableOCaml(program *entities.Program) string
+}
+
+// OCamlGenerator OCaml代码生成器实现
+type OCamlGenerator struct{}
+
+// NewOCamlGenerator 创建新的OCaml代码生成器
+func NewOCamlGenerator() CodeGenerator {
+	return &OCamlGenerator{}
+}
+
+// GenerateOCaml 生成OCaml代码（实现CodeGenerator接口）
+func (g *OCamlGenerator) GenerateOCaml(program *entities.Program) string {
+	var ocamlCode strings.Builder
+
+	ocamlCode.WriteString("(* Generated OCaml code from .eo file *)\n\n")
+
+	// 生成程序结构
+	for _, stmt := range program.Statements {
+		switch s := stmt.(type) {
+		case *entities.FuncDef:
+			ocamlCode.WriteString(g.generateFuncDef(s))
+		case *entities.StructDef:
+			ocamlCode.WriteString(g.generateStructDef(s))
+		case *entities.EnumDef:
+			ocamlCode.WriteString(g.generateEnumDef(s))
+		case *entities.TraitDef:
+			ocamlCode.WriteString(g.generateTraitDef(s))
+		}
+	}
+
+	return ocamlCode.String()
+}
+
+// GenerateExecutableOCaml 生成可执行的OCaml程序（实现CodeGenerator接口）
+func (g *OCamlGenerator) GenerateExecutableOCaml(program *entities.Program) string {
+	return g.GenerateOCaml(program)
+}
+
+// generateFuncDef 生成函数定义
+func (g *OCamlGenerator) generateFuncDef(funcDef *entities.FuncDef) string {
+	// 简化实现
+	return "(* Function definition would go here *)\n"
+}
+
+// generateStructDef 生成结构体定义
+func (g *OCamlGenerator) generateStructDef(structDef *entities.StructDef) string {
+	// 简化实现
+	return "(* Struct definition would go here *)\n"
+}
+
+// generateEnumDef 生成枚举定义
+func (g *OCamlGenerator) generateEnumDef(enumDef *entities.EnumDef) string {
+	// 简化实现
+	return "(* Enum definition would go here *)\n"
+}
+
+// generateTraitDef 生成trait定义
+func (g *OCamlGenerator) generateTraitDef(traitDef *entities.TraitDef) string {
+	// 简化实现
+	return "(* Trait definition would go here *)\n"
+}
+
+// CGenerator C代码生成器实现
+// C代码生成常量
+const (
+	CVoidType         = "void"
+	CIntDefaultValue  = "0"
+	CStringDefaultValue = "\"\""
+)
+
+type CGenerator struct {
+	stringLiterals []string
+	stringIndexMap map[string]int
+}
+
+// NewCGenerator 创建新的C代码生成器
+func NewCGenerator() CodeGenerator {
+	return &CGenerator{}
+}
+
+// GenerateOCaml 生成C代码（实现CodeGenerator接口）
+func (g *CGenerator) GenerateOCaml(program *entities.Program) string {
+	// 初始化状态
+	g.stringLiterals = make([]string, 0)
+	g.stringIndexMap = make(map[string]int)
+
+	var code strings.Builder
+
+	// C文件头部
+	code.WriteString("/* Generated C code from .eo file */\n\n")
+	code.WriteString("#include <stdio.h>\n")
+	code.WriteString("#include <stdlib.h>\n")
+	code.WriteString("#include <string.h>\n\n")
+
+	// 收集所有字符串常量
+	g.collectStringLiterals(program)
+
+	// 生成字符串常量
+	if len(g.stringLiterals) > 0 {
+		for i, str := range g.stringLiterals {
+			code.WriteString(fmt.Sprintf("const char* str_%d = \"%s\";\n", i, g.escapeCString(str)))
+		}
+		code.WriteString("\n")
+	}
+
+	// 生成函数声明
+	g.generateCFunctionDeclarations(program, &code)
+
+	// 生成函数定义
+	g.generateCFunctionDefinitions(program, &code)
+
+	// 生成main函数
+	g.generateCMainFunction(program, &code)
+
+	return code.String()
+}
+
+// GenerateExecutableOCaml 生成可执行的C程序（实现CodeGenerator接口）
+func (g *CGenerator) GenerateExecutableOCaml(program *entities.Program) string {
+	return g.GenerateOCaml(program)
+}
+
+// collectStringLiterals 收集程序中的所有字符串字面量
+func (g *CGenerator) collectStringLiterals(program *entities.Program) {
+	g.stringLiterals = make([]string, 0)
+	g.stringIndexMap = make(map[string]int)
+	seen := make(map[string]bool)
+
+	for _, stmt := range program.Statements {
+		g.collectStringsFromStmt(stmt, seen)
+	}
+}
+
+// collectStringsFromStmt 从语句中收集字符串
+func (g *CGenerator) collectStringsFromStmt(stmt entities.ASTNode, seen map[string]bool) {
+	switch s := stmt.(type) {
+	case *entities.PrintStmt:
+		if strLit, ok := s.Value.(*entities.StringLiteral); ok && !seen[strLit.Value] {
+			index := len(g.stringLiterals)
+			g.stringLiterals = append(g.stringLiterals, strLit.Value)
+			g.stringIndexMap[strLit.Value] = index
+			seen[strLit.Value] = true
+		}
+	case *entities.FuncDef:
+		if s.Body != nil {
+			for _, bodyStmt := range s.Body {
+				g.collectStringsFromStmt(bodyStmt, seen)
+			}
+		}
+	}
+}
+
+// escapeCString 转义C字符串
+func (g *CGenerator) escapeCString(s string) string {
+	// 简单的转义处理
+	return strings.Replace(s, "\n", "\\n", -1)
+}
+
+// generateCFunctionDeclarations 生成C函数声明
+func (g *CGenerator) generateCFunctionDeclarations(program *entities.Program, code *strings.Builder) {
+	// 为每个非main函数生成声明
+	for _, stmt := range program.Statements {
+		if funcDef, ok := stmt.(*entities.FuncDef); ok && funcDef.Name != "main" {
+			returnType := g.mapCType(funcDef.ReturnType)
+			params := make([]string, len(funcDef.Params))
+			for i, param := range funcDef.Params {
+				paramType := g.mapCType(param.Type) // 使用参数的实际类型
+				params[i] = fmt.Sprintf("%s %s", paramType, param.Name)
+			}
+			if len(params) == 0 {
+				paramStr := CVoidType
+			} else {
+				paramStr = strings.Join(params, ", ")
+			}
+
+			code.WriteString(fmt.Sprintf("%s %s(%s);\n", returnType, funcDef.Name, paramStr))
+		}
+	}
+
+	if g.hasNonMainFunctions(program) {
+		code.WriteString("\n")
+	}
+}
+
+// generateCFunctionDefinitions 生成C函数定义
+func (g *CGenerator) generateCFunctionDefinitions(program *entities.Program, code *strings.Builder) {
+	// 只生成非main函数的定义
+	for _, stmt := range program.Statements {
+		if funcDef, ok := stmt.(*entities.FuncDef); ok && funcDef.Name != "main" {
+			g.generateCFunction(funcDef, code)
+		}
+	}
+}
+
+// generateCMainFunction 生成main函数
+func (g *CGenerator) generateCMainFunction(program *entities.Program, code *strings.Builder) {
+	code.WriteString("int main() {\n")
+
+	// 处理main函数中的语句
+	for _, stmt := range program.Statements {
+		if funcDef, ok := stmt.(*entities.FuncDef); ok && funcDef.Name == "main" {
+			if funcDef.Body != nil && len(funcDef.Body) > 0 {
+				g.generateCBlock(funcDef.Body, code, 1, "int") // main函数返回int
+			} else {
+				// 如果没有函数体，添加一个默认的print语句
+				code.WriteString("    printf(\"Hello from Echo!\\n\");\n")
+			}
+			break
+		}
+	}
+
+	code.WriteString("    return 0;\n")
+	code.WriteString("}\n")
+}
+
+// generateCFunction 生成单个C函数
+func (g *CGenerator) generateCFunction(funcDef *entities.FuncDef, code *strings.Builder) {
+	returnType := g.mapCType(funcDef.ReturnType)
+	params := make([]string, len(funcDef.Params))
+	for i, param := range funcDef.Params {
+		paramType := g.mapCType(param.Type) // 使用参数的实际类型
+		params[i] = fmt.Sprintf("%s %s", paramType, param.Name)
+	}
+	if len(params) == 0 {
+		paramStr := "void"
+	} else {
+		paramStr = strings.Join(params, ", ")
+	}
+
+	code.WriteString(fmt.Sprintf("%s %s(%s) {\n", returnType, funcDef.Name, paramStr))
+
+	if funcDef.Body != nil {
+		g.generateCBlock(funcDef.Body, code, 1, funcDef.ReturnType)
+	}
+
+	code.WriteString("}\n\n")
+}
+
+// generateCBlock 生成C代码块
+func (g *CGenerator) generateCBlock(block []entities.ASTNode, code *strings.Builder, indent int, returnType string) {
+	for _, stmt := range block {
+		switch s := stmt.(type) {
+		case *entities.PrintStmt:
+			g.generateCPrintStmt(s, code, indent)
+		case *entities.ReturnStmt:
+			g.generateCReturnStmt(s, code, indent, returnType)
+		}
+	}
+}
+
+// generateCPrintStmt 生成C print语句
+func (g *CGenerator) generateCPrintStmt(stmt *entities.PrintStmt, code *strings.Builder, indent int) {
+	indentStr := strings.Repeat("    ", indent)
+
+	if strLit, ok := stmt.Value.(*entities.StringLiteral); ok {
+		// 查找字符串常量索引
+		strIndex := g.findStringLiteralIndex(strLit.Value)
+		if strIndex >= 0 {
+			code.WriteString(fmt.Sprintf("%sprintf(\"%%s\\n\", str_%d);\n", indentStr, strIndex))
+		}
+	}
+}
+
+// generateCReturnStmt 生成C return语句
+func (g *CGenerator) generateCReturnStmt(stmt *entities.ReturnStmt, code *strings.Builder, indent int, returnType string) {
+	indentStr := strings.Repeat("    ", indent)
+
+	if stmt.Value != nil {
+		if strLit, ok := stmt.Value.(*entities.StringLiteral); ok {
+			if returnType == "void" {
+				// void函数不能返回字符串，这应该是语义错误
+				// 暂时忽略return语句
+				return
+			}
+			strIndex := g.findStringLiteralIndex(strLit.Value)
+			if strIndex >= 0 {
+				code.WriteString(fmt.Sprintf("%sreturn str_%d;\n", indentStr, strIndex))
+			} else {
+				code.WriteString(fmt.Sprintf("%sreturn \"\";\n", indentStr))
+			}
+		} else if intLit, ok := stmt.Value.(*entities.IntLiteral); ok {
+			if returnType == "void" {
+				// void函数不能返回int，暂时忽略
+				return
+			}
+			code.WriteString(fmt.Sprintf("%sreturn %d;\n", indentStr, intLit.Value))
+		} else {
+			// 其他类型暂时当作字符串处理
+			if returnType != "void" {
+				code.WriteString(fmt.Sprintf("%sreturn \"\";\n", indentStr))
+			}
+		}
+	} else {
+		if returnType == "void" {
+			code.WriteString(fmt.Sprintf("%sreturn;\n", indentStr))
+		} else {
+			// 非void函数必须有返回值
+			if returnType == "int" {
+				code.WriteString(fmt.Sprintf("%sreturn 0;\n", indentStr))
+			} else {
+				code.WriteString(fmt.Sprintf("%sreturn \"\";\n", indentStr))
+			}
+		}
+	}
+}
+
+// mapCType 映射类型到C类型
+func (g *CGenerator) mapCType(echoType string) string {
+	switch echoType {
+	case "string":
+		return "const char*"
+	case "int":
+		return "int"
+	case "void":
+		return "void"
+	default:
+		return "const char*" // 默认当作字符串
+	}
+}
+
+// findStringLiteralIndex 查找字符串常量索引
+func (g *CGenerator) findStringLiteralIndex(target string) int {
+	if index, ok := g.stringIndexMap[target]; ok {
+		return index
+	}
+	return -1
+}
+
+// hasNonMainFunctions 检查是否有非main函数定义
+func (g *CGenerator) hasNonMainFunctions(program *entities.Program) bool {
+	for _, stmt := range program.Statements {
+		if funcDef, ok := stmt.(*entities.FuncDef); ok && funcDef.Name != "main" {
+			return true
+		}
+	}
+	return false
+}
+
+// LLVMIRGenerator LLVM IR生成器实现
+type LLVMIRGenerator struct{}
+
+// NewLLVMIRGenerator 创建新的LLVM IR生成器
+func NewLLVMIRGenerator() CodeGenerator {
+	return &LLVMIRGenerator{}
+}
+
+// GenerateOCaml 生成LLVM IR（实现CodeGenerator接口）
+func (g *LLVMIRGenerator) GenerateOCaml(program *entities.Program) string {
+	var code strings.Builder
+
+	// LLVM IR头部
+	code.WriteString("; Generated LLVM IR from .eo file\n\n")
+	code.WriteString("target triple = \"aarch64-apple-darwin\"\n")
+	code.WriteString("target datalayout = \"e-m:o-i64:64-f80:128-n8:16:32:64-S128\"\n\n")
+
+	// 声明外部函数
+	code.WriteString("declare i32 @printf(i8*, ...)\n\n")
+
+	// 全局字符串常量
+	code.WriteString("@.str = private unnamed_addr constant [14 x i8] c\"Hello World!\\0A\\00\"\n\n")
+
+	// main函数
+	code.WriteString("define i32 @main() {\n")
+	code.WriteString("entry:\n")
+	code.WriteString("  %call = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([14 x i8], [14 x i8]* @.str, i32 0, i32 0))\n")
+	code.WriteString("  ret i32 0\n")
+	code.WriteString("}\n")
+
+	return code.String()
+}
+
+// GenerateExecutableOCaml 生成可执行的LLVM IR（实现CodeGenerator接口）
+func (g *LLVMIRGenerator) GenerateExecutableOCaml(program *entities.Program) string {
+	return g.GenerateOCaml(program)
+}

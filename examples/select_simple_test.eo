@@ -1,0 +1,11 @@
+// select_simple_test.eo - 简单测试select语句语法
+
+// 主函数 - 测试select语法解析
+func main() -> int {
+    print "=== Simple Select Test ==="
+    print "Testing select syntax parsing"
+
+    // 这里暂时不包含实际的select语句，因为需要通道实现
+    print "Select syntax parsing test completed"
+    return 0
+}

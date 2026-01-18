@@ -1,0 +1,79 @@
+// async_future_test.eo - 测试真正的异步Future机制
+
+// 异步函数，模拟异步操作
+async func asyncOperation(id: int) -> string {
+    // 模拟一些异步工作
+    print "Async operation " + id + " started"
+    // 这里将来可以添加真正的异步IO操作
+    print "Async operation " + id + " completed"
+    return "Result from operation " + id
+}
+
+// 同步函数，用于比较
+func syncOperation(id: int) -> string {
+    print "Sync operation " + id + " executed"
+    return "Sync result from operation " + id
+}
+
+// 测试基本的async/await
+func testBasicAsync() -> void {
+    print "=== Testing Basic Async/Await ==="
+
+    print "Before await"
+    let result1: string = await asyncOperation(1)
+    print "After first await: " + result1
+
+    let result2: string = await asyncOperation(2)
+    print "After second await: " + result2
+
+    print "Basic async test completed"
+}
+
+// 测试并发执行
+func testConcurrentAsync() -> void {
+    print "=== Testing Concurrent Async Operations ==="
+
+    print "Starting concurrent operations..."
+
+    // 这里应该并发执行，但当前实现是顺序的
+    // 将来会实现真正的并发
+    let result1: string = await asyncOperation(10)
+    let result2: string = await asyncOperation(20)
+    let result3: string = await asyncOperation(30)
+
+    print "Concurrent results:"
+    print "Result 1: " + result1
+    print "Result 2: " + result2
+    print "Result 3: " + result3
+
+    print "Concurrent async test completed"
+}
+
+// 测试混合同步和异步操作
+func testMixedOperations() -> void {
+    print "=== Testing Mixed Sync/Async Operations ==="
+
+    // 同步操作
+    let syncResult: string = syncOperation(100)
+    print "Sync result: " + syncResult
+
+    // 异步操作
+    let asyncResult: string = await asyncOperation(200)
+    print "Async result: " + asyncResult
+
+    print "Mixed operations test completed"
+}
+
+// 主函数
+func main() -> int {
+    print "=== Async Future Test Suite ==="
+
+    testBasicAsync()
+    print ""
+    testConcurrentAsync()
+    print ""
+    testMixedOperations()
+
+    print "=== All Async Future Tests Completed ==="
+    return 0
+}

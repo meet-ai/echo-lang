@@ -1,0 +1,267 @@
+// concurrent_primitives_guide.eo - 并发原语使用指南
+// 这个文件提供Echo语言并发原语的完整使用指南和示例
+
+// =============================================================================
+// 1. ASYNC函数 - 定义异步操作
+// =============================================================================
+
+// 基本async函数
+async func simpleAsync() -> string {
+    return "Hello from async!"
+}
+
+// 带参数的async函数
+async func processData(data: string, id: int) -> string {
+    return "Processed " + data + " by worker " + id
+}
+
+// async函数可以调用其他async函数
+async func complexAsync() -> string {
+    let part1: string = await simpleAsync()
+    let part2: string = await processData("data", 1)
+    return part1 + " " + part2
+}
+
+// =============================================================================
+// 2. AWAIT表达式 - 等待异步结果
+// =============================================================================
+
+func testAwait() -> void {
+    // 基本await使用
+    let result1: string = await simpleAsync()
+
+    // await可以用于任何async函数调用
+    let result2: string = await processData("input", 42)
+
+    // await可以嵌套使用
+    let result3: string = await complexAsync()
+
+    // await可以用在表达式中
+    let combined: string = "Result: " + (await simpleAsync())
+
+    print "Await test results: " + result1 + ", " + result2 + ", " + result3
+}
+
+// =============================================================================
+// 3. SPAWN原语 - 启动并发协程
+// =============================================================================
+
+// 普通函数（可以作为协程运行）
+func backgroundWorker(id: int) -> void {
+    print "Worker " + id + " started"
+    // 执行后台任务...
+    print "Worker " + id + " finished"
+}
+
+// async函数也可以spawn
+async func asyncWorker(id: int) -> void {
+    let result: string = await processData("async_task", id)
+    print "Async worker " + id + " result: " + result
+}
+
+func testSpawn() -> void {
+    // 启动普通函数作为协程
+    spawn backgroundWorker(1)
+    spawn backgroundWorker(2)
+
+    // 启动async函数作为协程
+    spawn asyncWorker(10)
+    spawn asyncWorker(20)
+
+    // spawn不等待结果，立即返回
+    print "All coroutines spawned, main continues"
+}
+
+// =============================================================================
+// 4. CHAN类型 - 通道通信
+// =============================================================================
+
+func testChannels() -> void {
+    // 声明通道变量
+    let intChan: chan int = chan int
+    let strChan: chan string = chan string
+
+    // 带缓冲的通道（如果支持）
+    // let bufferedChan: chan[10] string = chan[10] string
+
+    // 发送数据到通道
+    // intChan <- 42
+    // strChan <- "hello"
+
+    // 从通道接收数据
+    // let value: int = <- intChan
+    // let message: string = <- strChan
+
+    // 关闭通道
+    // close(intChan)
+
+    print "Channel syntax examples (implementation needed)"
+}
+
+// =============================================================================
+// 5. SELECT语句 - 多路复用
+// =============================================================================
+
+func testSelect() -> void {
+    // let ch1: chan int = chan int
+    // let ch2: chan string = chan string
+    // let ch3: chan bool = chan bool
+
+    // 基本的select语句
+    select {
+        // 接收case
+        // case value := <- ch1:
+        //     print "Received int: " + value
+
+        // 发送case
+        // case ch2 <- "data":
+        //     print "Sent string data"
+
+        // 另一个接收case
+        // case signal := <- ch3:
+        //     print "Received bool signal: " + signal
+
+        // default case（如果没有准备好的操作）
+        // default:
+        //     print "No channel ready"
+    }
+
+    print "Select statement syntax example"
+}
+
+// =============================================================================
+// 6. FUTURE类型 - 异步结果处理
+// =============================================================================
+
+func testFutures() -> void {
+    // Future类型表示异步计算的结果
+    // let future1: Future[string] = asyncFunction()
+    // let future2: Future[int] = anotherAsyncFunction()
+
+    // 等待Future完成
+    // let result1: string = await future1
+    // let result2: int = await future2
+
+    print "Future type concepts (implementation needed)"
+}
+
+// =============================================================================
+// 7. 并发模式示例
+// =============================================================================
+
+// 生产者-消费者模式
+func producer(id: int) -> void {
+    print "Producer " + id + " producing data"
+    // 发送数据到通道
+    // dataChan <- "data_from_" + id
+}
+
+func consumer(id: int) -> void {
+    print "Consumer " + id + " waiting for data"
+    // 接收数据从通道
+    // let data: string = <- dataChan
+    // processData(data)
+}
+
+// 工作池模式
+func worker(id: int) -> void {
+    while true {
+        // 接收工作任务
+        // let task := <- taskChan
+
+        // 处理任务
+        print "Worker " + id + " processing task"
+
+        // 发送结果
+        // resultChan <- "result_from_" + id
+    }
+}
+
+func testConcurrencyPatterns() -> void {
+    print "=== Concurrency Patterns Examples ==="
+
+    // 生产者-消费者
+    spawn producer(1)
+    spawn consumer(1)
+
+    // 工作池
+    spawn worker(1)
+    spawn worker(2)
+    spawn worker(3)
+
+    print "Concurrency patterns demonstrated"
+}
+
+// =============================================================================
+// 8. 错误处理与并发
+// =============================================================================
+
+async func riskyAsyncOperation() -> Result[string, string] {
+    // 异步操作可能失败
+    // if someCondition {
+    //     return Ok("success")
+    // } else {
+    //     return Err("operation failed")
+    // }
+
+    return Ok("mock success")
+}
+
+func testConcurrentErrorHandling() -> void {
+    print "=== Concurrent Error Handling ==="
+
+    // 异步操作的错误处理
+    // let result: Result[string, string] = await riskyAsyncOperation()
+    // match result {
+    //     Ok(value) => print "Success: " + value
+    //     Err(error) => print "Error: " + error
+    // }
+
+    print "Concurrent error handling concepts"
+}
+
+// =============================================================================
+// 主函数 - 运行所有示例
+// =============================================================================
+
+func main() -> int {
+    print "=== Echo Concurrent Primitives Guide ==="
+    print ""
+    print "This guide demonstrates all concurrent features in Echo:"
+    print ""
+
+    testAwait()
+    print ""
+
+    testSpawn()
+    print ""
+
+    testChannels()
+    print ""
+
+    testSelect()
+    print ""
+
+    testFutures()
+    print ""
+
+    testConcurrencyPatterns()
+    print ""
+
+    testConcurrentErrorHandling()
+    print ""
+
+    print "=== Guide Completed ==="
+    print ""
+    print "Key Takeaways:"
+    print "• async: Define asynchronous functions"
+    print "• await: Wait for async results"
+    print "• spawn: Start concurrent coroutines"
+    print "• chan: Channel-based communication"
+    print "• select: Multiplex channel operations"
+    print "• Future: Handle async results"
+    print ""
+    print "These primitives enable powerful concurrent programming"
+    print "combining imperative style with asynchronous execution."
+    return 0
+}

@@ -1,0 +1,9 @@
+// pattern_match_test.eo - 模式匹配测试
+let x: int = 42
+
+match x {
+    42 => print 42
+    _ => print 0
+}
+
+print 100

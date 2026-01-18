@@ -1,0 +1,109 @@
+// complete_ast_test.eo - 完整AST支持测试
+
+// 1. 变量和基本类型
+let name: string = "Echo"
+let age: int = 25
+let pi: float = 3.14
+let isActive: bool = true
+
+// 2. 数组操作
+let numbers: [int] = [1, 2, 3, 4, 5]
+let first: int = numbers[0]
+let length: int = len(numbers)
+let slice: [int] = numbers[1:3]
+
+// 3. 结构体定义和使用
+struct Point {
+    x: int
+    y: int
+}
+
+let point: Point = {x: 10, y: 20}
+let px: int = point.x
+
+// 4. 枚举定义
+enum Color {
+    Red,
+    Green,
+    Blue
+}
+
+let color: Color = Color.Red
+
+// 5. 函数定义和调用
+func add(x: int, y: int) -> int {
+    return x + y
+}
+
+func greet(name: string) -> void {
+    print "Hello, " + name
+}
+
+// 6. 方法定义
+func (p Point) distance() -> float {
+    return 0.0  // 简化为0
+}
+
+// 7. Trait定义和实现
+trait Display {
+    func display() -> void
+}
+
+@impl Display
+struct Point {
+    // Point已经定义过了，这里只是添加Trait实现
+}
+
+// 8. 泛型Trait
+trait Container[T] {
+    type Item
+    func get() -> T
+}
+
+// 9. Trait约束
+func printContainer[T: Display](item: T) -> void {
+    item.display()
+}
+
+// 10. 控制流
+if age > 18 {
+    print "Adult"
+} else {
+    print "Minor"
+}
+
+let i: int = 0
+while i < 3 {
+    print i
+    i = i + 1
+}
+
+// 传统for循环（条件形式）
+let j: int = 0
+for j < 3 {
+    print j
+    j = j + 1
+}
+
+// 11. 表达式
+let result: int = add(5, 3)
+let condition: bool = (age > 18) && isActive
+
+// 12. 方法调用
+point.distance()
+
+// 测试主函数
+func main() -> void {
+    print name
+    print age
+    print first
+    print length
+
+    greet("World")
+    let sum: int = add(10, 20)
+    print sum
+
+    point.display()
+
+    print "AST test completed"
+}

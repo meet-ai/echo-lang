@@ -1,0 +1,18 @@
+// spawn_simple_test.eo - 简单的spawn测试
+// 测试基本的spawn功能
+
+// 简单的任务函数
+func task(id: int) -> void {
+    print "Task " + id + " executed"
+}
+
+// 主函数
+func main() -> int {
+    print "Testing spawn..."
+
+    spawn task(1)
+    spawn task(2)
+
+    print "Spawn test completed"
+    return 0
+}

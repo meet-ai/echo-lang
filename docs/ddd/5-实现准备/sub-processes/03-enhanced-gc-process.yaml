@@ -1,0 +1,504 @@
+context: enhanced-gc
+version: '1.0'
+description: 增强GC上下文处理流程 - 高级GC特性
+
+entry_points:
+  - id: initialize_modules
+    name: 【入口】初始化增强模块
+    trigger: system_startup
+    code:
+      handler: internal/modules/enhanced-gc/application/commands/initialize_modules_command.go
+      aggregate: internal/modules/enhanced-gc/domain/aggregates/module_manager.go
+    implementation_chain:
+      - scan_available_modules
+      - validate_module_dependencies
+      - load_module_binaries
+      - initialize_module_instances
+      - register_module_hooks
+    business_rules:
+      - 按依赖顺序初始化模块
+      - 跳过不可用或损坏的模块
+      - 记录模块初始化日志
+    success_criteria:
+      - 所有有效模块成功初始化
+      - 模块间依赖关系正确建立
+      - 模块钩子正确注册
+
+  - id: handle_module_enable
+    name: 【入口】处理模块启用请求
+    trigger: module_enabled_event
+    code:
+      handler: internal/modules/enhanced-gc/application/commands/enable_module_command.go
+      aggregate: internal/modules/enhanced-gc/domain/aggregates/module_manager.go
+    implementation_chain:
+      - validate_module_id
+      - check_dependencies
+      - load_module_configuration
+      - initialize_module_state
+      - activate_module_hooks
+      - update_module_status
+    business_rules:
+      - 确保所有依赖模块已启用
+      - 验证模块配置有效性
+      - 原子性状态变更
+    success_criteria:
+      - 模块成功启用并激活
+      - 模块状态正确更新
+      - 相关钩子开始工作
+
+  - id: handle_module_disable
+    name: 【入口】处理模块禁用请求
+    trigger: module_disabled_event
+    code:
+      handler: internal/modules/enhanced-gc/application/commands/disable_module_command.go
+      aggregate: internal/modules/enhanced-gc/domain/aggregates/module_manager.go
+    implementation_chain:
+      - validate_module_id
+      - deactivate_module_hooks
+      - cleanup_module_state
+      - unload_module_configuration
+      - update_module_status
+      - notify_dependents
+    business_rules:
+      - 安全停用模块而不影响运行
+      - 通知依赖模块进行调整
+      - 保留模块状态以便重新启用
+    success_criteria:
+      - 模块成功禁用
+      - 相关钩子停止工作
+      - 依赖模块收到通知
+
+  - id: generational_collection
+    name: 【特性】分代收集执行
+    trigger: gc_mark_phase OR scheduled
+    code:
+      handler: internal/modules/enhanced-gc/domain/services/generational_service.go
+      aggregate: internal/modules/enhanced-gc/domain/aggregates/generational_module.go
+    implementation_chain:
+      - check_young_generation_pressure
+      - collect_young_generation
+      - promote_survivors
+      - update_generation_statistics
+      - adjust_promotion_threshold
+    technical_details:
+      - 基于年龄的分代管理
+      - 晋升阈值动态调整
+      - 跨代引用处理
+      - 代际统计收集
+    business_rules:
+      - 优先收集年轻代以减少暂停时间
+      - 基于存活率调整晋升策略
+      - 维护代际间的引用完整性
+    success_criteria:
+      - 年轻代成功收集
+      - 存活对象正确晋升
+      - 统计信息准确更新
+
+  - id: incremental_marking
+    name: 【特性】增量标记执行
+    trigger: gc_mark_phase AND incremental_enabled
+    code:
+      handler: internal/modules/enhanced-gc/domain/services/incremental_service.go
+      aggregate: internal/modules/enhanced-gc/domain/aggregates/incremental_module.go
+    implementation_chain:
+      - calculate_mark_budget
+      - resume_previous_mark_state
+      - perform_incremental_mark_step
+      - check_completion_criteria
+      - save_mark_state
+      - yield_if_time_exceeded
+    technical_details:
+      - 时间预算控制
+      - 标记状态持久化
+      - 写屏障增强
+      - 增量完成检测
+    business_rules:
+      - 标记工作量控制在预算内
+      - 标记状态必须可恢复
+      - 增量标记与并发标记兼容
+    success_criteria:
+      - 标记进度按预算推进
+      - 标记状态正确保存
+      - 超出预算时正确让出控制权
+
+  - id: memory_compaction
+    name: 【特性】内存压缩执行
+    trigger: gc_completed OR fragmentation_high
+    code:
+      handler: internal/modules/enhanced-gc/domain/services/compaction_service.go
+      aggregate: internal/modules/enhanced-gc/domain/aggregates/compaction_module.go
+    implementation_chain:
+      - assess_fragmentation_level
+      - select_compaction_strategy
+      - prepare_compaction_phase
+      - execute_compaction
+      - update_object_references
+      - finalize_compaction
+    technical_details:
+      - 碎片率评估算法
+      - 压缩策略选择
+      - 转发指针管理
+      - 引用更新机制
+    business_rules:
+      - 基于碎片程度选择策略
+      - 压缩过程不影响GC正确性
+      - 引用更新必须完整无遗漏
+    success_criteria:
+      - 内存碎片显著减少
+      - 对象引用正确更新
+      - 压缩效果符合预期
+
+  - id: numa_optimization
+    name: 【特性】NUMA感知优化
+    trigger: continuous OR gc_cycles
+    code:
+      handler: internal/modules/enhanced-gc/domain/services/numa_service.go
+      aggregate: internal/modules/enhanced-gc/domain/aggregates/numa_module.go
+    implementation_chain:
+      - monitor_numa_topology
+      - analyze_memory_access_patterns
+      - optimize_object_placement
+      - adjust_thread_affinity
+      - update_numa_statistics
+    technical_details:
+      - NUMA节点检测
+      - 内存访问模式分析
+      - 对象亲和性放置
+      - 线程亲和性调整
+    business_rules:
+      - 优先本地NUMA节点访问
+      - 基于访问模式优化放置
+      - 动态调整线程分布
+    success_criteria:
+      - 跨NUMA访问延迟减少
+      - 内存访问本地化率提升
+      - 系统整体性能改善
+
+domain_services:
+  - id: generational_service
+    name: 分代收集服务
+    responsibility: 管理分代GC的执行逻辑
+    methods:
+      - CollectYoungGeneration(): 收集年轻代
+      - PromoteSurvivors(): 晋升存活对象
+      - AdjustPromotionThreshold(): 调整晋升阈值
+    dependencies:
+      - heap_access: 访问堆进行分代操作
+      - age_tracking: 对象年龄跟踪
+
+  - id: incremental_service
+    name: 增量标记服务
+    responsibility: 管理增量标记的执行逻辑
+    methods:
+      - PerformIncrementalMark(): 执行增量标记步
+      - CalculateMarkBudget(): 计算标记预算
+      - SaveMarkState(): 保存标记状态
+    dependencies:
+      - time_budget: 时间预算管理
+      - mark_state: 标记状态持久化
+
+  - id: compaction_service
+    name: 内存压缩服务
+    responsibility: 管理内存压缩的执行逻辑
+    methods:
+      - AssessFragmentation(): 评估碎片程度
+      - ExecuteCompaction(): 执行压缩操作
+      - UpdateReferences(): 更新对象引用
+    dependencies:
+      - heap_layout: 堆布局分析
+      - reference_graph: 引用关系图
+
+  - id: numa_service
+    name: NUMA优化服务
+    responsibility: 管理NUMA感知的优化逻辑
+    methods:
+      - AnalyzeAccessPatterns(): 分析访问模式
+      - OptimizePlacement(): 优化对象放置
+      - AdjustThreadAffinity(): 调整线程亲和性
+    dependencies:
+      - numa_topology: NUMA拓扑信息
+      - thread_scheduler: 线程调度器
+
+application_services:
+  - id: module_management_service
+    name: 模块管理服务
+    responsibility: 管理增强GC模块的生命周期
+    methods:
+      - InitializeModules(): 初始化所有模块
+      - EnableModule(): 启用指定模块
+      - DisableModule(): 禁用指定模块
+      - GetModuleStatus(): 获取模块状态
+    dependencies:
+      - module_registry: 模块注册表
+      - configuration_service: 配置服务
+
+domain_events:
+  - id: module_initialized
+    name: 模块已初始化
+    payload:
+      - moduleId: string
+      - version: string
+      - dependencies: []string
+      - timestamp: time.Time
+    subscribers:
+      - enhanced_gc_context: 记录模块状态
+      - monitoring_gc_context: 监控模块初始化
+
+  - id: module_activated
+    name: 模块已激活
+    payload:
+      - moduleId: string
+      - config: ModuleConfig
+      - timestamp: time.Time
+    subscribers:
+      - core_gc_context: 注册模块钩子
+      - monitoring_gc_context: 监控模块激活
+
+  - id: module_deactivated
+    name: 模块已停用
+    payload:
+      - moduleId: string
+      - timestamp: time.Time
+    subscribers:
+      - core_gc_context: 注销模块钩子
+      - monitoring_gc_context: 监控模块停用
+
+  - id: generational_gc_completed
+    name: 分代GC已完成
+    payload:
+      - youngGenCollected: int64
+      - survivorsPromoted: int64
+      - promotionThreshold: float64
+      - timestamp: time.Time
+    subscribers:
+      - monitoring_gc_context: 记录分代统计
+
+  - id: incremental_mark_progressed
+    name: 增量标记已推进
+    payload:
+      - progressRatio: float64
+      - timeBudgetUsed: time.Duration
+      - objectsMarked: int64
+      - timestamp: time.Time
+    subscribers:
+      - monitoring_gc_context: 监控标记进度
+
+  - id: memory_compaction_completed
+    name: 内存压缩已完成
+    payload:
+      - fragmentationBefore: float64
+      - fragmentationAfter: float64
+      - objectsMoved: int64
+      - timestamp: time.Time
+    subscribers:
+      - monitoring_gc_context: 记录压缩效果
+
+repositories:
+  - id: module_repository
+    name: 模块仓储
+    interface: ModuleRepository
+    methods:
+      - FindAvailableModules(): 查找可用模块
+      - SaveModuleState(module): 保存模块状态
+      - GetModuleConfiguration(moduleId): 获取模块配置
+    implementation: File system based
+
+  - id: generational_repository
+    name: 分代仓储
+    interface: GenerationalRepository
+    methods:
+      - GetGenerationStatistics(): 获取代际统计
+      - UpdatePromotionThreshold(): 更新晋升阈值
+      - SaveAgeDistribution(): 保存年龄分布
+    implementation: In-memory with persistence
+
+value_objects:
+  - id: module_config
+    name: 模块配置
+    properties:
+      - enabled: bool
+      - parameters: map[string]interface{}
+      - dependencies: []string
+      - resourceLimits: ResourceLimits
+    validation_rules:
+      - 依赖模块必须存在
+      - 参数值在有效范围内
+      - 资源限制合理
+
+  - id: generation_stats
+    name: 代际统计
+    properties:
+      - generationId: int
+      - size: int64
+      - objectCount: int64
+      - averageAge: float64
+      - survivalRate: float64
+    derived_properties:
+      - pressureRatio: size / maxSize
+      - collectionEfficiency: 1 - survivalRate
+
+  - id: compaction_result
+    name: 压缩结果
+    properties:
+      - strategy: CompactionStrategy
+      - fragmentationBefore: float64
+      - fragmentationAfter: float64
+      - objectsMoved: int64
+      - timeSpent: time.Duration
+    methods:
+      - ImprovementRatio(): 计算改善比率
+      - IsEffective(): 判断压缩是否有效
+
+  - id: numa_topology
+    name: NUMA拓扑
+    properties:
+      - nodeCount: int
+      - nodes: []NUMANode
+      - distances: [][]int  // 节点间距离矩阵
+    methods:
+      - GetLocalNode(threadId): 获取线程的本地节点
+      - CalculateAccessCost(from, to): 计算访问代价
+
+business_rules:
+  - id: BR-ENHANCED-001
+    name: 模块依赖管理
+    condition: module_dependencies_satisfied
+    action: allow_module_enable
+    priority: critical
+    description: 只有当所有依赖模块都启用时才能启用模块
+
+  - id: BR-ENHANCED-002
+    name: 分代收集时机
+    condition: young_generation_pressure > threshold
+    action: trigger_young_generation_collection
+    priority: high
+    description: 年轻代压力过大时触发分代收集
+
+  - id: BR-ENHANCED-003
+    name: 增量标记预算
+    condition: mark_time_remaining > 0
+    action: continue_incremental_mark
+    priority: high
+    description: 在时间预算内继续增量标记
+
+  - id: BR-ENHANCED-004
+    name: 内存压缩触发
+    condition: fragmentation_ratio > 0.3
+    action: schedule_memory_compaction
+    priority: medium
+    description: 碎片率过高时触发内存压缩
+
+  - id: BR-ENHANCED-005
+    name: NUMA优化决策
+    condition: cross_node_access_ratio > 0.2
+    action: enable_numa_optimization
+    priority: medium
+    description: 跨节点访问比例过高时启用NUMA优化
+
+error_handling:
+  - error_type: module_initialization_failure
+    description: 模块初始化失败
+    recovery_strategy: skip_module_and_continue
+    max_retry_attempts: 1
+    fallback_action: log_error_and_disable_module
+
+  - error_type: module_dependency_missing
+    description: 模块依赖缺失
+    recovery_strategy: defer_module_initialization
+    max_retry_attempts: 3
+    fallback_action: disable_module
+
+  - error_type: generational_collection_failure
+    description: 分代收集失败
+    recovery_strategy: fallback_to_full_gc
+    max_retry_attempts: 0
+    fallback_action: log_error_and_continue
+
+  - error_type: incremental_mark_failure
+    description: 增量标记失败
+    recovery_strategy: switch_to_concurrent_mark
+    max_retry_attempts: 0
+    fallback_action: log_error_and_fallback
+
+  - error_type: compaction_failure
+    description: 压缩失败
+    recovery_strategy: cancel_compaction
+    max_retry_attempts: 0
+    fallback_action: log_error_and_skip
+
+monitoring_points:
+  - point_id: module_lifecycle_monitoring
+    name: 模块生命周期监控
+    metrics: [module_state_changes, initialization_time, activation_time]
+    frequency: per_module_operation
+    threshold: initialization_time > 1000ms
+    action: investigate_module_performance
+
+  - point_id: generational_gc_monitoring
+    name: 分代GC监控
+    metrics: [young_gen_collection_time, promotion_count, survival_rate]
+    frequency: per_generational_gc
+    threshold: survival_rate > 0.8
+    action: adjust_promotion_threshold
+
+  - point_id: incremental_mark_monitoring
+    name: 增量标记监控
+    metrics: [mark_budget_usage, mark_progress_ratio, yield_count]
+    frequency: per_incremental_step
+    threshold: mark_budget_usage > 0.9
+    action: increase_mark_budget
+
+  - point_id: compaction_monitoring
+    name: 压缩监控
+    metrics: [compaction_time, fragmentation_reduction, objects_moved]
+    frequency: per_compaction
+    threshold: compaction_time > 500ms
+    action: optimize_compaction_algorithm
+
+  - point_id: numa_optimization_monitoring
+    name: NUMA优化监控
+    metrics: [local_access_ratio, cross_node_latency, thread_migrations]
+    frequency: per_gc_cycle
+    threshold: local_access_ratio < 0.7
+    action: review_numa_placement_strategy
+
+testing_requirements:
+  - test_type: unit_tests
+    coverage_target: 80%
+    focus_areas:
+      - 模块生命周期管理
+      - 分代收集算法正确性
+      - 增量标记状态管理
+      - 压缩引用更新逻辑
+      - NUMA拓扑分析
+
+  - test_type: integration_tests
+    scenarios:
+      - 模块动态加载和卸载
+      - 分代GC与核心GC集成
+      - 增量标记与并发标记切换
+      - 内存压缩的完整流程
+      - NUMA优化的端到端效果
+
+  - test_type: performance_tests
+    benchmarks:
+      - 模块切换延迟
+      - 分代GC暂停时间
+      - 增量标记开销
+      - 压缩吞吐量
+      - NUMA访问优化效果
+
+  - test_type: compatibility_tests
+    conditions:
+      - 模块与核心GC的兼容性
+      - 不同模块间的互操作性
+      - 配置变更的模块影响
+      - 版本升级的向后兼容性
+
+  - test_type: stress_tests
+    conditions:
+      - 高频模块启停
+      - 大规模堆的分代管理
+      - 长时间运行的增量标记
+      - 高碎片率的压缩压力
+      - 多NUMA节点的负载均衡

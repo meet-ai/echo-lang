@@ -1,0 +1,8 @@
+// simple_test.eo - 最简单的测试用例
+func main() -> int {
+    print "Simple test started"
+    print 42
+    print "Hello, LLVM IR!"
+    print "Simple test completed"
+    return 0
+}

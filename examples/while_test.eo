@@ -1,0 +1,6 @@
+// while_test.eo - while循环测试
+let x: int = 3
+while x > 0 {
+print x
+x = x - 1
+}

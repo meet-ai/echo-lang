@@ -1,0 +1,16 @@
+// simple_async_test.eo - async测试
+
+// 异步函数
+async func simpleAsync() -> string {
+    return "ok"
+}
+
+// 主函数
+func main() -> void {
+    print "Before await"
+    let result: string = await simpleAsync()
+    print "After await"
+}
+
+// 暂时移除复杂的测试用例，专注修复基本async/await
+

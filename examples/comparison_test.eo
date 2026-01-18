@@ -1,0 +1,9 @@
+// comparison_test.eo - 比较运算测试
+let a: int = 10
+let b: int = 20
+let isLess: int = a < b
+let isGreater: int = a > b
+let isEqual: int = a == a
+print isLess    // 应该输出1（true）
+print isGreater // 应该输出0（false）
+print isEqual   // 应该输出1（true）

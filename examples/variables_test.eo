@@ -1,0 +1,7 @@
+// variables_test.eo - 变量声明和算术运算测试
+let x: int = 10
+let y: int = 20
+let sum: int = x + y
+let product: int = x * y
+print sum
+print product

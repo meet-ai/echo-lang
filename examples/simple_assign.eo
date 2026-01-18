@@ -1,0 +1,4 @@
+// simple_assign.eo - 简单赋值测试
+let x: int = 10
+x = 20
+print x

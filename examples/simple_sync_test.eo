@@ -1,0 +1,5 @@
+// simple_sync_test.eo - 简单的同步测试
+func main() -> void {
+    print 42
+    print "Hello, Echo!"
+}

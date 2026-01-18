@@ -1,0 +1,52 @@
+// simple_ast_test.eo - 简单AST功能测试
+
+// 变量声明
+let message: string = "Hello"
+let number: int = 42
+let flag: bool = true
+
+// 数组操作
+let array: [int] = [1, 2, 3]
+let first: int = array[0]
+let length: int = len(array)
+
+// 结构体
+struct Person {
+    name: string
+    age: int
+}
+
+// 函数定义
+func greet(name: string) -> void {
+    print "Hello, " + name
+}
+
+// 方法定义
+func (p Person) sayHello() -> void {
+    print "Hello from " + p.name
+}
+
+// 控制流
+if flag {
+    print message
+} else {
+    print "Goodbye"
+}
+
+// 循环
+let i: int = 0
+while i < 3 {
+    print i
+    i = i + 1
+}
+
+// 函数调用
+greet("World")
+
+// 方法调用
+let person: Person = {name: "Alice", age: 30}
+person.sayHello()
+
+// 表达式
+let result: int = number + 10
+print result

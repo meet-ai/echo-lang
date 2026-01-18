@@ -1,0 +1,133 @@
+// hello.eo - Echo 语言示例文件
+
+// 结构体定义
+struct Point {
+    x: int,
+    y: int
+}
+
+struct Person {
+    name: string,
+    age: int
+}
+
+// Trait定义
+trait Printable {
+    func print();
+}
+
+// 枚举定义（实现Printable trait）
+@impl Printable
+
+enum Color {
+    Red,
+    Green,
+    Blue
+}
+
+// print方法实现
+func (c Color) print() -> void {
+    print "Color is printable"
+}
+
+// 方法定义
+func (p Point) distance(other: Point) -> int {
+    let dx: int = other.x - p.x
+    let dy: int = other.y - p.y
+    return dx + dy
+}
+
+// 模式匹配示例函数
+func getColorName(c: Color) -> string {
+    return match c { Red => "red", Green => "green", Blue => "blue" }
+}
+
+// match语句示例
+func describeColor(c: Color) -> void {
+    match c { Red => print "Red is a warm color" }
+}
+
+
+// 变量声明
+let name: string = "Echo"
+let age: int = 1
+let color: Color = Red
+
+// 数组示例
+let numbers: [int] = [1, 2, 3, 4, 5]
+let colors: [Color] = [Red, Green, Blue]
+
+// 打印语句
+print "Hello, World!"
+print "This is Echo language"
+
+// 简单表达式
+let sum: int = 10
+
+// 函数定义和实现
+func greet(name: string) -> void {
+    return "Hello, " + name
+}
+
+func add(x: int, y: int) -> int {
+    return x + y
+}
+
+func getMessage() -> string {
+    return "Hello from Echo!"
+}
+
+func getMessage2() -> string {
+    let greeting: string = "Hello from Echo!"
+    return greeting
+}
+
+// 函数调用示例
+greet("World")
+add(5, 3)
+getMessage()
+
+// 条件语句示例
+if age > 0 {
+    print "Age is positive"
+}
+if sum == 10 {
+    print "Sum equals 10"
+}
+if name == "Echo" {
+    print "Hello Echo!"
+}
+
+// 多行if-else语句
+if age > 5 {
+    print "Age is greater than 5"
+    let status: string = "adult"
+    print "Status: " + status
+} else {
+    print "Age is 5 or less"
+    let status: string = "child"
+    print "Status: " + status
+}
+
+// 循环语句示例
+for sum > 5 {
+    print "Sum is greater than 5"
+    let sum: int = sum - 1
+}
+for age >= 1 {
+    print "Age is at least 1"
+    let age: int = age + 1
+}
+
+// while循环示例
+while age < 10 {
+    print "Age is less than 10"
+    let age: int = age + 1
+}
+
+print "Functions called successfully!"
+
+// 未来将支持的特性:
+// 函数体: func greet() { print "Greetings from Echo!" }
+// 条件语句: if age > 0 { print "Echo is alive!" }
+// 循环语句: for i < 5 { print "Loop iteration" }

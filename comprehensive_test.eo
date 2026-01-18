@@ -1,0 +1,23 @@
+struct Point {
+    x: int
+    y: int
+}
+
+func add(a: int, b: int) int {
+    return a + b
+}
+
+func (p Point) getX() int {
+    return p.x
+}
+
+let result: int = add(5, 3)
+let p: Point = {x: 42, y: 24}
+
+if result > 5 {
+    print(100)
+} else {
+    print(200)
+}
+
+print(result)

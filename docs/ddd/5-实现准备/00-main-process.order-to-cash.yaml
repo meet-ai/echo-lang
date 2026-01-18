@@ -1,0 +1,246 @@
+name: gc-main-process
+description: GC主流程 - 并发标记清扫垃圾回收
+contexts:
+  - core-gc
+  - adaptive-gc
+  - enhanced-gc
+  - monitoring-gc
+
+nodes:
+  - id: app_allocation
+    name: 应用程序内存分配
+    type: continuous
+    context: core-gc
+    description: 应用程序持续分配对象，触发GC条件检查
+
+  - id: check_gc_trigger
+    name: 检查GC触发条件
+    type: condition_check
+    context: core-gc
+    ref: ./sub-processes/01-core-gc-process.yaml#check_trigger
+    next:
+      - condition: heap_usage >= config.trigger_ratio
+        target: trigger_gc
+      - condition: memory_pressure == high
+        target: trigger_gc
+      - condition: allocation_rate_spike == true
+        target: trigger_gc
+      - default: app_allocation
+
+  - id: trigger_gc
+    name: 触发GC
+    type: event_trigger
+    context: core-gc
+    ref: ./sub-processes/01-core-gc-process.yaml#trigger_gc
+    description: 满足触发条件，启动GC周期
+    next: adaptive_analysis
+
+  - id: adaptive_analysis
+    name: 自适应工作负载分析
+    type: analysis
+    context: adaptive-gc
+    ref: ./sub-processes/02-adaptive-gc-process.yaml#analyze_workload
+    description: 分析当前应用工作负载特征
+    next: decision_making
+
+  - id: decision_making
+    name: 决策制定
+    type: decision
+    context: adaptive-gc
+    ref: ./sub-processes/02-adaptive-gc-process.yaml#make_decisions
+    description: 根据分析结果和规则制定GC策略
+    next: configure_gc
+
+  - id: configure_gc
+    name: 配置GC策略
+    type: configuration
+    context: adaptive-gc
+    ref: ./sub-processes/02-adaptive-gc-process.yaml#apply_configuration
+    description: 应用自适应配置和模块选择
+    next: concurrent_mark
+
+  - id: concurrent_mark
+    name: 并发标记阶段
+    type: gc_phase
+    context: core-gc
+    ref: ./sub-processes/01-core-gc-process.yaml#concurrent_mark
+    description: 并发标记可达对象
+    next: concurrent_sweep
+
+  - id: concurrent_sweep
+    name: 并发清扫阶段
+    type: gc_phase
+    context: core-gc
+    ref: ./sub-processes/01-core-gc-process.yaml#concurrent_sweep
+    description: 并发回收不可达内存
+    next: finalize_gc
+
+  - id: finalize_gc
+    name: GC周期完成
+    type: completion
+    context: core-gc
+    ref: ./sub-processes/01-core-gc-process.yaml#finalize_cycle
+    description: 完成GC周期，更新统计信息
+    next: metrics_collection
+
+  - id: metrics_collection
+    name: 性能指标收集
+    type: monitoring
+    context: monitoring-gc
+    ref: ./sub-processes/04-monitoring-gc-process.yaml#collect_metrics
+    description: 收集GC执行的性能指标
+    next: rule_evaluation
+
+  - id: rule_evaluation
+    name: 规则评估
+    type: evaluation
+    context: adaptive-gc
+    ref: ./sub-processes/02-adaptive-gc-process.yaml#evaluate_rules
+    description: 评估自适应规则，准备下次调整
+    next: check_gc_trigger
+
+transitions:
+  - from: check_gc_trigger
+    to: trigger_gc
+    condition: heap_usage >= config.trigger_ratio OR memory_pressure == high
+    description: 堆使用率过高或内存压力大时触发GC
+
+  - from: trigger_gc
+    to: adaptive_analysis
+    description: GC触发后立即进行工作负载分析
+
+  - from: adaptive_analysis
+    to: decision_making
+    description: 基于分析结果制定决策
+
+  - from: decision_making
+    to: configure_gc
+    description: 应用决策结果到GC配置
+
+  - from: configure_gc
+    to: concurrent_mark
+    description: 配置完成后开始标记阶段
+
+  - from: concurrent_mark
+    to: concurrent_sweep
+    condition: mark_phase_completed
+    description: 标记完成后进入清扫阶段
+
+  - from: concurrent_sweep
+    to: finalize_gc
+    condition: sweep_phase_completed
+    description: 清扫完成后完成GC周期
+
+  - from: finalize_gc
+    to: metrics_collection
+    description: GC完成后收集性能指标
+
+  - from: metrics_collection
+    to: rule_evaluation
+    description: 基于新指标评估规则
+
+  - from: rule_evaluation
+    to: check_gc_trigger
+    description: 规则评估完成后回到触发条件检查
+
+error_handling:
+  - error_type: gc_trigger_failed
+    handler: log_error_and_retry
+    max_retries: 3
+    fallback: emergency_gc
+
+  - error_type: mark_phase_failed
+    handler: abort_gc_and_log
+    description: 标记阶段失败时记录错误并终止GC
+
+  - error_type: sweep_phase_failed
+    handler: partial_recovery
+    description: 清扫阶段失败时尝试部分恢复
+
+  - error_type: configuration_failed
+    handler: use_default_config
+    description: 配置失败时使用默认配置
+
+monitoring_points:
+  - point: gc_trigger_check
+    metrics: [heap_usage_ratio, allocation_rate]
+    frequency: continuous
+
+  - point: gc_phase_transition
+    metrics: [phase_duration, objects_processed]
+    frequency: per_phase
+
+  - point: gc_completion
+    metrics: [total_duration, memory_reclaimed, pause_time]
+    frequency: per_cycle
+
+  - point: adaptive_decision
+    metrics: [workload_type, config_changes]
+    frequency: per_cycle
+
+business_rules:
+  - rule_id: BR-GC-001
+    name: GC触发阈值
+    condition: heap_usage >= config.trigger_ratio
+    action: trigger_gc
+    priority: high
+
+  - rule_id: BR-GC-002
+    name: 紧急GC触发
+    condition: memory_pressure == critical
+    action: trigger_emergency_gc
+    priority: critical
+
+  - rule_id: BR-GC-003
+    name: 暂停时间控制
+    condition: pause_time_p95 > config.max_pause_time
+    action: enable_incremental_mode
+    priority: high
+
+  - rule_id: BR-GC-004
+    name: 工作负载适应
+    condition: workload_changed
+    action: reanalyze_and_reconfigure
+    priority: medium
+
+data_flow:
+  - name: heap_usage_data
+    source: core-gc
+    destination: [adaptive-gc, monitoring-gc]
+    format: HeapUsageMetrics
+    frequency: continuous
+
+  - name: gc_performance_data
+    source: core-gc
+    destination: [adaptive-gc, monitoring-gc]
+    format: GCPerformanceMetrics
+    frequency: per_gc_cycle
+
+  - name: workload_analysis_data
+    source: adaptive-gc
+    destination: monitoring-gc
+    format: WorkloadAnalysisResult
+    frequency: per_gc_cycle
+
+  - name: configuration_changes
+    source: adaptive-gc
+    destination: [core-gc, monitoring-gc]
+    format: ConfigurationChange
+    frequency: on_change
+
+quality_assurance:
+  - qa_type: performance_test
+    criteria: pause_time_p95 < 10ms, throughput_loss < 5%
+    frequency: per_release
+
+  - qa_type: correctness_test
+    criteria: no_memory_corruption, no_gc_leaks
+    frequency: continuous
+
+  - qa_type: integration_test
+    criteria: all_contexts_work_together
+    frequency: per_commit
+
+  - qa_type: load_test
+    criteria: handles_allocation_rate > 100MB/s
+    frequency: weekly

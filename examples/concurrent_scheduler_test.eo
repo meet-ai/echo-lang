@@ -1,0 +1,29 @@
+// concurrent_scheduler_test.eo - 协程调度器并发测试
+
+// 模拟一个异步任务
+async func asyncTask(id: int) -> string {
+    print "Task " + id + " started"
+    // 在实际应用中，这里可能会有I/O操作或其他异步工作
+    return "Task " + id + " completed"
+}
+
+// 测试并发执行
+func testConcurrency() -> void {
+    print "Starting concurrent tasks..."
+
+    let result1: string = await asyncTask(1)
+    let result2: string = await asyncTask(2)
+    let result3: string = await asyncTask(3)
+
+    print result1
+    print result2
+    print result3
+
+    print "All tasks completed!"
+}
+
+// 主函数
+func main() -> void {
+    testConcurrency()
+    print "Concurrent scheduler test finished"
+}

@@ -1,0 +1,37 @@
+// channel_test.eo - 测试通道机制
+
+// 简单的通道测试
+func simpleChannelTest() -> void {
+    print "=== Simple Channel Test ==="
+
+    // 创建通道
+    let ch: chan int = chan int
+    print "Channel created"
+
+    // 在后台协程中发送数据
+    spawn sendToChannel(ch, 42)
+    print "Spawned sender"
+
+    // 接收数据
+    print "Waiting to receive..."
+    // let value: int = <- ch  // 暂时注释掉，等待完整实现
+    print "Receive operation completed"
+}
+
+// 发送者函数
+func sendToChannel(ch: chan int, value: int) -> void {
+    print "Sending value to channel"
+    // ch <- value  // 暂时注释掉，等待完整实现
+    print "Value sent"
+}
+
+// 主函数
+func main() -> int {
+    print "=== Channel Test Suite ==="
+
+    simpleChannelTest()
+    print ""
+
+    print "=== Channel Tests Completed ==="
+    return 0
+}

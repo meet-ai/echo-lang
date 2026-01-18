@@ -1,0 +1,398 @@
+context: adaptive-gc
+version: '1.0'
+description: 自适应GC上下文处理流程 - 智能策略调整
+
+entry_points:
+  - id: analyze_workload
+    name: 【入口】分析工作负载特征
+    trigger: gc_triggered_event
+    code:
+      handler: internal/modules/adaptive-gc/domain/services/workload_analyzer.go
+      aggregate: internal/modules/adaptive-gc/domain/aggregates/adaptive_controller.go
+    implementation_chain:
+      - collect_current_metrics
+      - analyze_allocation_patterns
+      - classify_workload_type
+      - update_workload_profile
+      - publish_workload_analyzed_event
+    business_rules:
+      - 基于对象寿命分布识别负载类型
+      - 考虑分配速率和并发模式
+      - 动态调整分析窗口大小
+    success_criteria:
+      - 识别当前工作负载类型
+      - 计算置信度评分
+      - 发布WorkloadAnalyzed事件
+
+  - id: make_decisions
+    name: 【核心】制定自适应决策
+    trigger: workload_analyzed
+    code:
+      handler: internal/modules/adaptive-gc/domain/services/decision_maker.go
+      aggregate: internal/modules/adaptive-gc/domain/aggregates/adaptive_controller.go
+    implementation_chain:
+      - evaluate_active_rules
+      - calculate_decision_priority
+      - generate_gc_decisions
+      - validate_decision_consistency
+      - prepare_decision_execution
+    technical_details:
+      - 规则引擎评估条件
+      - PID控制器计算调整量
+      - 决策冲突解决策略
+      - 决策优先级排序
+    business_rules:
+      - 决策必须基于当前工作负载特征
+      - 避免配置震荡（冷却时间控制）
+      - 渐进式调整而非激进变更
+    success_criteria:
+      - 生成有效的GC决策列表
+      - 决策按优先级排序
+      - 决策间无冲突
+
+  - id: apply_configuration
+    name: 【核心】应用配置调整
+    trigger: decisions_made
+    code:
+      handler: internal/modules/adaptive-gc/application/commands/apply_decisions_command.go
+      aggregate: internal/modules/adaptive-gc/domain/aggregates/adaptive_controller.go
+    implementation_chain:
+      - validate_decisions
+      - apply_parameter_changes
+      - enable_disable_modules
+      - update_configuration
+      - publish_config_adjusted_event
+    business_rules:
+      - 配置变更必须原子性
+      - 无效配置使用默认值
+      - 配置变更需要记录审计日志
+    success_criteria:
+      - 配置成功应用到GC系统
+      - 模块状态正确变更
+      - 发布ConfigAdjusted事件
+
+  - id: evaluate_rules
+    name: 【出口】评估规则效果
+    trigger: gc_cycle_completed
+    code:
+      handler: internal/modules/adaptive-gc/domain/services/rule_evaluator.go
+      aggregate: internal/modules/adaptive-gc/domain/aggregates/adaptive_controller.go
+    implementation_chain:
+      - collect_post_gc_metrics
+      - evaluate_rule_effectiveness
+      - update_rule_statistics
+      - adjust_rule_parameters
+      - prepare_next_adaptation
+    business_rules:
+      - 基于实际效果调整规则参数
+      - 记录规则执行历史
+      - 识别规则过时情况
+    success_criteria:
+      - 规则效果统计更新
+      - 规则参数动态调整
+      - 为下次GC准备适应策略
+
+domain_services:
+  - id: workload_analyzer
+    name: 工作负载分析器
+    responsibility: 分析应用的工作负载特征
+    methods:
+      - AnalyzeCurrentWorkload(): 分析当前工作负载
+      - ClassifyWorkloadType(): 分类负载类型
+      - CalculateConfidenceScore(): 计算置信度
+    dependencies:
+      - performance_metrics: 获取性能指标
+      - workload_history: 访问历史负载数据
+
+  - id: decision_maker
+    name: 决策制定器
+    responsibility: 根据分析结果制定GC调整决策
+    methods:
+      - EvaluateRules(): 评估激活的规则
+      - GenerateDecisions(): 生成决策列表
+      - PrioritizeDecisions(): 决策优先级排序
+    dependencies:
+      - rule_engine: 执行规则评估
+      - workload_profile: 获取当前负载特征
+
+  - id: rule_evaluator
+    name: 规则评估器
+    responsibility: 评估规则执行效果并调整参数
+    methods:
+      - EvaluateRuleEffectiveness(): 评估规则效果
+      - UpdateRuleStatistics(): 更新规则统计
+      - AdjustRuleParameters(): 调整规则参数
+    dependencies:
+      - rule_repository: 访问规则配置
+      - performance_history: 获取历史性能数据
+
+application_services:
+  - id: adaptive_scheduler
+    name: 自适应调度器
+    responsibility: 协调自适应GC的整体流程
+    methods:
+      - ScheduleWorkloadAnalysis(): 安排负载分析
+      - ExecuteAdaptiveDecisions(): 执行自适应决策
+      - MonitorAdaptiveEffectiveness(): 监控适应效果
+    dependencies:
+      - event_bus: 订阅GC事件
+      - config_service: 访问配置服务
+
+domain_events:
+  - id: workload_analyzed
+    name: 工作负载已分析
+    payload:
+      - controllerId: string
+      - workloadType: WorkloadType
+      - confidence: float64
+      - features: WorkloadFeatures
+      - timestamp: time.Time
+    subscribers:
+      - adaptive_gc_context: 制定决策
+      - monitoring_gc_context: 记录分析结果
+
+  - id: rule_executed
+    name: 规则已执行
+    payload:
+      - controllerId: string
+      - ruleId: string
+      - condition: RuleCondition
+      - action: RuleAction
+      - result: ExecutionResult
+      - timestamp: time.Time
+    subscribers:
+      - adaptive_gc_context: 记录执行结果
+      - monitoring_gc_context: 监控规则效果
+
+  - id: config_adjusted
+    name: 配置已调整
+    payload:
+      - controllerId: string
+      - changes: []ConfigChange
+      - reason: string
+      - timestamp: time.Time
+    subscribers:
+      - core_gc_context: 应用新配置
+      - monitoring_gc_context: 记录配置变更
+
+  - id: module_enabled
+    name: 模块已启用
+    payload:
+      - controllerId: string
+      - moduleId: string
+      - config: ModuleConfig
+      - timestamp: time.Time
+    subscribers:
+      - enhanced_gc_context: 激活模块
+      - monitoring_gc_context: 记录模块状态
+
+  - id: module_disabled
+    name: 模块已禁用
+    payload:
+      - controllerId: string
+      - moduleId: string
+      - timestamp: time.Time
+    subscribers:
+      - enhanced_gc_context: 停用模块
+      - monitoring_gc_context: 记录模块状态
+
+repositories:
+  - id: adaptive_controller_repository
+    name: 自适应控制器仓储
+    interface: AdaptiveControllerRepository
+    methods:
+      - FindByID(id): 按ID查找控制器
+      - Save(controller): 保存控制器状态
+      - GetActiveController(): 获取活跃控制器
+    implementation: In-memory with persistence
+
+  - id: rule_repository
+    name: 规则仓储
+    interface: RuleRepository
+    methods:
+      - FindActiveRules(): 查找激活的规则
+      - SaveRuleExecution(ruleExec): 保存规则执行记录
+      - GetRuleStatistics(ruleId): 获取规则统计信息
+    implementation: Configuration file based
+
+value_objects:
+  - id: workload_profile
+    name: 工作负载特征
+    properties:
+      - type: WorkloadType
+      - shortLivedRatio: float64
+      - mediumLivedRatio: float64
+      - longLivedRatio: float64
+      - allocationRate: int64
+      - mutationRate: float64
+      - concurrencyLevel: int
+    validation_rules:
+      - 各比例之和 = 1.0
+      - allocationRate > 0
+      - 并发度 > 0
+
+  - id: rule_condition
+    name: 规则条件
+    properties:
+      - type: ConditionType
+      - metric: string
+      - operator: ComparisonOperator
+      - threshold: interface{}
+      - timeWindow: time.Duration
+    methods:
+      - Evaluate(metrics): 评估条件是否满足
+      - ToString(): 转换为可读字符串
+
+  - id: gc_decision
+    name: GC决策
+    properties:
+      - type: DecisionType
+      - target: string
+      - value: interface{}
+      - priority: int
+      - reason: string
+      - cooldown: time.Duration
+    validation_rules:
+      - priority ∈ [1, 10]
+      - target 非空
+      - reason 非空
+
+  - id: pid_parameters
+    name: PID参数
+    properties:
+      - kp: float64  // 比例系数
+      - ki: float64  // 积分系数
+      - kd: float64  // 微分系数
+      - setpoint: float64  // 目标值
+      - outputMin: float64 // 输出下限
+      - outputMax: float64 // 输出上限
+    validation_rules:
+      - kp, ki, kd >= 0
+      - outputMin < outputMax
+
+business_rules:
+  - id: BR-ADAPTIVE-001
+    name: 工作负载识别准确性
+    condition: workload_confidence >= 0.8
+    action: accept_workload_classification
+    priority: high
+    description: 只有当置信度足够高时才接受工作负载分类
+
+  - id: BR-ADAPTIVE-002
+    name: 决策冷却时间
+    condition: time_since_last_decision < decision_cooldown
+    action: skip_decision_making
+    priority: high
+    description: 避免配置频繁震荡
+
+  - id: BR-ADAPTIVE-003
+    name: 渐进式调整
+    condition: config_change_magnitude > max_incremental_change
+    action: apply_incremental_changes
+    priority: medium
+    description: 大幅配置变更应该分步进行
+
+  - id: BR-ADAPTIVE-004
+    name: 紧急调整触发
+    condition: performance_degradation > critical_threshold
+    action: apply_emergency_configuration
+    priority: critical
+    description: 性能严重退化时立即应用紧急配置
+
+  - id: BR-ADAPTIVE-005
+    name: 规则效果评估
+    condition: rule_executed_recently
+    action: evaluate_rule_effectiveness
+    priority: medium
+    description: 定期评估规则的实际效果
+
+error_handling:
+  - error_type: workload_analysis_failure
+    description: 工作负载分析失败
+    recovery_strategy: use_default_workload_type
+    max_retry_attempts: 2
+    fallback_action: log_warning_and_continue
+
+  - error_type: decision_conflict
+    description: 决策间存在冲突
+    recovery_strategy: resolve_conflicts_by_priority
+    max_retry_attempts: 0
+    fallback_action: apply_highest_priority_decision_only
+
+  - error_type: configuration_application_failure
+    description: 配置应用失败
+    recovery_strategy: rollback_to_previous_config
+    max_retry_attempts: 1
+    fallback_action: use_default_configuration
+
+  - error_type: rule_evaluation_failure
+    description: 规则评估失败
+    recovery_strategy: skip_rule_evaluation
+    max_retry_attempts: 0
+    fallback_action: log_error_and_continue
+
+monitoring_points:
+  - point_id: workload_analysis_monitoring
+    name: 工作负载分析监控
+    metrics: [analysis_duration, confidence_score, workload_type_changes]
+    frequency: per_analysis
+    threshold: analysis_duration > 100ms
+    action: optimize_analysis_algorithm
+
+  - point_id: decision_making_monitoring
+    name: 决策制定监控
+    metrics: [decision_count, average_priority, conflict_count]
+    frequency: per_decision_cycle
+    threshold: conflict_count > 0
+    action: review_decision_rules
+
+  - point_id: configuration_monitoring
+    name: 配置调整监控
+    metrics: [config_change_count, rollback_count, effectiveness_score]
+    frequency: per_config_change
+    threshold: rollback_count > 2
+    action: investigate_config_stability
+
+  - point_id: rule_evaluation_monitoring
+    name: 规则评估监控
+    metrics: [rule_hit_rate, rule_effectiveness, parameter_adjustments]
+    frequency: per_evaluation_cycle
+    threshold: rule_effectiveness < 0.5
+    action: review_rule_definitions
+
+testing_requirements:
+  - test_type: unit_tests
+    coverage_target: 85%
+    focus_areas:
+      - 工作负载分类算法正确性
+      - 规则条件评估逻辑
+      - PID控制器计算准确性
+      - 决策冲突解决策略
+
+  - test_type: integration_tests
+    scenarios:
+      - 完整自适应循环执行
+      - 不同工作负载类型切换
+      - 配置变更的原子性
+      - 规则效果的动态调整
+
+  - test_type: performance_tests
+    benchmarks:
+      - 工作负载分析延迟
+      - 决策制定时间
+      - 配置应用性能
+      - 规则评估效率
+
+  - test_type: adaptive_tests
+    conditions:
+      - 工作负载类型识别准确率 > 90%
+      - 配置调整收敛时间 < 5个GC周期
+      - 规则效果提升 > 10%
+      - 系统稳定性：无配置震荡
+
+  - test_type: stress_tests
+    conditions:
+      - 高频工作负载变化场景
+      - 大量并发规则评估
+      - 配置变更压力测试
+      - 长时间运行的自适应稳定性

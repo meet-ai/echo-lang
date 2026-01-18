@@ -1,0 +1,11 @@
+// Echo 基本功能演示
+// 简化版，只测试基本功能
+
+func main() -> void {
+    print "Starting Echo basic demo..."
+
+    let x: int = 42
+    print x
+
+    print "Echo demo completed!"
+}

@@ -1,0 +1,13 @@
+// simple_spawn_test.eo - spawn测试
+
+// 简单的异步任务
+async func simpleTask() -> void {
+    print "Task executed"
+}
+
+// 主函数 - 只测试spawn
+func main() -> void {
+    print "Before spawn"
+    spawn simpleTask()
+    print "After spawn"
+}

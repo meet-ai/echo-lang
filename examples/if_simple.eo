@@ -1,0 +1,6 @@
+// if_simple.eo - 简单if条件语句测试
+if 5 > 3 {
+print 1
+} else {
+print 0
+}

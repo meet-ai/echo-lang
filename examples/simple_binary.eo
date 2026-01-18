@@ -1,0 +1,2 @@
+// simple_binary.eo - 简单二元表达式测试
+print (5 + 3)

@@ -1,0 +1,40 @@
+file(REMOVE_RECURSE
+  "CMakeFiles/echo_runtime.dir/src/core/async_memory_pool.c.o"
+  "CMakeFiles/echo_runtime.dir/src/core/async_memory_pool.c.o.d"
+  "CMakeFiles/echo_runtime.dir/src/core/future.c.o"
+  "CMakeFiles/echo_runtime.dir/src/core/future.c.o.d"
+  "CMakeFiles/echo_runtime.dir/src/core/industrial_memory_pool.c.o"
+  "CMakeFiles/echo_runtime.dir/src/core/industrial_memory_pool.c.o.d"
+  "CMakeFiles/echo_runtime.dir/src/core/memory_pool.c.o"
+  "CMakeFiles/echo_runtime.dir/src/core/memory_pool.c.o.d"
+  "CMakeFiles/echo_runtime.dir/src/core/runtime.c.o"
+  "CMakeFiles/echo_runtime.dir/src/core/runtime.c.o.d"
+  "CMakeFiles/echo_runtime.dir/src/core/task.c.o"
+  "CMakeFiles/echo_runtime.dir/src/core/task.c.o.d"
+  "CMakeFiles/echo_runtime.dir/src/gc/core-gc/application/commands/trigger_gc_command.c.o"
+  "CMakeFiles/echo_runtime.dir/src/gc/core-gc/application/commands/trigger_gc_command.c.o.d"
+  "CMakeFiles/echo_runtime.dir/src/gc/core-gc/application/services/gc_scheduler.c.o"
+  "CMakeFiles/echo_runtime.dir/src/gc/core-gc/application/services/gc_scheduler.c.o.d"
+  "CMakeFiles/echo_runtime.dir/src/gc/core-gc/core_gc.c.o"
+  "CMakeFiles/echo_runtime.dir/src/gc/core-gc/core_gc.c.o.d"
+  "CMakeFiles/echo_runtime.dir/src/gc/core-gc/domain/aggregates/garbage_collector.c.o"
+  "CMakeFiles/echo_runtime.dir/src/gc/core-gc/domain/aggregates/garbage_collector.c.o.d"
+  "CMakeFiles/echo_runtime.dir/src/gc/core-gc/domain/aggregates/heap.c.o"
+  "CMakeFiles/echo_runtime.dir/src/gc/core-gc/domain/aggregates/heap.c.o.d"
+  "CMakeFiles/echo_runtime.dir/src/gc/core-gc/domain/services/mark_service.c.o"
+  "CMakeFiles/echo_runtime.dir/src/gc/core-gc/domain/services/mark_service.c.o.d"
+  "CMakeFiles/echo_runtime.dir/src/gc/core-gc/domain/services/sweep_service.c.o"
+  "CMakeFiles/echo_runtime.dir/src/gc/core-gc/domain/services/sweep_service.c.o.d"
+  "CMakeFiles/echo_runtime.dir/src/platform/context/aarch64/context_switch.S.o"
+  "CMakeFiles/echo_runtime.dir/src/platform/context/aarch64/makecontext.c.o"
+  "CMakeFiles/echo_runtime.dir/src/platform/context/aarch64/makecontext.c.o.d"
+  "CMakeFiles/echo_runtime.dir/src/platform/event/posix/macos/kqueue.c.o"
+  "CMakeFiles/echo_runtime.dir/src/platform/event/posix/macos/kqueue.c.o.d"
+  "libecho_runtime.a"
+  "libecho_runtime.pdb"
+)
+
+# Per-language clean rules from dependency scanning.
+foreach(lang ASM C)
+  include(CMakeFiles/echo_runtime.dir/cmake_clean_${lang}.cmake OPTIONAL)
+endforeach()
