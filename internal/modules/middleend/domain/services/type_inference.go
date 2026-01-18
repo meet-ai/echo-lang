@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/meetai/echo-lang/internal/modules/frontend/domain/entities"
+	"echo/internal/modules/frontend/domain/entities"
 )
 
 // TypeInference 类型推断引擎

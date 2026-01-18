@@ -1,80 +1,68 @@
 package di
 
 import (
-	"fmt"
+	"echo/internal/infrastructure/di/providers"
+	"echo/internal/modules/backend"
+	"echo/internal/modules/frontend"
 
-	"github.com/meetai/echo-lang/internal/infrastructure/di/providers"
+	"echo/internal/modules/middleend"
+	"echo/internal/modules/runtime"
+
 	"github.com/samber/do"
 )
 
-// Container wraps the do.Injector with additional functionality
+// Container holds all application services and dependencies
 type Container struct {
-	*do.Injector
+	Frontend  *frontend.Module
+	Backend   *backend.Module
+	Middleend *middleend.Module
+	Runtime   *runtime.Module
 }
 
-// NewContainer creates a new dependency injection container
-func NewContainer() *Container {
-	container := &Container{
-		Injector: do.New(),
-	}
-
-	// Register all service providers
-	providers.ProvideFrontendServices(container.Injector)
-	// TODO: Add other module providers when implemented
-
-	return container
+// Compiler represents the main compiler interface
+type Compiler interface {
+	Compile(filename string) error
+	CompileAndRun(filename string) error
 }
 
-// ProvideNamed provides a service with a specific name
-func (c *Container) ProvideNamed(name string, constructor interface{}) {
-	// In a real implementation, this would use do.ProvideNamed
-	// For now, we'll use regular Provide
-	do.Provide(c.Injector, constructor)
-}
+// BuildContainer creates and configures the dependency injection container
+func BuildContainer() (*Container, error) {
+	injector := do.New()
 
-// InvokeNamed invokes a service by name
-func (c *Container) InvokeNamed(name string, ptr interface{}) error {
-	// In a real implementation, this would use do.InvokeNamed
-	// For now, we'll use regular Invoke
-	return do.Invoke(c.Injector, ptr)
-}
+	// Register service providers
+	providers.ProvideFrontendServices(injector)
+	providers.ProvideBackendServices(injector)
 
-// HasService checks if a service is registered
-func (c *Container) HasService(serviceType interface{}) bool {
-	// Try to invoke the service to check if it exists
-	err := do.Invoke(c.Injector, serviceType)
-	return err == nil
-}
+	// TODO: Add middleend and runtime providers when available
+	// providers.ProvideMiddleendServices(injector)
+	// providers.ProvideRuntimeServices(injector)
 
-// ListServices returns a list of registered service types
-func (c *Container) ListServices() []string {
-	// This would require extending do.Injector to track registered services
-	// For now, return empty slice
-	return []string{}
-}
-
-// Validate validates the container configuration
-func (c *Container) Validate() error {
-	// Basic validation - check if container is initialized
-	if c.Injector == nil {
-		return fmt.Errorf("container is not initialized")
-	}
-	return nil
-}
-
-// Shutdown gracefully shuts down the container and all services
-func (c *Container) Shutdown() error {
-	// In a real implementation, this would call shutdown methods on services
-	// that implement a Shutdown() interface
-	return nil
-}
-
-// GetFrontendService gets the frontend service from the container
-func (c *Container) GetFrontendService() (interface{}, error) {
-	var service interface{}
-	err := do.Invoke(c.Injector, &service)
+	// Build modules
+	frontendModule, err := frontend.NewModule(injector)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get frontend service: %w", err)
+		return nil, err
 	}
-	return service, nil
+
+	backendModule, err := backend.NewModule(injector)
+	if err != nil {
+		return nil, err
+	}
+
+	// TODO: Build middleend and runtime modules when available
+	// Temporarily disable middleend and runtime modules to focus on backend
+	var middleendModule *middleend.Module
+	var runtimeModule *runtime.Module
+
+	return &Container{
+		Frontend:  frontendModule,
+		Backend:   backendModule,
+		Middleend: middleendModule,
+		Runtime:   runtimeModule,
+	}, nil
+}
+
+// Compiler returns the main compiler service
+func (c *Container) Compiler() Compiler {
+	// TODO: Implement compiler service
+	return nil
 }

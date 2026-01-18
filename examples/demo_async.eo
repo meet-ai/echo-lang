@@ -1,11 +1,11 @@
 // Echo 异步编程演示
-// 展示完整的异步编程功能
+// 展示异步编程功能
 
 // 异步函数定义
-async func fetchUserData[T](userId: int) -> Result[T] {
+async func fetchUserData(userId: int) -> Result[string] {
     print "Fetching user data for ID: " + userId
     // 模拟异步操作
-    return Ok("user_data" as T)
+    return Ok("user_data")
 }
 
 // 异步函数调用和await

@@ -3,7 +3,7 @@ package services
 import (
 	"testing"
 
-	"github.com/meetai/echo-lang/internal/modules/frontend/domain/entities"
+	"echo/internal/modules/frontend/domain/entities"
 )
 
 func TestParserBasicSyntax(t *testing.T) {
@@ -251,8 +251,13 @@ func TestParserBasicSyntax(t *testing.T) {
 					return
 				}
 
-				if printStmt1.Value != "Hello, World!" {
-					t.Errorf("Expected print value 'Hello, World!', got '%s'", printStmt1.Value)
+				stringLit, ok := printStmt1.Value.(*entities.StringLiteral)
+				if !ok {
+					t.Errorf("Expected StringLiteral, got %T", printStmt1.Value)
+					return
+				}
+				if stringLit.Value != "Hello, World!" {
+					t.Errorf("Expected print value 'Hello, World!', got '%s'", stringLit.Value)
 				}
 			},
 		},

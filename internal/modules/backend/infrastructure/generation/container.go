@@ -1,8 +1,8 @@
 package generation
 
 import (
-	"github.com/meetai/echo-lang/internal/modules/backend/domain/services/generation"
-	"github.com/meetai/echo-lang/internal/modules/backend/infrastructure/generation/impl"
+	"echo/internal/modules/backend/domain/services/generation"
+	"echo/internal/modules/backend/infrastructure/generation/impl"
 )
 
 // Container 代码生成领域服务容器

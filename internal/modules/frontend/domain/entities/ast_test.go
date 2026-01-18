@@ -44,6 +44,17 @@ func TestASTNodeString(t *testing.T) {
 			contains: "FuncCall",
 		},
 		{
+			name:     "TraitMethod",
+			node:     &TraitMethod{
+				Name:       "transform",
+				TypeParams: []GenericParam{{Name: "U"}},
+				Params:     []Param{{Name: "item", Type: "T"}},
+				ReturnType: "U",
+				IsDefault:  false,
+			},
+			contains: "TraitMethod{Name: transform, TypeParams: [U], Params: [item: T], ReturnType: U, IsDefault: false}",
+		},
+		{
 			name:     "FuncDef",
 			node:     &FuncDef{
 				Name:       "test",
@@ -339,6 +350,7 @@ type mockASTVisitor struct{}
 
 func (m *mockASTVisitor) VisitFuncDef(node *FuncDef) interface{}     { return nil }
 func (m *mockASTVisitor) VisitVarDecl(node *VarDecl) interface{}     { return nil }
+func (m *mockASTVisitor) VisitAssignStmt(node *AssignStmt) interface{} { return nil }
 func (m *mockASTVisitor) VisitReturnStmt(node *ReturnStmt) interface{} { return nil }
 func (m *mockASTVisitor) VisitIfStmt(node *IfStmt) interface{}       { return nil }
 func (m *mockASTVisitor) VisitPrintStmt(node *PrintStmt) interface{} { return nil }
@@ -354,6 +366,11 @@ func (m *mockASTVisitor) VisitMatchStmt(node *MatchStmt) interface{} { return ni
 func (m *mockASTVisitor) VisitMatchExpr(node *MatchExpr) interface{}   { return nil }
 func (m *mockASTVisitor) VisitForStmt(node *ForStmt) interface{}         { return nil }
 func (m *mockASTVisitor) VisitWhileStmt(node *WhileStmt) interface{}     { return nil }
+func (m *mockASTVisitor) VisitAgentCreateStmt(node *AgentCreateStmt) interface{} { return nil }
+func (m *mockASTVisitor) VisitAgentSendStmt(node *AgentSendStmt) interface{}     { return nil }
+func (m *mockASTVisitor) VisitAgentReceiveStmt(node *AgentReceiveStmt) interface{} { return nil }
+func (m *mockASTVisitor) VisitBreakStmt(node *BreakStmt) interface{}               { return nil }
+func (m *mockASTVisitor) VisitContinueStmt(node *ContinueStmt) interface{}         { return nil }
 func (m *mockASTVisitor) VisitArrayLiteral(node *ArrayLiteral) interface{}   { return nil }
 func (m *mockASTVisitor) VisitStructLiteral(node *StructLiteral) interface{} { return nil }
 func (m *mockASTVisitor) VisitStructAccess(node *StructAccess) interface{}   { return nil }
@@ -365,9 +382,6 @@ func (m *mockASTVisitor) VisitErrLiteral(node *ErrLiteral) interface{}     { ret
 func (m *mockASTVisitor) VisitSomeLiteral(node *SomeLiteral) interface{}   { return nil }
 func (m *mockASTVisitor) VisitNoneLiteral(node *NoneLiteral) interface{}   { return nil }
 func (m *mockASTVisitor) VisitBoolLiteral(node *BoolLiteral) interface{}         { return nil }
-func (m *mockASTVisitor) VisitResultExpr(node *ResultExpr) interface{}           { return nil }
-func (m *mockASTVisitor) VisitOkLiteral(node *OkLiteral) interface{}             { return nil }
-func (m *mockASTVisitor) VisitErrLiteral(node *ErrLiteral) interface{}           { return nil }
 func (m *mockASTVisitor) VisitErrorPropagation(node *ErrorPropagation) interface{} { return nil }
 func (m *mockASTVisitor) VisitErrPattern(node *ErrPattern) interface{}         { return nil }
 func (m *mockASTVisitor) VisitOkPattern(node *OkPattern) interface{}       { return nil }
@@ -400,6 +414,7 @@ type mockExprVisitor struct{}
 func (m *mockExprVisitor) VisitIdentifier(node *Identifier) interface{}       { return nil }
 func (m *mockExprVisitor) VisitStringLiteral(node *StringLiteral) interface{} { return nil }
 func (m *mockExprVisitor) VisitIntLiteral(node *IntLiteral) interface{}       { return nil }
+func (m *mockExprVisitor) VisitFloatLiteral(node *FloatLiteral) interface{}     { return nil }
 func (m *mockExprVisitor) VisitBinaryExpr(node *BinaryExpr) interface{}       { return nil }
 func (m *mockExprVisitor) VisitFuncCall(node *FuncCall) interface{}           { return nil }
 func (m *mockExprVisitor) VisitResultExpr(node *ResultExpr) interface{}       { return nil }
@@ -410,7 +425,6 @@ func (m *mockExprVisitor) VisitErrorPropagation(node *ErrorPropagation) interfac
 func (m *mockExprVisitor) VisitSomeLiteral(node *SomeLiteral) interface{}     { return nil }
 func (m *mockExprVisitor) VisitNoneLiteral(node *NoneLiteral) interface{}     { return nil }
 func (m *mockExprVisitor) VisitBoolLiteral(node *BoolLiteral) interface{}       { return nil }
-func (m *mockExprVisitor) VisitResultExpr(node *ResultExpr) interface{}         { return nil }
 func (m *mockExprVisitor) VisitMatchExpr(node *MatchExpr) interface{}         { return nil }
 func (m *mockExprVisitor) VisitArrayLiteral(node *ArrayLiteral) interface{}   { return nil }
 func (m *mockExprVisitor) VisitStructAccess(node *StructAccess) interface{}   { return nil }

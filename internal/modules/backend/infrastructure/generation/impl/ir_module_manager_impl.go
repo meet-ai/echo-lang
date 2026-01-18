@@ -63,6 +63,9 @@ func (m *IRModuleManagerImpl) CreateFunction(name string, returnType interface{}
 		llvmReturnType = types.Void
 	case *types.VoidType:
 		llvmReturnType = types.Void
+	case *FutureType, *ChanType:
+		// Future和Channel类型在运行时都是i8*指针
+		llvmReturnType = types.NewPointer(types.I8)
 	default:
 		// 默认返回int类型
 		llvmReturnType = types.I32
@@ -82,8 +85,11 @@ func (m *IRModuleManagerImpl) CreateFunction(name string, returnType interface{}
 			llvmParamTypes = append(llvmParamTypes, paramType)
 		case *types.ArrayType:
 			llvmParamTypes = append(llvmParamTypes, paramType)
+		case *FutureType, *ChanType:
+			// Future和Channel类型在运行时都是i8*指针
+			llvmParamTypes = append(llvmParamTypes, types.NewPointer(types.I8))
 		default:
-			// 默认返回指针类型（用于Future等不透明类型）
+			// 默认返回指针类型（用于其他不透明类型）
 			llvmParamTypes = append(llvmParamTypes, types.NewPointer(types.I8))
 		}
 	}
@@ -305,7 +311,12 @@ func (m *IRModuleManagerImpl) CreateBinaryOp(op string, left interface{}, right 
 		if strings.HasSuffix(leftTypeStr, "*") && strings.HasSuffix(rightTypeStr, "*") {
 			fmt.Printf("DEBUG: Detected string concatenation, calling string_concat\n")
 			// 字符串拼接：调用 string_concat 函数
-			result, err = m.CreateCall("string_concat", llvmLeft, llvmRight)
+			var err error
+			callResult, err := m.CreateCall("string_concat", llvmLeft, llvmRight)
+			if err != nil {
+				return nil, fmt.Errorf("failed to create string concatenation call: %w", err)
+			}
+			result = callResult.(llvalue.Value)
 			if err != nil {
 				return nil, fmt.Errorf("failed to create string concatenation call: %w", err)
 			}
@@ -632,6 +643,20 @@ func (m *IRModuleManagerImpl) GetFunction(name string) (interface{}, bool) {
 	}
 
 	return nil, false
+}
+
+// RegisterFunction 注册函数到外部函数缓存中
+func (m *IRModuleManagerImpl) RegisterFunction(name string, fn interface{}) error {
+	if funcPtr, ok := fn.(*ir.Func); ok {
+		m.externalFunctions[name] = funcPtr
+		return nil
+	}
+	return fmt.Errorf("invalid function type for registration: %T", fn)
+}
+
+// RegisterExternalFunction 注册外部函数（与RegisterFunction相同，用于接口兼容性）
+func (m *IRModuleManagerImpl) RegisterExternalFunction(name string, fn interface{}) error {
+	return m.RegisterFunction(name, fn)
 }
 
 // declareCoroutineRuntimeFunctions 声明协程运行时函数

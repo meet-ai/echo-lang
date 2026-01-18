@@ -1,202 +1,98 @@
-cmake_minimum_required(VERSION 3.10)
-project(echo_runtime C)
+# Echo Runtime - CMake Build System
+cmake_minimum_required(VERSION 3.20)
+project(echo-runtime C)
 
-# 设置C标准
+# Set C standard
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
-# 包含目录
-include_directories(include)
+# Global build options
+option(RUNTIME_ENABLE_GC "Enable garbage collection support" ON)
+option(RUNTIME_ENABLE_COROUTINE "Enable coroutine support" ON)
+option(RUNTIME_ENABLE_NETWORK "Enable network communication support" ON)
+option(RUNTIME_ENABLE_FILESYSTEM "Enable filesystem support" ON)
+option(RUNTIME_ENABLE_DEBUG "Enable debug and monitoring support" ON)
+option(RUNTIME_BUILD_TESTS "Build test executables" ON)
+option(RUNTIME_BUILD_EXAMPLES "Build example programs" ON)
+option(RUNTIME_BUILD_SHARED "Build shared libraries" OFF)
 
-# 编译选项
-if(MSVC)
-    add_compile_options(/W4)
+# Platform detection
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    set(RUNTIME_PLATFORM "linux")
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    set(RUNTIME_PLATFORM "macos")
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    set(RUNTIME_PLATFORM "windows")
 else()
-    add_compile_options(-Wall -Wextra -Wpedantic)
+    set(RUNTIME_PLATFORM "unix")
 endif()
 
-# 设置汇编文件编译
-enable_language(ASM)
-set(CMAKE_ASM_FLAGS "${CMAKE_ASM_FLAGS} -x assembler-with-cpp")
+message(STATUS "Building Echo Runtime for platform: ${RUNTIME_PLATFORM}")
 
-# 为不同架构设置汇编标志
-if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|amd64")
-    set(CMAKE_ASM_FLAGS "${CMAKE_ASM_FLAGS} -m64")
-elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64|arm64")
-    set(CMAKE_ASM_FLAGS "${CMAKE_ASM_FLAGS} -march=armv8-a")
-endif()
-
-# 调试模式
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    add_compile_definitions(DEBUG)
-endif()
-
-# ============================================================================
-# 核心运行时库
-# ============================================================================
-
-# 收集源文件
-set(RUNTIME_SOURCES
-    # 应用层
-    src/core/runtime.c
-    src/core/task.c
-    src/core/future.c
-    src/core/memory_pool.c
-    # src/core/advanced_memory_pool.c  # 暂时注释掉有问题的文件
-    # src/core/cache_utils.c          # 暂时注释掉有问题的文件
-
-    # 工业级内存池系统
-    src/core/industrial_memory_pool.c
-    src/core/async_memory_pool.c
-
-    # ============================================================================
-    # GC 系统
-    # ============================================================================
-
-    # 核心GC上下文
-    src/gc/core-gc/core_gc.c
-    src/gc/core-gc/domain/aggregates/garbage_collector.c
-    src/gc/core-gc/domain/aggregates/heap.c
-    src/gc/core-gc/domain/services/mark_service.c
-    src/gc/core-gc/domain/services/sweep_service.c
-    src/gc/core-gc/application/commands/trigger_gc_command.c
-    src/gc/core-gc/application/services/gc_scheduler.c
-
-    # 领域层 - 暂时简化，只包含必要的
-    # src/domain/executor/executor.c
-    # src/domain/reactor/reactor.c
-    # src/domain/reactor/event_loop.c  # 有编译错误，暂时注释
-    # src/domain/reactor/timer_future.c
-    # src/domain/coroutine/coroutine.c
-    # src/domain/coroutine/context.c
-    # src/domain/coroutine/switcher.c
-    # src/domain/coroutine/yield.c
-    # src/domain/scheduler/scheduler.c
-    # src/domain/scheduler/processor.c
-    # src/domain/scheduler/machine.c
-    # src/domain/channel/channel.c
-    # src/domain/channel/select.c
-
-    # 基础设施层 - 暂时简化
-    # src/platform/context/context_platform.c
-    # src/platform/event/platform_detector.c
-    # $<$<PLATFORM_ID:Linux>:src/platform/event/posix/linux/epoll.c>
-    # $<$<PLATFORM_ID:Linux>:src/platform/event/posix/linux/io_uring.c>
-    # $<$<PLATFORM_ID:Windows>:src/platform/event/windows/iocp.c>
-    # $<$<OR:$<PLATFORM_ID:Linux>,$<PLATFORM_ID:Darwin>,$<PLATFORM_ID:Windows>>:src/platform/event/posix/select.c>
+# Global compile definitions
+add_compile_definitions(
+    RUNTIME_PLATFORM_${RUNTIME_PLATFORM}=1
 )
 
-# 平台特定源文件
-if(APPLE)
-    list(APPEND RUNTIME_SOURCES
-        src/platform/event/posix/macos/kqueue.c
-    )
-    # macOS 通常是x86_64或aarch64
-    if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|amd64")
-        list(APPEND RUNTIME_SOURCES
-            src/platform/context/x86_64/context_switch.S
-            src/platform/context/x86_64/makecontext.c
-        )
-    elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64|arm64")
-        list(APPEND RUNTIME_SOURCES
-            src/platform/context/aarch64/context_switch.S
-            src/platform/context/aarch64/makecontext.c
-        )
-    endif()
-elseif(UNIX AND NOT APPLE)
-    # Linux
-    if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|amd64")
-        list(APPEND RUNTIME_SOURCES
-            src/platform/context/x86_64/context_switch.S
-            src/platform/context/x86_64/makecontext.c
-        )
-    elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64|arm64")
-        list(APPEND RUNTIME_SOURCES
-            src/platform/context/aarch64/context_switch.S
-            src/platform/context/aarch64/makecontext.c
-        )
-    endif()
-elseif(WIN32)
-    # Windows x86_64
-    if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|amd64")
-        list(APPEND RUNTIME_SOURCES
-            src/platform/context/x86_64/context_switch.S
-            src/platform/context/x86_64/makecontext.c
-        )
-    endif()
-else()
-    # 未知平台，使用setjmp/longjmp后备
-    message(WARNING "Unknown platform, using setjmp/longjmp fallback for context switching")
+if(RUNTIME_ENABLE_GC)
+    add_compile_definitions(RUNTIME_ENABLE_GC=1)
 endif()
 
-# 创建运行时库
-add_library(echo_runtime ${RUNTIME_SOURCES})
-
-# 链接依赖
-if(UNIX)
-    target_link_libraries(echo_runtime pthread)
+if(RUNTIME_ENABLE_COROUTINE)
+    add_compile_definitions(RUNTIME_ENABLE_COROUTINE=1)
 endif()
 
-# ============================================================================
-# 示例程序
-# ============================================================================
+# Include directories
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/api)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/platform/interface)
 
-# 异步编程示例
-add_executable(async_await_example examples/async_await.c)
-target_link_libraries(async_await_example echo_runtime)
+# Platform-specific includes
+if(RUNTIME_PLATFORM STREQUAL "linux" OR RUNTIME_PLATFORM STREQUAL "macos")
+    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/platform/posix)
+endif()
 
-# 工业级内存池基本使用示例
-add_executable(basic_usage_example examples/basic_usage.c)
-target_link_libraries(basic_usage_example echo_runtime)
+# Find required packages
+find_package(Threads REQUIRED)
 
-# 性能对比示例
-add_executable(performance_comparison_example examples/performance_comparison.c)
-target_link_libraries(performance_comparison_example echo_runtime)
+# Core runtime (always included)
+add_subdirectory(core)
 
-# ============================================================================
-# 测试
-# ============================================================================
+# API layer
+add_subdirectory(api)
 
-# 启用测试
-enable_testing()
+# Bounded contexts (conditionally included)
+if(RUNTIME_ENABLE_NETWORK)
+    add_subdirectory(bounded-contexts/network)
+endif()
 
-# 简单的运行时测试
-add_executable(runtime_test tests/runtime_test.c)
-target_link_libraries(runtime_test echo_runtime)
-add_test(NAME runtime_test COMMAND runtime_test)
+if(RUNTIME_ENABLE_FILESYSTEM)
+    add_subdirectory(bounded-contexts/filesystem)
+endif()
 
-# 高级内存池测试
-add_executable(advanced_memory_pool_test tests/advanced_memory_pool_test.c)
-target_link_libraries(advanced_memory_pool_test echo_runtime)
-add_test(NAME advanced_memory_pool_test COMMAND advanced_memory_pool_test)
+add_subdirectory(bounded-contexts/channel)
 
-# 工业级内存池测试
-add_executable(industrial_memory_pool_test tests/industrial_memory_pool_test.c)
-target_link_libraries(industrial_memory_pool_test echo_runtime)
-add_test(NAME industrial_memory_pool_test COMMAND industrial_memory_pool_test)
+if(RUNTIME_ENABLE_DEBUG)
+    add_subdirectory(bounded-contexts/debug)
+endif()
 
-# 异步内存池测试
-add_executable(async_memory_pool_test tests/async_memory_pool_test.c)
-target_link_libraries(async_memory_pool_test echo_runtime)
-add_test(NAME async_memory_pool_test COMMAND async_memory_pool_test)
+# Platform abstraction
+add_subdirectory(platform)
 
-# GC测试
-add_executable(gc_test tests/gc_test.c)
-target_link_libraries(gc_test echo_runtime)
-add_test(NAME gc_test COMMAND gc_test)
+# Tests
+if(RUNTIME_BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(tests)
+endif()
 
-# ============================================================================
-# 安装
-# ============================================================================
+# Examples
+if(RUNTIME_BUILD_EXAMPLES)
+    add_subdirectory(examples)
+endif()
 
-# 安装头文件
-install(DIRECTORY include/ DESTINATION include)
+# Installation
+install(DIRECTORY api/echo/
+        DESTINATION include/echo
+        FILES_MATCHING PATTERN "*.h")
 
-# 安装库
-install(TARGETS echo_runtime
-    LIBRARY DESTINATION lib
-    ARCHIVE DESTINATION lib)
-
-# 安装示例
-install(TARGETS async_await_example basic_usage_example performance_comparison_example
-    RUNTIME DESTINATION bin)
+# Generate compile_commands.json for IDE support
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)

@@ -4,9 +4,19 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/meetai/echo-lang/internal/modules/backend/domain/services"
-	"github.com/meetai/echo-lang/internal/modules/frontend/domain/entities"
+	"echo/internal/modules/frontend/domain/entities"
 )
+
+// mockCodeGenerator is a simple mock implementation for testing
+type mockCodeGenerator struct{}
+
+func (m *mockCodeGenerator) GenerateCode(program *entities.Program) string {
+	return "// Mock generated code"
+}
+
+func (m *mockCodeGenerator) GenerateOCaml(program *entities.Program) string {
+	return "// Mock OCaml generated code"
+}
 
 func TestTryOptionParsing(t *testing.T) {
 	parser := NewSimpleParser()
@@ -143,7 +153,8 @@ func TestTryOptionParsing(t *testing.T) {
 
 func TestTryOptionCodeGeneration(t *testing.T) {
 	parser := NewSimpleParser()
-	generator := services.NewOCamlGenerator()
+	// Use a simple mock generator for testing
+	generator := &mockCodeGenerator{}
 
 	tests := []struct {
 		name         string

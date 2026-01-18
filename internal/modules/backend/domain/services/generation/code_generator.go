@@ -1,7 +1,7 @@
 package generation
 
 import (
-	"github.com/meetai/echo-lang/internal/modules/frontend/domain/entities"
+	"echo/internal/modules/frontend/domain/entities"
 )
 
 // CodeGenerationContext 代码生成上下文

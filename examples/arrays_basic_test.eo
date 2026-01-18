@@ -1,0 +1,5 @@
+// arrays_basic_test.eo - 数组基本操作测试
+let numbers: [int] = [1, 2, 3, 4, 5]
+
+print numbers[0]      // 索引访问
+print len(numbers)    // 长度获取

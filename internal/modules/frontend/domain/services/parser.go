@@ -8,13 +8,10 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/meetai/echo-lang/internal/modules/frontend/domain/entities"
+	"echo/internal/modules/frontend/domain/entities"
 )
 
-// Parser 语法分析器接口
-type Parser interface {
-	Parse(content string) (*entities.Program, error)
-}
+// Parser 接口已在 interfaces.go 中定义
 
 // SimpleParser 简单语法分析器实现
 type SimpleParser struct{}
@@ -49,7 +46,7 @@ func (p *SimpleParser) Parse(content string) (*entities.Program, error) {
 	var currentEnumDef *entities.EnumDef
 	var currentMatchStmt *entities.MatchStmt
 	var currentAsyncFunc *entities.AsyncFuncDef
-	var pendingImplTraits []entities.ImplAnnotation // 等待应用的impl注解
+	var pendingImplTraits []entities.ImplAnnotation              // 等待应用的impl注解
 	var pendingAssociatedTypeImpls []entities.AssociatedTypeImpl // 等待应用的关联类型实现
 	var functionBodyLines []string
 	var ifBodyLines []string
@@ -71,15 +68,36 @@ func (p *SimpleParser) Parse(content string) (*entities.Program, error) {
 			continue
 		}
 
-		// 检查then分支结束后是否有else
-		if thenBranchEnded && strings.TrimSpace(line) == "else" {
-			// 进入else分支
-			thenBranchEnded = false
-			parsingElse = true
-			inIfBody = true
-			ifBodyLines = []string{}
-			i++ // 跳过这一行，继续下一行
-			continue
+		// 检查then分支结束后是否有else或else if
+		if thenBranchEnded {
+			if strings.TrimSpace(line) == "else" {
+				// 进入else分支
+				thenBranchEnded = false
+				parsingElse = true
+				inIfBody = true
+				ifBodyLines = []string{}
+				i++ // 跳过这一行，继续下一行
+				continue
+			} else if strings.Contains(line, "} else if ") {
+				// 处理 } else if condition { 语法
+				// 解析 else if condition 部分
+				elseIfLine := strings.TrimSpace(line[1:]) // 移除开头的 }
+				elseIfStmt, err := p.parseElseIfStmt(elseIfLine, i)
+				if err != nil {
+					return nil, fmt.Errorf("line %d: invalid else if statement: %v", i, err)
+				}
+
+				// 将 else if 作为嵌套的 if 语句放入当前if的 else 分支
+				currentIfStmt.ElseBody = []entities.ASTNode{elseIfStmt}
+
+				// 设置新的 currentIfStmt 为 else if 语句，继续处理其then分支
+				currentIfStmt = elseIfStmt.(*entities.IfStmt)
+				thenBranchEnded = false
+				inIfBody = true
+				ifBodyLines = []string{}
+				i++ // 跳过这一行，继续下一行
+				continue
+			}
 		}
 
 		if inFunctionBody {
@@ -87,8 +105,6 @@ func (p *SimpleParser) Parse(content string) (*entities.Program, error) {
 			if line == "}" {
 				// 函数体结束
 				inFunctionBody = false
-
-				fmt.Fprintf(os.Stderr, "DEBUG: Parsing function %s body, %d lines\n", currentFunction.Name, len(functionBodyLines))
 
 				// 从函数体行中移除最后的"}"（如果存在）
 				bodyLines := functionBodyLines
@@ -102,8 +118,6 @@ func (p *SimpleParser) Parse(content string) (*entities.Program, error) {
 					return nil, fmt.Errorf("function %s body error: %v", currentFunction.Name, err)
 				}
 				currentFunction.Body = body
-
-				fmt.Fprintf(os.Stderr, "DEBUG: Function %s parsed with %d body statements\n", currentFunction.Name, len(body))
 
 				// 添加函数定义到程序
 				program.Statements = append(program.Statements, currentFunction)
@@ -369,6 +383,23 @@ func (p *SimpleParser) Parse(content string) (*entities.Program, error) {
 					thenBranchEnded = true
 					// 注意：这里不立即添加到program.Statements，等待检查是否有else
 				}
+			} else if strings.Contains(line, "} else if ") {
+				// 处理 } else if condition { 语法
+				// 解析 else if condition 部分
+				elseIfLine := strings.TrimSpace(line[1:]) // 移除开头的 }
+				elseIfStmt, err := p.parseElseIfStmt(elseIfLine, i)
+				if err != nil {
+					return nil, fmt.Errorf("line %d: invalid else if statement: %v", i, err)
+				}
+
+				// 将 else if 作为嵌套的 if 语句放入 else 分支
+				currentIfStmt.ElseBody = []entities.ASTNode{elseIfStmt}
+
+				// 设置新的 currentIfStmt 为 else if 语句
+				currentIfStmt = elseIfStmt.(*entities.IfStmt)
+				inIfBody = true
+				parsingElse = false
+				ifBodyLines = []string{}
 			} else if strings.Contains(line, "} else {") {
 				// 先处理then分支（} else { 表示then分支结束）
 
@@ -474,7 +505,7 @@ func (p *SimpleParser) Parse(content string) (*entities.Program, error) {
 						return nil, fmt.Errorf("line %d: invalid @impl syntax, missing closing bracket", i+1)
 					}
 
-					typeArgsStr := strings.TrimSpace(implLine[bracketStart+1:bracketEnd])
+					typeArgsStr := strings.TrimSpace(implLine[bracketStart+1 : bracketEnd])
 					if typeArgsStr != "" {
 						// 解析逗号分隔的类型参数
 						args := strings.Split(typeArgsStr, ",")
@@ -533,7 +564,7 @@ func (p *SimpleParser) Parse(content string) (*entities.Program, error) {
 				// 应用pending的impl traits和关联类型实现
 				currentStructDef.ImplTraits = append(currentStructDef.ImplTraits, pendingImplTraits...)
 				currentStructDef.AssociatedTypeImpls = append(currentStructDef.AssociatedTypeImpls, pendingAssociatedTypeImpls...)
-				pendingImplTraits = nil // 清空pending traits
+				pendingImplTraits = nil          // 清空pending traits
 				pendingAssociatedTypeImpls = nil // 清空pending associated types
 				inStructBody = true
 				structBodyLines = []string{}
@@ -832,23 +863,34 @@ func (p *SimpleParser) parseVarDecl(line string, lineNum int) (entities.ASTNode,
 	left := strings.TrimSpace(parts[0])
 	right := strings.TrimSpace(parts[1])
 
-	// 解析变量名和类型
-	nameType := strings.Split(left, ":")
-	if len(nameType) != 2 {
-		return nil, fmt.Errorf("line %d: missing type annotation", lineNum)
-	}
+	// 解析变量名和类型（支持类型推断）
+	var name, varType string
+	var inferred bool
 
-	name := strings.TrimSpace(nameType[0])
-	varType := strings.TrimSpace(nameType[1])
+	nameType := strings.Split(left, ":")
+	if len(nameType) == 2 {
+		// 显式类型注解：let name: type
+		name = strings.TrimSpace(nameType[0])
+		varType = strings.TrimSpace(nameType[1])
+		inferred = false
+	} else if len(nameType) == 1 {
+		// 类型推断：let name（没有冒号）
+		name = strings.TrimSpace(nameType[0])
+		varType = "" // 类型将在后续推断阶段确定
+		inferred = true
+	} else {
+		return nil, fmt.Errorf("line %d: invalid variable declaration syntax", lineNum)
+	}
 	value, err := p.parseExpr(right)
 	if err != nil {
 		return nil, fmt.Errorf("line %d: %v", lineNum, err)
 	}
 
 	return &entities.VarDecl{
-		Name:  name,
-		Type:  varType,
-		Value: value,
+		Name:     name,
+		Type:     varType,
+		Value:    value,
+		Inferred: inferred,
 	}, nil
 }
 
@@ -1040,6 +1082,33 @@ func (p *SimpleParser) parseIfStmt(line string, lineNum int) (entities.ASTNode, 
 	}
 
 	conditionStr := strings.TrimSpace(ifLine[:braceIndex])
+
+	condition, err := p.parseExpr(conditionStr)
+	if err != nil {
+		return nil, fmt.Errorf("line %d: invalid condition: %v", lineNum, err)
+	}
+
+	return &entities.IfStmt{
+		Condition: condition,
+		ThenBody:  []entities.ASTNode{}, // 语句块将在多行解析中填充
+		ElseBody:  []entities.ASTNode{}, // else分支将在多行解析中填充
+	}, nil
+}
+
+// parseElseIfStmt 解析else if语句
+func (p *SimpleParser) parseElseIfStmt(line string, lineNum int) (entities.ASTNode, error) {
+	// 支持语法：else if condition { ... }
+	// 多行版本：只解析条件部分，语句块在Parse函数中处理
+
+	elseIfLine := strings.TrimSpace(line[7:]) // 移除"else if "
+
+	// 找到条件和 { 的分界点
+	braceIndex := strings.Index(elseIfLine, "{")
+	if braceIndex == -1 {
+		return nil, fmt.Errorf("line %d: else if statement must have opening brace", lineNum)
+	}
+
+	conditionStr := strings.TrimSpace(elseIfLine[:braceIndex])
 
 	condition, err := p.parseExpr(conditionStr)
 	if err != nil {
@@ -1314,6 +1383,11 @@ func (p *SimpleParser) parseMethodDef(line string, lineNum int) (entities.ASTNod
 func (p *SimpleParser) parseExpr(expr string) (entities.Expr, error) {
 	expr = strings.TrimSpace(expr)
 
+	// 移除行内注释
+	if commentIndex := strings.Index(expr, "//"); commentIndex >= 0 {
+		expr = strings.TrimSpace(expr[:commentIndex])
+	}
+
 	// 处理括号表达式
 	if len(expr) >= 2 && expr[0] == '(' && expr[len(expr)-1] == ')' {
 		innerExpr := strings.TrimSpace(expr[1 : len(expr)-1])
@@ -1334,6 +1408,13 @@ func (p *SimpleParser) parseExpr(expr string) (entities.Expr, error) {
 		}, nil
 	}
 
+	// 浮点数字面量
+	if floatVal, err := strconv.ParseFloat(expr, 64); err == nil {
+		return &entities.FloatLiteral{
+			Value: floatVal,
+		}, nil
+	}
+
 	// match表达式 (如 match value { Case => action })
 	if strings.HasPrefix(expr, "match ") {
 		return p.parseMatchExpr(expr)
@@ -1346,7 +1427,8 @@ func (p *SimpleParser) parseExpr(expr string) (entities.Expr, error) {
 		if err != nil {
 			return nil, fmt.Errorf("invalid await expression: %v", err)
 		}
-		return entities.NewAwaitExpr(asyncExpr), nil
+		result := entities.NewAwaitExpr(asyncExpr)
+		return result, nil
 	}
 
 	// spawn表达式 (如 spawn funcName(args))
@@ -1425,7 +1507,19 @@ func (p *SimpleParser) parseExpr(expr string) (entities.Expr, error) {
 		return p.parseArrayLiteral(expr)
 	}
 
-	// 结构体字段访问 (如 point.x)
+	// len() 函数调用 (如 len(array)) - 必须在结构体字段访问之前处理
+	if strings.HasPrefix(expr, "len(") && strings.HasSuffix(expr, ")") {
+		inner := strings.TrimSpace(expr[4 : len(expr)-1])
+		arrayExpr, err := p.parseExpr(inner)
+		if err != nil {
+			return nil, fmt.Errorf("invalid len expression: %v", err)
+		}
+		return &entities.LenExpr{
+			Array: arrayExpr,
+		}, nil
+	}
+
+	// 结构体字段访问 (如 point.x) - 在len()之后处理
 	if strings.Contains(expr, ".") {
 		parts := strings.Split(expr, ".")
 		if len(parts) == 2 {
@@ -1494,7 +1588,6 @@ func (p *SimpleParser) parseExpr(expr string) (entities.Expr, error) {
 
 	// spawn表达式 (如 spawn funcName(args)) - 必须在函数调用之前检查
 	if strings.HasPrefix(expr, "spawn ") {
-		fmt.Fprintf(os.Stderr, "DEBUG: Parsing spawn expression in parseExpr: %s\n", expr)
 		inner := strings.TrimSpace(expr[6:])
 		if !strings.Contains(inner, "(") {
 			return nil, fmt.Errorf("invalid spawn expression: missing parentheses")
@@ -1511,7 +1604,6 @@ func (p *SimpleParser) parseExpr(expr string) (entities.Expr, error) {
 		if err != nil {
 			return nil, fmt.Errorf("invalid spawn function: %v", err)
 		}
-		fmt.Fprintf(os.Stderr, "DEBUG: Spawn function parsed as: %T\n", funcExpr)
 
 		var args []entities.Expr
 		if argsStr != "" {
@@ -1536,12 +1628,7 @@ func (p *SimpleParser) parseExpr(expr string) (entities.Expr, error) {
 		return p.parseStructLiteral(expr)
 	}
 
-	// 函数调用 (如 funcName(args) 或 funcName[T](args))
-	if strings.Contains(expr, "(") && strings.Contains(expr, ")") {
-		return p.parseFuncCallExpr(expr)
-	}
-
-	// len() 函数调用 (如 len(array))
+	// len() 函数调用 (如 len(array)) - 必须在函数调用之前处理
 	if strings.HasPrefix(expr, "len(") && strings.HasSuffix(expr, ")") {
 		inner := strings.TrimSpace(expr[4 : len(expr)-1])
 		arrayExpr, err := p.parseExpr(inner)
@@ -1551,6 +1638,11 @@ func (p *SimpleParser) parseExpr(expr string) (entities.Expr, error) {
 		return &entities.LenExpr{
 			Array: arrayExpr,
 		}, nil
+	}
+
+	// 函数调用 (如 funcName(args) 或 funcName[T](args))
+	if strings.Contains(expr, "(") && strings.Contains(expr, ")") {
+		return p.parseFuncCallExpr(expr)
 	}
 
 	// 方法调用 (如 receiver.method(args))
@@ -1568,7 +1660,15 @@ func (p *SimpleParser) parseExpr(expr string) (entities.Expr, error) {
 		return p.parseSliceExpr(expr)
 	}
 
-	// 标识符
+	// 布尔字面量
+	if expr == "true" {
+		return &entities.BoolLiteral{Value: true}, nil
+	}
+	if expr == "false" {
+		return &entities.BoolLiteral{Value: false}, nil
+	}
+
+	// 标识符（必须在布尔字面量之后）
 	if p.isIdentifier(expr) {
 		return &entities.Identifier{
 			Name: expr,
@@ -1588,18 +1688,12 @@ func (p *SimpleParser) parseExpr(expr string) (entities.Expr, error) {
 		strings.Contains(expr, " == ") || strings.Contains(expr, " != ") {
 		return p.parseComparisonExpr(expr)
 	}
-
-	// 布尔字面量
-	if expr == "true" {
-		return &entities.BoolLiteral{Value: true}, nil
-	}
-	if expr == "false" {
-		return &entities.BoolLiteral{Value: false}, nil
-	}
+	fmt.Fprintf(os.Stderr, "DEBUG: '%s' is not boolean\n", expr)
 
 	// 标识符（变量名）
 	// 必须放在最后，因为其他表达式可能包含字母
 	if matched, _ := regexp.MatchString(`^[a-zA-Z_][a-zA-Z0-9_]*$`, expr); matched {
+		fmt.Fprintf(os.Stderr, "DEBUG: Parsed '%s' as Identifier\n", expr)
 		return &entities.Identifier{
 			Name: expr,
 		}, nil
@@ -2202,7 +2296,7 @@ func (p *SimpleParser) parseType(typeStr string) (string, error) {
 		bracketEnd := strings.LastIndex(typeStr, "]")
 		if bracketStart > 0 && bracketEnd > bracketStart {
 			typeName := strings.TrimSpace(typeStr[:bracketStart])
-			typeArgsStr := strings.TrimSpace(typeStr[bracketStart+1:bracketEnd])
+			typeArgsStr := strings.TrimSpace(typeStr[bracketStart+1 : bracketEnd])
 
 			// 检查是否是已知的Trait名称（简化实现，实际应该从符号表查询）
 			knownTraits := []string{"Printable", "Serializable", "Comparable"}
@@ -2432,7 +2526,6 @@ func (p *SimpleParser) parseTraitDef(line string, lineNum int, lines []string) (
 					continue
 				}
 
-
 				if strings.HasPrefix(decl, "type ") && !strings.Contains(decl, "(") {
 					// 关联类型声明：type Item
 					typeName := strings.TrimSpace(decl[5:]) // 移除"type "
@@ -2485,7 +2578,6 @@ func (p *SimpleParser) parseTraitDef(line string, lineNum int, lines []string) (
 	var associatedTypes []entities.AssociatedType
 	var methods []entities.TraitMethod
 
-
 	// 单行trait的情况
 	if remainingLine == "{}" || remainingLine == "{ }" {
 		return &entities.TraitDef{
@@ -2537,8 +2629,10 @@ func (p *SimpleParser) parseTraitDef(line string, lineNum int, lines []string) (
 
 // parseTraitMethod 解析trait方法声明
 func (p *SimpleParser) parseTraitMethod(methodStr string, lineNum int) (*entities.TraitMethod, error) {
-	// 支持语法：func methodName(params) -> ReturnType
-	// 或 func methodName(params)
+	// 支持语法：
+	// func methodName(params) -> ReturnType
+	// func methodName[T](params) -> ReturnType  // 方法级泛型参数
+	// func methodName[T, U](params) -> ReturnType
 
 	methodStr = strings.TrimSpace(methodStr)
 	if !strings.HasPrefix(methodStr, "func ") {
@@ -2547,13 +2641,38 @@ func (p *SimpleParser) parseTraitMethod(methodStr string, lineNum int) (*entitie
 
 	methodStr = methodStr[5:] // 移除"func "
 
-	// 解析方法名
-	parenIndex := strings.Index(methodStr, "(")
+	// 解析方法名和可能的泛型参数
+	// 查找方法名结束位置（遇到(、[或空格）
+	methodNameEnd := strings.IndexAny(methodStr, "([ ")
+	if methodNameEnd == -1 {
+		return nil, fmt.Errorf("invalid method name")
+	}
+
+	methodName := strings.TrimSpace(methodStr[:methodNameEnd])
+
+	// 解析方法类型参数（如 methodName[T, U]）
+	var methodTypeParams []entities.GenericParam
+	remainingAfterName := strings.TrimSpace(methodStr[methodNameEnd:])
+	if strings.HasPrefix(remainingAfterName, "[") {
+		bracketEnd := strings.Index(remainingAfterName, "]")
+		if bracketEnd == -1 {
+			return nil, fmt.Errorf("unclosed method type parameter brackets")
+		}
+		typeParamStr := remainingAfterName[:bracketEnd+1]
+		remainingAfterName = strings.TrimSpace(remainingAfterName[bracketEnd+1:])
+
+		var err error
+		methodTypeParams, err = p.parseGenericParams(typeParamStr)
+		if err != nil {
+			return nil, fmt.Errorf("invalid method type parameters: %v", err)
+		}
+	}
+
+	// 解析参数
+	parenIndex := strings.Index(remainingAfterName, "(")
 	if parenIndex == -1 {
 		return nil, fmt.Errorf("invalid method signature")
 	}
-
-	methodName := strings.TrimSpace(methodStr[:parenIndex])
 
 	// 解析参数
 	paramsEnd := strings.Index(methodStr, ")")
@@ -2635,6 +2754,7 @@ func (p *SimpleParser) parseTraitMethod(methodStr string, lineNum int) (*entitie
 
 	return &entities.TraitMethod{
 		Name:       methodName,
+		TypeParams: methodTypeParams,
 		Params:     params,
 		ReturnType: returnType,
 		Body:       body,
@@ -2828,15 +2948,40 @@ func (p *SimpleParser) parseBlock(lines []string, startLineNum int) ([]entities.
 				ifStmt.ThenBody = thenBody
 
 				if hasElse {
-					// 有else分支，解析else分支
-					elseLines, elseConsumed, _ := p.extractElseBlock(lines[i+1+consumedLines:], currentLineNum+1+consumedLines)
-					if len(elseLines) > 0 {
-						elseBody, _, err := p.parseBlock(elseLines, currentLineNum+1+consumedLines)
-						if err != nil {
-							return nil, currentLineNum, fmt.Errorf("line %d: if else body error: %v", currentLineNum, err)
+					// 有else分支，检查是否是else if
+					nextLineIndex := i + 1 + consumedLines
+					if nextLineIndex < len(lines) {
+						nextLine := strings.TrimSpace(lines[nextLineIndex])
+						if strings.Contains(nextLine, "} else if ") {
+							// 处理 } else if condition { 语法
+							elseIfLine := strings.TrimSpace(nextLine[1:]) // 移除开头的 }
+							elseIfStmt, err := p.parseElseIfStmt(elseIfLine, currentLineNum+1+consumedLines)
+							if err != nil {
+								return nil, currentLineNum, fmt.Errorf("line %d: invalid else if statement: %v", currentLineNum+1+consumedLines, err)
+							}
+
+							// 将 else if 作为嵌套的 if 语句放入 else 分支
+							nestedIfStmt := elseIfStmt.(*entities.IfStmt)
+							ifStmt.ElseBody = []entities.ASTNode{nestedIfStmt}
+
+							// 递归处理嵌套的if语句
+							nestedConsumed, err := p.processNestedIf(&nestedIfStmt, lines[nextLineIndex+1:], currentLineNum+1+consumedLines+1)
+							if err != nil {
+								return nil, currentLineNum, err
+							}
+							consumedLines += 1 + nestedConsumed // +1 for the } else if line
+						} else {
+							// 普通的else分支
+							elseLines, elseConsumed, _ := p.extractElseBlock(lines[i+1+consumedLines:], currentLineNum+1+consumedLines)
+							if len(elseLines) > 0 {
+								elseBody, _, err := p.parseBlock(elseLines, currentLineNum+1+consumedLines)
+								if err != nil {
+									return nil, currentLineNum, fmt.Errorf("line %d: if else body error: %v", currentLineNum, err)
+								}
+								ifStmt.ElseBody = elseBody
+								consumedLines += elseConsumed
+							}
 						}
-						ifStmt.ElseBody = elseBody
-						consumedLines += elseConsumed
 					}
 				}
 
@@ -2951,6 +3096,10 @@ func (p *SimpleParser) extractIfBlock(lines []string, startLineNum int) ([]strin
 			}
 		} else if braceCount > 0 {
 			blockLines = append(blockLines, lines[i])
+		} else if strings.HasPrefix(line, "} else") {
+			// 处理 } else 或 } else if 情况
+			hasElse = true
+			break
 		} else if strings.HasPrefix(line, "else") {
 			hasElse = true
 			break
@@ -2958,6 +3107,42 @@ func (p *SimpleParser) extractIfBlock(lines []string, startLineNum int) ([]strin
 	}
 
 	return blockLines, len(blockLines) + 1, hasElse // +1 for the closing }
+}
+
+// processNestedIf 处理嵌套的if语句
+func (p *SimpleParser) processNestedIf(ifStmt **entities.IfStmt, lines []string, startLineNum int) (int, error) {
+	// 使用与顶层if语句相同的处理逻辑
+	currentIf := *ifStmt
+	nestedConsumed := 0
+
+	// 提取then分支
+	thenLines, consumed, hasElse := p.extractIfBlock(lines, startLineNum)
+	if consumed == 0 {
+		return 0, fmt.Errorf("line %d: incomplete nested if statement", startLineNum)
+	}
+
+	// 解析then分支
+	thenBody, _, err := p.parseBlock(thenLines, startLineNum)
+	if err != nil {
+		return 0, fmt.Errorf("line %d: nested if then body error: %v", startLineNum, err)
+	}
+	currentIf.ThenBody = thenBody
+	nestedConsumed += consumed
+
+	if hasElse {
+		// 处理else分支，这里可能包含嵌套的if语句
+		elseLines, elseConsumed, _ := p.extractElseBlock(lines[consumed:], startLineNum+consumed)
+		if len(elseLines) > 0 {
+			elseBody, _, err := p.parseBlock(elseLines, startLineNum+consumed)
+			if err != nil {
+				return 0, fmt.Errorf("line %d: nested if else body error: %v", startLineNum+consumed, err)
+			}
+			currentIf.ElseBody = elseBody
+			nestedConsumed += elseConsumed
+		}
+	}
+
+	return nestedConsumed, nil
 }
 
 // extractElseBlock 提取else分支内容
@@ -2969,7 +3154,7 @@ func (p *SimpleParser) extractElseBlock(lines []string, startLineNum int) ([]str
 	for i, line := range lines {
 		line = strings.TrimSpace(line)
 
-		if strings.HasPrefix(line, "else") {
+		if strings.HasPrefix(line, "else") || strings.HasPrefix(line, "} else") {
 			started = true
 			if strings.Contains(line, "{") {
 				braceCount++
@@ -3253,7 +3438,6 @@ func (p *SimpleParser) isAsyncExpression(line string) bool {
 // parseAsyncStatement 解析异步表达式语句
 func (p *SimpleParser) parseAsyncStatement(line string, lineNum int) (entities.ASTNode, error) {
 	line = strings.TrimSpace(line)
-	fmt.Fprintf(os.Stderr, "DEBUG: parseAsyncStatement called with line: %s\n", line)
 
 	// 尝试解析为表达式，然后包装为ExprStmt
 	expr, err := p.parseExpr(line)
@@ -3261,6 +3445,5 @@ func (p *SimpleParser) parseAsyncStatement(line string, lineNum int) (entities.A
 		return nil, err
 	}
 
-	fmt.Fprintf(os.Stderr, "DEBUG: parseAsyncStatement parsed expr of type: %T\n", expr)
 	return &entities.ExprStmt{Expression: expr}, nil
 }

@@ -3,7 +3,7 @@ package services
 import (
 	"testing"
 
-	"github.com/meetai/echo-lang/internal/modules/frontend/domain/entities"
+	"echo/internal/modules/frontend/domain/entities"
 )
 
 func TestTypeInference_InferTypes(t *testing.T) {

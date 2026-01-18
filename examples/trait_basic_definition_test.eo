@@ -1,0 +1,27 @@
+// trait_basic_definition_test.eo - 基本Trait定义测试
+trait Printable {
+    func print() -> void
+    func toString() -> string {
+        return "Default implementation"
+    }
+}
+
+@impl Printable
+
+struct Person {
+    name: string,
+    age: int
+}
+
+func (p Person) print() -> void {
+    print "Person: " + p.name + ", " + p.age
+}
+
+// 测试默认方法
+func testDefaultMethod() -> void {
+    let person: Person = {name: "Alice", age: 30}
+    person.print()
+    print person.toString()
+}
+
+testDefaultMethod()

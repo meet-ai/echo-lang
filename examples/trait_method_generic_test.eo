@@ -1,0 +1,45 @@
+// trait_method_generic_test.eo - Trait方法泛型参数测试
+
+// 定义支持方法级泛型的Trait
+trait Transformer[T] {
+    // 方法级泛型参数：将T类型转换为U类型
+    func transform[U](item: T) -> U
+
+    // 多个泛型参数：映射转换
+    func map[F, R](items: [F]) -> [R]
+
+    // 带约束的泛型参数
+    func filter[U: Comparable](items: [T], predicate: func(T, U) -> bool) -> [T]
+
+    // 普通的Trait方法（无泛型参数）
+    func getType() -> string
+}
+
+// 实现Transformer Trait
+@impl Transformer[string]
+
+struct StringTransformer {
+    prefix: string
+}
+
+// 实现方法级泛型方法
+func (st StringTransformer) transform[int](item: string) -> int {
+    return len(item)
+}
+
+func (st StringTransformer) map[string, int](items: [string]) -> [int] {
+    return [1, 2, 3]
+}
+
+func (st StringTransformer) filter[int](items: [string], predicate: func(string, int) -> bool) -> [string] {
+    return ["filtered"]
+}
+
+func (st StringTransformer) getType() -> string {
+    return "StringTransformer"
+}
+
+func main() -> int {
+    print "Trait method generics syntax test!"
+    return 0
+}

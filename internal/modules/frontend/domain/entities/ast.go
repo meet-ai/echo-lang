@@ -103,13 +103,18 @@ func (e *ExprStmt) Accept(visitor ASTVisitor) interface{} {
 
 // VarDecl 变量声明节点
 type VarDecl struct {
-	Name  string
-	Type  string
-	Value Expr
+	Name      string
+	Type      string
+	Value     Expr
+	Inferred  bool // 是否需要类型推断
 }
 
 func (v *VarDecl) String() string {
-	return fmt.Sprintf("VarDecl{Name: %s, Type: %s, Value: %s}", v.Name, v.Type, v.Value)
+	inferred := ""
+	if v.Inferred {
+		inferred = " (inferred)"
+	}
+	return fmt.Sprintf("VarDecl{Name: %s, Type: %s, Value: %s%s}", v.Name, v.Type, v.Value, inferred)
 }
 
 func (v *VarDecl) Accept(visitor ASTVisitor) interface{} {
@@ -1073,16 +1078,25 @@ func (t *TraitDef) Accept(visitor ASTVisitor) interface{} {
 
 // TraitMethod Trait方法
 type TraitMethod struct {
-	Name       string    // 方法名
-	Params     []Param   // 参数列表
-	ReturnType string    // 返回类型
-	Body       []ASTNode // 默认实现 (可选)
-	IsDefault  bool      // 是否有默认实现
+	Name       string         // 方法名
+	TypeParams []GenericParam // 方法类型参数 (新增)
+	Params     []Param        // 参数列表
+	ReturnType string         // 返回类型
+	Body       []ASTNode      // 默认实现 (可选)
+	IsDefault  bool           // 是否有默认实现
 }
 
 func (m TraitMethod) String() string {
-	return fmt.Sprintf("TraitMethod{Name: %s, Params: %v, ReturnType: %s, IsDefault: %v}",
-		m.Name, m.Params, m.ReturnType, m.IsDefault)
+	params := make([]string, len(m.Params))
+	for i, p := range m.Params {
+		params[i] = p.String()
+	}
+	typeParams := make([]string, len(m.TypeParams))
+	for i, tp := range m.TypeParams {
+		typeParams[i] = tp.String()
+	}
+	return fmt.Sprintf("TraitMethod{Name: %s, TypeParams: [%s], Params: [%s], ReturnType: %s, IsDefault: %v}",
+		m.Name, strings.Join(typeParams, ", "), strings.Join(params, ", "), m.ReturnType, m.IsDefault)
 }
 
 // ImplAnnotation 实现注解（@impl TraitName）
@@ -1347,6 +1361,7 @@ type ExprVisitor interface {
 	VisitIdentifier(expr *Identifier) interface{}
 	VisitStringLiteral(expr *StringLiteral) interface{}
 	VisitIntLiteral(expr *IntLiteral) interface{}
+	VisitFloatLiteral(expr *FloatLiteral) interface{}
 	VisitBinaryExpr(expr *BinaryExpr) interface{}
 	VisitFuncCall(expr *FuncCall) interface{}
 	VisitResultExpr(expr *ResultExpr) interface{}
@@ -1421,6 +1436,19 @@ func (i *IntLiteral) String() string {
 
 func (i *IntLiteral) AcceptExpr(visitor ExprVisitor) interface{} {
 	return visitor.VisitIntLiteral(i)
+}
+
+// FloatLiteral 浮点数字面量
+type FloatLiteral struct {
+	Value float64
+}
+
+func (f *FloatLiteral) String() string {
+	return fmt.Sprintf("FloatLiteral{Value: %f}", f.Value)
+}
+
+func (f *FloatLiteral) AcceptExpr(visitor ExprVisitor) interface{} {
+	return visitor.VisitFloatLiteral(f)
 }
 
 // BinaryExpr 二元表达式

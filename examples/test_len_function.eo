@@ -1,0 +1,7 @@
+// test_len_function.eo - 测试len函数支持
+func main() -> int {
+    let numbers: [int] = [1, 2, 3, 4, 5]
+    let length: int = len(numbers)
+    print "Array length: " + length
+    return 0
+}

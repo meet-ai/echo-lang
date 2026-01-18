@@ -1,0 +1,10 @@
+// operators_comparison_test.eo - 比较运算测试
+let x: int = 5
+let y: int = 10
+
+print x > y   // false
+print x >= y  // false
+print x < y   // true
+print x <= y  // true
+print x == y  // false
+print x != y  // true

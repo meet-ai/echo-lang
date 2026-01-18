@@ -3,7 +3,7 @@ package services
 import (
 	"testing"
 
-	"github.com/meetai/echo-lang/internal/modules/frontend/domain/entities"
+	"echo/internal/modules/frontend/domain/entities"
 )
 
 func TestMonomorphization_Basic(t *testing.T) {
@@ -103,7 +103,7 @@ func TestMonomorphization_MakeMonomorphizationKey(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		result := mono.makeMonomorphizationKey(test.funcName, test.typeArgs)
+		result := mono.generateMonomorphizedName(test.funcName, test.typeArgs)
 		if result != test.expected {
 			t.Errorf("makeMonomorphizationKey(%s, %v) = %s, expected %s",
 				test.funcName, test.typeArgs, result, test.expected)

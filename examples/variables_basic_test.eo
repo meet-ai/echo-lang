@@ -1,0 +1,13 @@
+// variables_basic_test.eo - 基本变量声明和使用测试
+func main() -> int {
+    let x: int = 42
+    let y: float = 3.14
+    let name: string = "Echo"
+    let flag: bool = true
+
+    print x
+    print y
+    print name
+    print flag
+    return 0
+}

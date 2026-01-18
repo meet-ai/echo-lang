@@ -1,2 +1,5 @@
 // debug_print.eo - 调试print语句解析
-print 42
+func main() -> int {
+    print 42
+    return 0
+}

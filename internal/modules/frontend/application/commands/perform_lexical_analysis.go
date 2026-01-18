@@ -3,7 +3,7 @@ package commands
 import (
 	"time"
 
-	"github.com/meetai/echo-lang/internal/modules/frontend"
+	"echo/internal/modules/frontend/domain/exceptions"
 )
 
 // PerformLexicalAnalysisCommand represents the command to perform lexical analysis
@@ -45,13 +45,13 @@ func (c *PerformLexicalAnalysisCommand) CommandType() string {
 // Validate validates the command
 func (c *PerformLexicalAnalysisCommand) Validate() error {
 	if c.SourceFileID == "" {
-		return frontend.ErrSourceFileIDRequired
+		return exceptions.ErrSourceFileIDRequired
 	}
 	if c.SourceCode == "" {
-		return frontend.ErrSourceCodeRequired
+		return exceptions.ErrSourceCodeRequired
 	}
 	if c.SourceFilePath == "" {
-		return frontend.ErrSourceFilePathRequired
+		return exceptions.ErrSourceFilePathRequired
 	}
 	return nil
 }

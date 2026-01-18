@@ -2,8 +2,6 @@ package events
 
 import (
 	"time"
-
-	"github.com/meetai/echo-lang/internal/modules/frontend"
 )
 
 // AnalysisCompletedEvent represents the event fired when analysis is completed
@@ -31,26 +29,26 @@ type AnalysisCompletedEvent struct {
 }
 
 // NewAnalysisCompletedEvent creates a new analysis completed event
-func NewAnalysisCompletedEvent(sourceFileID, analysisType string, success bool, error string, duration time.Duration) *AnalysisCompletedEvent {
+func NewAnalysisCompletedEvent(sourceFileID, analysisType string, success bool, errorMsg string, duration time.Duration) *AnalysisCompletedEvent {
 	return &AnalysisCompletedEvent{
-		EventID:      generateEventID(),
-		EventType:    "frontend.analysis.completed",
-		Timestamp:    time.Now(),
+		EventID:   generateEventID(),
+		EventType: "frontend.analysis.completed",
+		Timestamp: time.Now(),
 		SourceFileID: sourceFileID,
 		AnalysisType: analysisType,
 		Success:      success,
-		Error:        error,
+		Error:        errorMsg,
 		Duration:     duration,
 	}
 }
 
-// EventID returns the event ID
-func (e *AnalysisCompletedEvent) EventID() string {
+// GetEventID returns the event ID
+func (e *AnalysisCompletedEvent) GetEventID() string {
 	return e.EventID
 }
 
-// EventType returns the event type
-func (e *AnalysisCompletedEvent) EventType() string {
+// GetEventType returns the event type
+func (e *AnalysisCompletedEvent) GetEventType() string {
 	return e.EventType
 }
 

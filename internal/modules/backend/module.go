@@ -5,40 +5,104 @@ package backend
 import (
 	"context"
 	"fmt"
+	"time"
+
+	"echo/internal/modules/backend/domain/services"
 
 	"github.com/samber/do"
 )
 
+// 类型别名，引用domain层定义的类型
+type TargetCodeGenerator = services.TargetCodeGenerator
+type Assembler = services.Assembler
+type Linker = services.Linker
+type ExecutableRepository = services.ExecutableRepository
+type ObjectFileRepository = services.ObjectFileRepository
+type ClangAdapter = services.ClangAdapter
+type LLCAdapter = services.LLCAdapter
+type LinkerAdapter = services.LinkerAdapter
+
+// 类型别名，引用domain层的类型
+type GenerateTargetCodeCommand = services.GenerateTargetCodeCommand
+type CodeGenerationResult = services.CodeGenerationResult
+type GetGenerationStatusQuery = services.GetGenerationStatusQuery
+type GenerationStatusDTO = services.GenerationStatusDTO
+
+// 组装相关类型（模块本地）
+type AssembleCommand struct {
+	IRCode    string
+	Target    string
+	Runtime   string
+	OutputDir string
+}
+
+type AssemblyResult struct {
+	ObjectFile string
+	Success    bool
+	Error      error
+}
+
+type GetAssemblyStatusQuery struct {
+	RequestID string
+}
+
+type AssemblyStatusDTO struct {
+	RequestID   string
+	Status      string // "pending", "processing", "completed", "failed"
+	Progress    int
+	Error       string
+	CompletedAt *time.Time
+}
+
+// 链接相关类型（模块本地）
+type LinkCommand struct {
+	ObjectFile string
+	Runtime    string
+	OutputDir  string
+}
+
+type LinkingResult struct {
+	Executable string
+	Success    bool
+	Error      error
+}
+
+type GetLinkingStatusQuery struct {
+	RequestID string
+}
+
+type LinkingStatusDTO struct {
+	RequestID   string
+	Status      string // "pending", "processing", "completed", "failed"
+	Progress    int
+	Error       string
+	CompletedAt *time.Time
+}
+
 // Module represents the backend processing module
 type Module struct {
-	// Ports - external interfaces
-	codeGenService CodeGenerationService
-	asmService     AssemblyService
-	linkService    LinkingService
-
-	// Domain services
-	codeGenerator TargetCodeGenerator
-	assembler     Assembler
-	linker        Linker
+	// Domain services (infrastructure implementations)
+	CodeGenerator TargetCodeGenerator
+	Assembler     Assembler
+	Linker        Linker
 
 	// Infrastructure
-	executableRepo ExecutableRepository
-	objectFileRepo ObjectFileRepository
+	ExecutableRepo ExecutableRepository
+	ObjectFileRepo ObjectFileRepository
 
 	// Adapters
-	clangAdapter ClangAdapter
-	llcAdapter   LLCAdapter
-	ldAdapter    LinkerAdapter
+	ClangAdapter ClangAdapter
+	LLCAdapter   LLCAdapter
+	LDAdapter    LinkerAdapter
 
 	// Dependencies from other modules
-	middleendModule interface{} // Will be injected
+	MiddleendModule interface{} // Will be injected
 }
 
 // CodeGenerationService defines the interface for code generation operations
 type CodeGenerationService interface {
 	GenerateTargetCode(ctx context.Context, cmd GenerateTargetCodeCommand) (*CodeGenerationResult, error)
-	AssembleObjectFile(ctx context.Context, cmd AssembleObjectFileCommand) (*AssemblyResult, error)
-	LinkExecutable(ctx context.Context, cmd LinkExecutableCommand) (*LinkingResult, error)
+	GetGenerationStatus(ctx context.Context, query GetGenerationStatusQuery) (*GenerationStatusDTO, error)
 }
 
 // AssemblyService defines the interface for assembly operations
@@ -69,59 +133,66 @@ func NewModule(i *do.Injector) (*Module, error) {
 	llcAdapter := do.MustInvoke[LLCAdapter](i)
 	ldAdapter := do.MustInvoke[LinkerAdapter](i)
 
-	// Create application services
-	codeGenSvc := NewCodeGenerationService(codeGenerator, assembler, linker, executableRepo, objectFileRepo)
-	asmSvc := NewAssemblyService(assembler, objectFileRepo)
-	linkSvc := NewLinkingService(linker, executableRepo)
+	// Note: Application services are created by the DI container
+	// The module provides access to domain services and infrastructure
+
+	// Validate that all required dependencies are available
+	if codeGenerator == nil {
+		return nil, fmt.Errorf("code generator is not available")
+	}
+	if assembler == nil {
+		return nil, fmt.Errorf("assembler is not available")
+	}
+	if linker == nil {
+		return nil, fmt.Errorf("linker is not available")
+	}
 
 	return &Module{
-		codeGenService: codeGenSvc,
-		asmService:     asmSvc,
-		linkService:    linkSvc,
-		codeGenerator:  codeGenerator,
-		assembler:      assembler,
-		linker:         linker,
-		executableRepo: executableRepo,
-		objectFileRepo: objectFileRepo,
-		clangAdapter:   clangAdapter,
-		llcAdapter:     llcAdapter,
-		ldAdapter:      ldAdapter,
+		CodeGenerator:   codeGenerator,
+		Assembler:       assembler,
+		Linker:          linker,
+		ExecutableRepo:  executableRepo,
+		ObjectFileRepo:  objectFileRepo,
+		ClangAdapter:    clangAdapter,
+		LLCAdapter:      llcAdapter,
+		LDAdapter:       ldAdapter,
+		MiddleendModule: nil,
 	}, nil
 }
 
 // CodeGenerationService returns the code generation service interface
-func (m *Module) CodeGenerationService() CodeGenerationService {
-	return m.codeGenService
+func (m *Module) CodeGenerationService() interface{} {
+	return m.CodeGenerator
 }
 
 // AssemblyService returns the assembly service interface
-func (m *Module) AssemblyService() AssemblyService {
-	return m.asmService
+func (m *Module) AssemblyService() interface{} {
+	return m.Assembler
 }
 
 // LinkingService returns the linking service interface
-func (m *Module) LinkingService() LinkingService {
-	return m.linkService
+func (m *Module) LinkingService() interface{} {
+	return m.Linker
 }
 
 // Validate validates the module configuration
 func (m *Module) Validate() error {
-	if m.codeGenService == nil {
-		return fmt.Errorf("code generation service is not initialized")
+	if m.CodeGenerator == nil {
+		return fmt.Errorf("code generator is not initialized")
 	}
-	if m.asmService == nil {
-		return fmt.Errorf("assembly service is not initialized")
+	if m.Assembler == nil {
+		return fmt.Errorf("assembler is not initialized")
 	}
-	if m.linkService == nil {
-		return fmt.Errorf("linking service is not initialized")
+	if m.Linker == nil {
+		return fmt.Errorf("linker is not initialized")
 	}
-	if m.clangAdapter == nil {
+	if m.ClangAdapter == nil {
 		return fmt.Errorf("Clang adapter is not initialized")
 	}
-	if m.llcAdapter == nil {
+	if m.LLCAdapter == nil {
 		return fmt.Errorf("LLC adapter is not initialized")
 	}
-	if m.ldAdapter == nil {
+	if m.LDAdapter == nil {
 		return fmt.Errorf("linker adapter is not initialized")
 	}
 	return nil

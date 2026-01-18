@@ -3,8 +3,8 @@ package services
 import (
 	"fmt"
 
-	"github.com/meetai/echo-lang/internal/modules/frontend/domain/entities"
-	"github.com/meetai/echo-lang/internal/modules/middleend/domain/services"
+	"echo/internal/modules/frontend/domain/entities"
+	"echo/internal/modules/middleend/domain/services"
 )
 
 // TypeInferenceService 类型推断应用服务

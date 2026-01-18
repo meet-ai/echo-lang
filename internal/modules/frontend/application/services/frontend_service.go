@@ -6,11 +6,51 @@ import (
 	"io/ioutil"
 	"time"
 
-	"github.com/meetai/echo-lang/internal/modules/frontend"
-	"github.com/meetai/echo-lang/internal/modules/frontend/domain/entities"
-	"github.com/meetai/echo-lang/internal/modules/frontend/domain/services"
-	"github.com/meetai/echo-lang/internal/modules/frontend/ports/services"
+	"echo/internal/modules/frontend"
+	"echo/internal/modules/frontend/domain/commands"
+	"echo/internal/modules/frontend/domain/dtos"
+	"echo/internal/modules/frontend/domain/entities"
+	"echo/internal/modules/frontend/domain/services"
 )
+
+// IFrontendService 前端服务接口
+type IFrontendService interface {
+	PerformLexicalAnalysis(ctx context.Context, cmd commands.PerformLexicalAnalysisCommand) (*commands.LexicalAnalysisResult, error)
+	PerformSyntaxAnalysis(ctx context.Context, cmd commands.PerformSyntaxAnalysisCommand) (*commands.SyntaxAnalysisResult, error)
+	PerformSemanticAnalysis(ctx context.Context, cmd commands.PerformSemanticAnalysisCommand) (*commands.SemanticAnalysisResult, error)
+	HandleCompilationErrors(ctx context.Context, cmd commands.HandleCompilationErrorsCommand) (*commands.ErrorHandlingResult, error)
+	CompileFile(filePath string) (*dtos.CompilationResult, error)
+}
+
+// AnalysisCompletedEvent 分析完成事件
+type AnalysisCompletedEvent struct {
+	EventID      string        `json:"event_id"`
+	EventType    string        `json:"event_type"`
+	Timestamp    time.Time     `json:"timestamp"`
+	SourceFileID string        `json:"source_file_id"`
+	AnalysisType string        `json:"analysis_type"`
+	Success      bool          `json:"success"`
+	Error        string        `json:"error,omitempty"`
+	Duration     time.Duration `json:"duration"`
+}
+
+// SourceFileRepository 源文件仓储接口
+type SourceFileRepository interface {
+	Save(ctx context.Context, sourceFile *entities.SourceFile) error
+	FindByID(ctx context.Context, id string) (*entities.SourceFile, error)
+	Update(ctx context.Context, sourceFile *entities.SourceFile) error
+}
+
+// ASTRepository AST仓储接口
+type ASTRepository interface {
+	Save(ctx context.Context, sourceFileID string, ast *entities.ASTNode) error
+	FindBySourceFileID(ctx context.Context, sourceFileID string) (*entities.ASTNode, error)
+}
+
+// EventPublisher 事件发布器接口
+type EventPublisher interface {
+	Publish(ctx context.Context, event interface{}) error
+}
 
 // frontendService 前端应用服务实现
 type frontendService struct {
@@ -18,9 +58,9 @@ type frontendService struct {
 	syntaxAnalyzer   services.SyntaxAnalyzer
 	semanticAnalyzer services.SemanticAnalyzer
 	errorHandler     services.ErrorHandler
-	sourceFileRepo   frontend.SourceFileRepository
-	astRepo          frontend.ASTRepository
-	eventPublisher   frontend.EventPublisher
+	sourceFileRepo   SourceFileRepository
+	astRepo          ASTRepository
+	eventPublisher   EventPublisher
 	parser           services.Parser
 }
 
@@ -30,11 +70,11 @@ func NewFrontendService(
 	syntaxAnalyzer services.SyntaxAnalyzer,
 	semanticAnalyzer services.SemanticAnalyzer,
 	errorHandler services.ErrorHandler,
-	sourceFileRepo frontend.SourceFileRepository,
-	astRepo frontend.ASTRepository,
-	eventPublisher frontend.EventPublisher,
+	sourceFileRepo SourceFileRepository,
+	astRepo ASTRepository,
+	eventPublisher EventPublisher,
 	parser services.Parser,
-) services.IFrontendService {
+) IFrontendService {
 	return &frontendService{
 		lexicalAnalyzer:  lexicalAnalyzer,
 		syntaxAnalyzer:   syntaxAnalyzer,
@@ -48,7 +88,7 @@ func NewFrontendService(
 }
 
 // PerformLexicalAnalysis 执行词法分析用例
-func (s *frontendService) PerformLexicalAnalysis(ctx context.Context, cmd frontend.PerformLexicalAnalysisCommand) (*frontend.LexicalAnalysisResult, error) {
+func (s *frontendService) PerformLexicalAnalysis(ctx context.Context, cmd commands.PerformLexicalAnalysisCommand) (*commands.LexicalAnalysisResult, error) {
 	// 1. 验证命令
 	if err := s.validateLexicalAnalysisCommand(cmd); err != nil {
 		return nil, fmt.Errorf("invalid command: %w", err)
@@ -94,7 +134,7 @@ func (s *frontendService) PerformLexicalAnalysis(ctx context.Context, cmd fronte
 }
 
 // PerformSyntaxAnalysis 执行语法分析用例
-func (s *frontendService) PerformSyntaxAnalysis(ctx context.Context, cmd frontend.PerformSyntaxAnalysisCommand) (*frontend.SyntaxAnalysisResult, error) {
+func (s *frontendService) PerformSyntaxAnalysis(ctx context.Context, cmd commands.PerformSyntaxAnalysisCommand) (*commands.SyntaxAnalysisResult, error) {
 	// 获取源文件
 	sourceFile, err := s.sourceFileRepo.FindByID(ctx, cmd.SourceFileID)
 	if err != nil {
@@ -134,7 +174,7 @@ func (s *frontendService) PerformSyntaxAnalysis(ctx context.Context, cmd fronten
 }
 
 // PerformSemanticAnalysis 执行语义分析用例
-func (s *frontendService) PerformSemanticAnalysis(ctx context.Context, cmd frontend.PerformSemanticAnalysisCommand) (*frontend.SemanticAnalysisResult, error) {
+func (s *frontendService) PerformSemanticAnalysis(ctx context.Context, cmd commands.PerformSemanticAnalysisCommand) (*commands.SemanticAnalysisResult, error) {
 	// 获取源文件
 	sourceFile, err := s.sourceFileRepo.FindByID(ctx, cmd.SourceFileID)
 	if err != nil {
@@ -156,7 +196,9 @@ func (s *frontendService) PerformSemanticAnalysis(ctx context.Context, cmd front
 	}
 
 	// 更新源文件
-	sourceFile.SetSymbolTable(result.SymbolTable)
+	if symbolTable, ok := result.SymbolTable.(*entities.SymbolTable); ok {
+		sourceFile.SetSymbolTable(symbolTable)
+	}
 	sourceFile.SetAnalysisStatus(entities.AnalysisStatusSemantic)
 
 	// 保存并发布事件
@@ -174,7 +216,7 @@ func (s *frontendService) PerformSemanticAnalysis(ctx context.Context, cmd front
 }
 
 // HandleCompilationErrors 处理编译错误用例
-func (s *frontendService) HandleCompilationErrors(ctx context.Context, cmd frontend.HandleCompilationErrorsCommand) (*frontend.ErrorHandlingResult, error) {
+func (s *frontendService) HandleCompilationErrors(ctx context.Context, cmd commands.HandleCompilationErrorsCommand) (*commands.ErrorHandlingResult, error) {
 	// 获取源文件
 	sourceFile, err := s.sourceFileRepo.FindByID(ctx, cmd.SourceFileID)
 	if err != nil {
@@ -194,7 +236,12 @@ func (s *frontendService) HandleCompilationErrors(ctx context.Context, cmd front
 		return nil, fmt.Errorf("failed to save source file: %w", err)
 	}
 
-	return result, nil
+	return &commands.ErrorHandlingResult{
+		SourceFileID:   result.SourceFileID,
+		Suggestions:    result.Suggestions,
+		ProcessedCount: result.ProcessedCount,
+		Success:        result.Success,
+	}, nil
 }
 
 // Helper methods
@@ -234,7 +281,7 @@ func (s *frontendService) getOrCreateSourceFile(ctx context.Context, id, code, p
 }
 
 func (s *frontendService) publishAnalysisEvent(ctx context.Context, sourceFileID, analysisType string, success bool, duration time.Duration) {
-	event := &frontend.AnalysisCompletedEvent{
+	event := &AnalysisCompletedEvent{
 		EventID:      generateEventID(),
 		EventType:    "frontend.analysis.completed",
 		Timestamp:    time.Now(),
@@ -252,35 +299,35 @@ func generateEventID() string {
 }
 
 // CompileFile 编译源文件 (简化版本，用于演示)
-func (s *frontendService) CompileFile(filePath string) (*services.CompilationResult, error) {
+func (s *frontendService) CompileFile(filePath string) (*dtos.CompilationResult, error) {
 	// 读取文件内容
 	content, err := ioutil.ReadFile(filePath)
 	if err != nil {
-		return &services.CompilationResult{
+		return &dtos.CompilationResult{
 			SourceFile: filePath,
 			Success:    false,
-			Error:      err,
+			Error:      err.Error(),
 		}, nil
 	}
 
 	// 解析文件
 	program, err := s.parser.Parse(string(content))
 	if err != nil {
-		return &services.CompilationResult{
+		return &dtos.CompilationResult{
 			SourceFile: filePath,
 			AST:        "",
 			Success:    false,
-			Error:      err,
+			Error:      err.Error(),
 		}, nil
 	}
 
 	// 这里应该调用backend服务生成代码
 	// 暂时返回解析结果
-	return &services.CompilationResult{
+	return &dtos.CompilationResult{
 		SourceFile:    filePath,
 		AST:           program.String(),
 		GeneratedCode: "(* TODO: Call backend service *)",
 		Success:       true,
-		Error:         nil,
+		Error:         "",
 	}, nil
 }

@@ -37,7 +37,8 @@ func testAwait() -> void {
     let result3: string = await complexAsync()
 
     // await可以用在表达式中
-    let combined: string = "Result: " + (await simpleAsync())
+    let asyncResult: string = await simpleAsync()
+    let combined: string = "Result: " + asyncResult
 
     print "Await test results: " + result1 + ", " + result2 + ", " + result3
 }

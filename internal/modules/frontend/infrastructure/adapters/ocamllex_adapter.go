@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/meetai/echo-lang/internal/modules/frontend/domain/valueobjects"
+	"echo/internal/modules/frontend/domain/valueobjects"
 )
 
 // OCamlLexAdapter adapts the ocamllex lexer for use in the frontend infrastructure layer.

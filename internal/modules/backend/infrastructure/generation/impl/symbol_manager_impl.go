@@ -3,7 +3,7 @@ package impl
 import (
 	"fmt"
 
-	"github.com/meetai/echo-lang/internal/modules/backend/domain/services/generation"
+	"echo/internal/modules/backend/domain/services/generation"
 )
 
 // SymbolManagerImpl 符号管理器实现

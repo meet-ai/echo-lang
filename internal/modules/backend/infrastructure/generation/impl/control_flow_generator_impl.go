@@ -3,8 +3,8 @@ package impl
 import (
 	"fmt"
 
-	"github.com/meetai/echo-lang/internal/modules/backend/domain/services/generation"
-	"github.com/meetai/echo-lang/internal/modules/frontend/domain/entities"
+	"echo/internal/modules/backend/domain/services/generation"
+	"echo/internal/modules/frontend/domain/entities"
 )
 
 // ControlFlowGeneratorImpl 控制流生成器实现

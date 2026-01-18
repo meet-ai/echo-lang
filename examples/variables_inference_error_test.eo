@@ -1,0 +1,8 @@
+// variables_inference_error_test.eo - 类型推断错误测试
+// 测试无法推断类型的表达式应该报错
+func main() -> int {
+    // 这个应该报错：无法推断变量引用的类型
+    let a = someVar  // ERROR: cannot infer type from variable reference
+
+    return 0
+}

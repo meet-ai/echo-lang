@@ -1,0 +1,11 @@
+// control_flow_if_test.eo - if语句测试
+func main() -> int {
+    let x: int = 10
+    if x > 5 {
+        print "x > 5"
+    }
+    if x <= 5 {
+        print "x <= 5"
+    }
+    return 0
+}

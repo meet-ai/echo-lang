@@ -1,0 +1,1 @@
+/usr/bin/cc  -arch arm64 -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/async_await_example.dir/examples/async_await.c.o -o async_await_example  libecho_runtime.a -lpthread

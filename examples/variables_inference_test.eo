@@ -1,0 +1,14 @@
+// variables_inference_test.eo - 变量类型推断测试
+// Echo语言支持类型推断语法：let name = value
+func main() -> int {
+    let a = 100        // 类型推断：int
+    let b = 2.5        // 类型推断：float
+    let c = "test"     // 类型推断：string
+    let d = true       // 类型推断：bool
+
+    print a
+    print b
+    print c
+    print d
+    return 0
+}

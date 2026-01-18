@@ -3,8 +3,9 @@ package impl
 import (
 	"testing"
 
+	"echo/internal/modules/frontend/domain/entities"
+
 	"github.com/llir/llvm/ir"
-	"github.com/meetai/echo-lang/internal/modules/frontend/domain/entities"
 )
 
 // MockIRManager 简单的mock IR管理器用于测试
@@ -13,6 +14,8 @@ type MockIRManager struct{}
 func (m *MockIRManager) AddGlobalVariable(name string, value interface{}) error { return nil }
 func (m *MockIRManager) AddStringConstant(content string) (*ir.Global, error) { return nil, nil }
 func (m *MockIRManager) CreateFunction(name string, returnType interface{}, paramTypes []interface{}) (interface{}, error) { return nil, nil }
+func (m *MockIRManager) GetExternalFunction(name string) (interface{}, bool) { return nil, false }
+func (m *MockIRManager) GetFunction(name string) (interface{}, bool) { return nil, false }
 func (m *MockIRManager) GetCurrentFunction() interface{} { return nil }
 func (m *MockIRManager) SetCurrentFunction(fn interface{}) error { return nil }
 func (m *MockIRManager) CreateBasicBlock(name string) (interface{}, error) { return nil, nil }

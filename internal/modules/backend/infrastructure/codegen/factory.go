@@ -1,7 +1,7 @@
 package codegen
 
 import (
-	"github.com/meetai/echo-lang/internal/modules/backend/domain/services"
+	"echo/internal/modules/backend/domain/services"
 )
 
 // NewCodeGenerator 根据类型创建代码生成器

@@ -1,0 +1,40 @@
+// trait_associated_types_full_test.eo - 完整的Trait关联类型测试
+trait Container[T] {
+    type Item;  // 关联类型声明
+
+    func get(index: int) -> Option[Item]
+    func size() -> int
+}
+
+@impl Container[int]
+
+type Item = int;  // 关联类型实现
+
+struct IntArray {
+    data: [int]
+}
+
+func (ia IntArray) get(index: int) -> Option[int] {
+    if index >= 0 {
+        if index < 5 {  // 暂时用固定长度代替len
+            return Some(ia.data[index])
+        }
+    }
+    return None
+}
+
+func (ia IntArray) size() -> int {
+    return 5  // 暂时用固定长度
+}
+
+func main() -> int {
+    let arr: IntArray = {data: [1, 2, 3, 4, 5]}
+    print arr.size()
+
+    match arr.get(2) {
+        Some(v) => print "Value at index 2: " + v
+        None => print "Index out of bounds"
+    }
+
+    return 0
+}

@@ -1,0 +1,12 @@
+// simple_else_if_test.eo - 简单的else if测试
+func main() -> int {
+    let x: int = 7
+
+    if x > 10 {
+        print "x > 10"
+    } else if x > 5 {
+        print "x > 5 but <= 10"
+    }
+
+    return 0
+}

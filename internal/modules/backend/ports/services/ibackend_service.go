@@ -1,6 +1,6 @@
 package services
 
-import "github.com/meetai/echo-lang/internal/modules/frontend/domain/entities"
+import "echo/internal/modules/frontend/domain/entities"
 
 // IBackendService 后端服务接口
 type IBackendService interface {

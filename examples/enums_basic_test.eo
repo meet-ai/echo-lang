@@ -1,0 +1,12 @@
+// enums_basic_test.eo - 枚举定义和使用测试
+enum Color {
+    Red,
+    Green,
+    Blue
+}
+
+let color1: Color = Red
+let color2: Color = Color.Green
+
+print "Color1 is Red"
+print "Color2 is Green"

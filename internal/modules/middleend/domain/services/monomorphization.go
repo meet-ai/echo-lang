@@ -1,316 +1,166 @@
 package services
 
 import (
-	"fmt"
-	"strings"
+	"context"
 
-	"github.com/meetai/echo-lang/internal/modules/frontend/domain/entities"
+	"echo/internal/modules/frontend/domain/entities"
 )
 
-// MonomorphizedFunction 单态化函数定义
-type MonomorphizedFunction struct {
-	OriginalName string            // 原始泛型函数名
-	TypeArgs     []string          // 具体类型参数
-	MonoName     string            // 单态化后的函数名
-	FuncDef      *entities.FuncDef // 单态化后的函数定义
-}
-
-// Monomorphization 单态化引擎
+// Monomorphization 单态化服务
+// 职责：将泛型函数和类型转换为具体类型的版本
 type Monomorphization struct {
-	monomorphizedFuncs map[string]*MonomorphizedFunction // key: "funcName[T1,T2]"
-	typeInference      *TypeInference
+	// 记录已单态化的函数，避免重复处理
+	monomorphized map[string]*MonomorphizedFunction
 }
 
-// NewMonomorphization 创建单态化引擎
+// MonomorphizedFunction 单态化函数
+type MonomorphizedFunction struct {
+	OriginalName string
+	TypeParams   []string // 类型参数，如 ["T", "U"]
+	ConcreteTypes []string // 具体类型，如 ["int", "string"]
+	MonomorphedName string // 单态化后的名称，如 "add_int_string"
+	Function       *entities.FuncDef
+}
+
+// NewMonomorphization 创建单态化服务
 func NewMonomorphization() *Monomorphization {
 	return &Monomorphization{
-		monomorphizedFuncs: make(map[string]*MonomorphizedFunction),
-		typeInference:      NewTypeInference(),
+		monomorphized: make(map[string]*MonomorphizedFunction),
 	}
+}
+
+// MonomorphizeFunction 单态化泛型函数
+func (m *Monomorphization) MonomorphizeFunction(
+	ctx context.Context,
+	funcDef *entities.FuncDef,
+	concreteTypes map[string]string,
+) (*MonomorphizedFunction, error) {
+
+	// 生成单态化后的函数名
+	monoName := m.generateMonomorphizedName(funcDef.Name, concreteTypes)
+
+	// 检查是否已存在
+	if existing, exists := m.monomorphized[monoName]; exists {
+		return existing, nil
+	}
+
+	// 复制函数定义
+	monomorphizedFunc := &entities.FuncDef{
+		Name:       monoName,
+		TypeParams: funcDef.TypeParams, // 保持类型参数（如果有）
+		Params:     make([]entities.Param, len(funcDef.Params)),
+		ReturnType: funcDef.ReturnType,
+		Body:       make([]entities.ASTNode, len(funcDef.Body)),
+	}
+
+	// 替换类型参数为具体类型
+	for i, param := range funcDef.Params {
+		substitutedType := m.substituteType(param.Type, concreteTypes)
+		// 类型断言为string（简化处理）
+		typeStr, ok := substitutedType.(string)
+		if !ok {
+			typeStr = param.Type // 如果转换失败，使用原始类型
+		}
+		monomorphizedFunc.Params[i] = entities.Param{
+			Name: param.Name,
+			Type: typeStr,
+		}
+	}
+
+	// 复制函数体（这里简化处理，实际需要递归替换所有类型引用）
+	copy(monomorphizedFunc.Body, funcDef.Body)
+
+	// 创建单态化结果
+	result := &MonomorphizedFunction{
+		OriginalName:    funcDef.Name,
+		TypeParams:      m.extractTypeParams(funcDef),
+		ConcreteTypes:   m.mapToSlice(concreteTypes),
+		MonomorphedName: monoName,
+		Function:        monomorphizedFunc,
+	}
+
+	// 缓存结果
+	m.monomorphized[monoName] = result
+
+	return result, nil
+}
+
+// generateMonomorphizedName 生成单态化函数名
+func (m *Monomorphization) generateMonomorphizedName(originalName string, concreteTypes map[string]string) string {
+	name := originalName + "_"
+	for _, concreteType := range concreteTypes {
+		name += concreteType + "_"
+	}
+	// 移除末尾的下划线
+	if len(name) > 0 && name[len(name)-1] == '_' {
+		name = name[:len(name)-1]
+	}
+	return name
+}
+
+// substituteType 替换类型参数为具体类型
+func (m *Monomorphization) substituteType(typeExpr interface{}, concreteTypes map[string]string) interface{} {
+	// 这里简化处理，实际需要递归处理复杂类型
+	if typeName, ok := typeExpr.(string); ok {
+		if concrete, exists := concreteTypes[typeName]; exists {
+			return concrete
+		}
+	}
+	return typeExpr
+}
+
+// extractTypeParams 提取类型参数（这里简化实现）
+func (m *Monomorphization) extractTypeParams(funcDef *entities.FuncDef) []string {
+	// 实际实现需要从函数定义中解析泛型参数
+	// 这里返回空切片作为占位符
+	return []string{}
+}
+
+// mapToSlice 将map转换为有序切片
+func (m *Monomorphization) mapToSlice(mymap map[string]string) []string {
+	result := make([]string, 0, len(mymap))
+	for _, value := range mymap {
+		result = append(result, value)
+	}
+	return result
+}
+
+// GetMonomorphizedFunctions 获取所有单态化函数
+func (m *Monomorphization) GetMonomorphizedFunctions() []*MonomorphizedFunction {
+	result := make([]*MonomorphizedFunction, 0, len(m.monomorphized))
+	for _, fn := range m.monomorphized {
+		result = append(result, fn)
+	}
+	return result
 }
 
 // MonomorphizeProgram 对整个程序进行单态化处理
 func (m *Monomorphization) MonomorphizeProgram(program *entities.Program) (*entities.Program, error) {
-	// 第一遍：收集所有泛型函数调用
-	genericCalls := m.collectGenericCalls(program)
-
-	// 第二遍：为每个泛型调用生成单态化版本
-	for _, call := range genericCalls {
-		if err := m.monomorphizeCall(program, call); err != nil {
-			return nil, fmt.Errorf("failed to monomorphize call to %s: %v", call.Name, err)
-		}
+	// 创建程序副本
+	result := &entities.Program{
+		Statements: make([]entities.ASTNode, 0, len(program.Statements)),
 	}
 
-	// 第三遍：更新所有函数调用为单态化版本
-	if err := m.updateCallsToMonomorphized(program); err != nil {
-		return nil, err
-	}
-
-	return program, nil
-}
-
-// collectGenericCalls 收集程序中的所有泛型函数调用
-func (m *Monomorphization) collectGenericCalls(program *entities.Program) []*entities.FuncCall {
-	var calls []*entities.FuncCall
-
+	// 遍历所有语句，查找泛型函数调用并进行单态化
 	for _, stmt := range program.Statements {
-		m.collectCallsFromNode(stmt, &calls)
+		processedStmt, err := m.processStatement(stmt)
+		if err != nil {
+			return nil, err
+		}
+		result.Statements = append(result.Statements, processedStmt)
 	}
 
-	return calls
+	// 添加所有单态化的函数定义
+	for _, monoFunc := range m.GetMonomorphizedFunctions() {
+		result.Statements = append(result.Statements, monoFunc.Function)
+	}
+
+	return result, nil
 }
 
-// collectCallsFromNode 从AST节点中收集函数调用
-func (m *Monomorphization) collectCallsFromNode(node entities.ASTNode, calls *[]*entities.FuncCall) {
-	switch n := node.(type) {
-	case *entities.FuncCall:
-		*calls = append(*calls, n)
-		// 递归处理参数中的函数调用
-		for _, arg := range n.Args {
-			if argExpr, ok := arg.(entities.ASTNode); ok {
-				m.collectCallsFromNode(argExpr, calls)
-			}
-		}
-	case *entities.FuncDef:
-		// 递归处理函数体
-		for _, stmt := range n.Body {
-			m.collectCallsFromNode(stmt, calls)
-		}
-	case *entities.IfStmt:
-		for _, stmt := range n.ThenBody {
-			m.collectCallsFromNode(stmt, calls)
-		}
-		if n.ElseBody != nil {
-			for _, stmt := range n.ElseBody {
-				m.collectCallsFromNode(stmt, calls)
-			}
-		}
-	case *entities.ForStmt:
-		for _, stmt := range n.Body {
-			m.collectCallsFromNode(stmt, calls)
-		}
-	case *entities.WhileStmt:
-		for _, stmt := range n.Body {
-			m.collectCallsFromNode(stmt, calls)
-		}
-	case *entities.VarDecl:
-		if n.Value != nil {
-			if valExpr, ok := n.Value.(entities.ASTNode); ok {
-				m.collectCallsFromNode(valExpr, calls)
-			}
-		}
-	case *entities.ReturnStmt:
-		if n.Value != nil {
-			if valExpr, ok := n.Value.(entities.ASTNode); ok {
-				m.collectCallsFromNode(valExpr, calls)
-			}
-		}
-	}
-}
-
-// monomorphizeCall 为单个函数调用生成单态化版本
-func (m *Monomorphization) monomorphizeCall(program *entities.Program, call *entities.FuncCall) error {
-	// 查找对应的泛型函数定义
-	funcDef := m.findGenericFuncDef(program, call.Name)
-	if funcDef == nil || len(funcDef.TypeParams) == 0 {
-		// 不是泛型函数，跳过
-		return nil
-	}
-
-	// 推断类型参数
-	inferredTypes, err := m.typeInference.InferTypes(funcDef, call)
-	if err != nil {
-		return fmt.Errorf("type inference failed: %v", err)
-	}
-
-	// 检查是否已经生成过单态化版本
-	monoKey := m.makeMonomorphizationKey(call.Name, inferredTypes)
-	if _, exists := m.monomorphizedFuncs[monoKey]; exists {
-		return nil // 已经生成过
-	}
-
-	// 生成单态化版本
-	monoFunc, err := m.createMonomorphizedFunction(funcDef, inferredTypes)
-	if err != nil {
-		return fmt.Errorf("failed to create monomorphized function: %v", err)
-	}
-
-	// 添加到程序中
-	program.Statements = append(program.Statements, monoFunc.FuncDef)
-	m.monomorphizedFuncs[monoKey] = monoFunc
-
-	return nil
-}
-
-// findGenericFuncDef 查找泛型函数定义
-func (m *Monomorphization) findGenericFuncDef(program *entities.Program, funcName string) *entities.FuncDef {
-	for _, stmt := range program.Statements {
-		if funcDef, ok := stmt.(*entities.FuncDef); ok {
-			if funcDef.Name == funcName && len(funcDef.TypeParams) > 0 {
-				return funcDef
-			}
-		}
-	}
-	return nil
-}
-
-// makeMonomorphizationKey 生成单态化函数的唯一键
-func (m *Monomorphization) makeMonomorphizationKey(funcName string, typeArgs map[string]string) string {
-	var parts []string
-	parts = append(parts, funcName)
-
-	// 按类型参数名称排序以确保一致性
-	for _, typeParam := range []string{"T", "U", "V", "W"} { // 扩展支持更多类型参数
-		if typ, exists := typeArgs[typeParam]; exists {
-			parts = append(parts, typ)
-		}
-	}
-
-	return funcName + "[" + strings.Join(parts[1:], ",") + "]"
-}
-
-// createMonomorphizedFunction 创建单态化函数
-func (m *Monomorphization) createMonomorphizedFunction(originalFunc *entities.FuncDef, typeArgs map[string]string) (*MonomorphizedFunction, error) {
-	// 生成单态化函数名
-	monoName := m.makeMonomorphizationKey(originalFunc.Name, typeArgs)
-
-	// 复制函数定义
-	monoFunc := &entities.FuncDef{
-		Name:       monoName,
-		TypeParams: []entities.GenericParam{}, // 单态化后没有类型参数
-		Params:     make([]entities.Param, len(originalFunc.Params)),
-		ReturnType: originalFunc.ReturnType,
-		Body:       make([]entities.ASTNode, len(originalFunc.Body)),
-	}
-
-	// 复制参数，替换类型变量
-	for i, param := range originalFunc.Params {
-		monoFunc.Params[i] = entities.Param{
-			Name: param.Name,
-			Type: m.substituteTypeVars(param.Type, typeArgs),
-		}
-	}
-
-	// 替换返回类型
-	monoFunc.ReturnType = m.substituteTypeVars(originalFunc.ReturnType, typeArgs)
-
-	// 复制并替换函数体
-	for i, stmt := range originalFunc.Body {
-		monoFunc.Body[i] = m.substituteTypeVarsInNode(stmt, typeArgs)
-	}
-
-	return &MonomorphizedFunction{
-		OriginalName: originalFunc.Name,
-		TypeArgs:     m.typeMapToSlice(typeArgs),
-		MonoName:     monoName,
-		FuncDef:      monoFunc,
-	}, nil
-}
-
-// substituteTypeVars 替换类型变量
-func (m *Monomorphization) substituteTypeVars(typeStr string, typeArgs map[string]string) string {
-	result := typeStr
-
-	// 替换简单类型变量
-	for varName, concreteType := range typeArgs {
-		result = strings.ReplaceAll(result, varName, concreteType)
-	}
-
-	// 处理泛型类型，如 Container[T] -> Container[int]
-	if strings.Contains(result, "[") && strings.Contains(result, "]") {
-		// 这里简化处理，更复杂的泛型类型需要递归处理
-		for varName, concreteType := range typeArgs {
-			result = strings.ReplaceAll(result, "["+varName+"]", "["+concreteType+"]")
-		}
-	}
-
-	return result
-}
-
-// substituteTypeVarsInNode 在AST节点中替换类型变量
-func (m *Monomorphization) substituteTypeVarsInNode(node entities.ASTNode, typeArgs map[string]string) entities.ASTNode {
-	switch n := node.(type) {
-	case *entities.VarDecl:
-		return &entities.VarDecl{
-			Name:  n.Name,
-			Type:  m.substituteTypeVars(n.Type, typeArgs),
-			Value: n.Value, // 表达式中的类型变量替换需要更复杂的处理
-		}
-	case *entities.ReturnStmt:
-		return &entities.ReturnStmt{
-			Value: n.Value, // 类似地需要处理表达式
-		}
-	case *entities.FuncCall:
-		// 更新函数调用为单态化版本
-		monoKey := m.makeMonomorphizationKey(n.Name, typeArgs)
-		if monoFunc, exists := m.monomorphizedFuncs[monoKey]; exists {
-			return &entities.FuncCall{
-				Name:     monoFunc.MonoName,
-				TypeArgs: []string{}, // 单态化后没有类型参数
-				Args:     n.Args,
-			}
-		}
-		return n
-	default:
-		return node // 其他节点暂时保持不变
-	}
-}
-
-// typeMapToSlice 将类型映射转换为有序切片
-func (m *Monomorphization) typeMapToSlice(typeMap map[string]string) []string {
-	var result []string
-	// 按标准顺序返回：T, U, V, W...
-	for _, key := range []string{"T", "U", "V", "W"} {
-		if val, exists := typeMap[key]; exists {
-			result = append(result, val)
-		}
-	}
-	return result
-}
-
-// updateCallsToMonomorphized 更新所有函数调用为单态化版本
-func (m *Monomorphization) updateCallsToMonomorphized(program *entities.Program) error {
-	for _, stmt := range program.Statements {
-		if err := m.updateCallsInNode(stmt); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-// updateCallsInNode 更新节点中的函数调用
-func (m *Monomorphization) updateCallsInNode(node entities.ASTNode) error {
-	switch n := node.(type) {
-	case *entities.FuncCall:
-		// TODO: 实现完整的函数调用更新逻辑
-		// 这里需要访问程序上下文来查找函数定义并进行类型推断
-
-		// 递归处理参数
-		for _, arg := range n.Args {
-			if argNode, ok := arg.(entities.ASTNode); ok {
-				if err := m.updateCallsInNode(argNode); err != nil {
-					return err
-				}
-			}
-		}
-
-	case *entities.FuncDef:
-		for _, stmt := range n.Body {
-			if err := m.updateCallsInNode(stmt); err != nil {
-				return err
-			}
-		}
-		// 处理其他复合语句...
-	}
-
-	return nil
-}
-
-// GetMonomorphizedFunctions 获取所有单态化函数
-func (m *Monomorphization) GetMonomorphizedFunctions() map[string]*MonomorphizedFunction {
-	result := make(map[string]*MonomorphizedFunction)
-	for k, v := range m.monomorphizedFuncs {
-		result[k] = v
-	}
-	return result
+// processStatement 处理单个语句
+func (m *Monomorphization) processStatement(stmt entities.ASTNode) (entities.ASTNode, error) {
+	// 这里简化实现，实际需要处理函数调用语句
+	// 检查是否是泛型函数调用，如果是则进行单态化
+	return stmt, nil
 }

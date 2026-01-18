@@ -1,0 +1,15 @@
+// test_len_in_struct.eo - 测试结构体中的len函数
+struct IntArray {
+    data: [int]
+}
+
+func (ia IntArray) size() -> int {
+    return len(ia.data)
+}
+
+func main() -> int {
+    let arr: IntArray = {data: [1, 2, 3, 4, 5]}
+    let size: int = arr.size()
+    print size
+    return 0
+}

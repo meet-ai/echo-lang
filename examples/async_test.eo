@@ -6,14 +6,15 @@ async func fetchData(url: string) -> string {
     return "data from " + url
 }
 
-// Future类型函数
+// Future类型函数 - 通过spawn返回Future
 func processData() -> Future[string] {
-    return await fetchData("http://api.example.com")
+    return spawn fetchData("http://api.example.com")
 }
 
 // await表达式测试
 func testAwait() -> void {
-    let result: string = await fetchData("http://test.com")
+    let future: Future[string] = spawn fetchData("http://test.com")
+    let result: string = await future
     print "Result: " + result
 }
 
@@ -26,11 +27,19 @@ func testSpawn() -> void {
 // 通道操作测试
 func testChannels() -> void {
     let ch: chan string = chan string
-    spawn func() -> void {
-        ch <- "Hello from goroutine"
-    }()
+    spawn sendMessage(ch)
     let msg: string = <- ch
     print "Received: " + msg
+}
+
+// 测试spawn参数传递
+func testSpawnArgs() -> void {
+    spawn fetchData("test url")
+    print "Spawned with args"
+}
+
+func sendMessage(ch: chan string) -> void {
+    ch <- "Hello from goroutine"
 }
 
 // 主函数
@@ -38,5 +47,6 @@ func main() -> void {
     testAwait()
     testSpawn()
     testChannels()
+    testSpawnArgs()
     print "Async test completed"
 }

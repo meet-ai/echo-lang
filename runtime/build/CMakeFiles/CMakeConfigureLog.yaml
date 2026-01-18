@@ -1689,3 +1689,42 @@ events:
       Thread model: posix
       InstalledDir: /Library/Developer/CommandLineTools/usr/bin
 ...
+
+---
+events:
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/opt/homebrew/share/cmake/Modules/Internal/CheckSourceCompiles.cmake:104 (try_compile)"
+      - "/opt/homebrew/share/cmake/Modules/CheckCSourceCompiles.cmake:103 (cmake_check_source_compiles)"
+      - "/opt/homebrew/share/cmake/Modules/FindThreads.cmake:160 (check_c_source_compiles)"
+      - "/opt/homebrew/share/cmake/Modules/FindThreads.cmake:226 (_threads_check_libc)"
+      - "CMakeLists.txt:55 (find_package)"
+    checks:
+      - "Performing Test CMAKE_HAVE_LIBC_PTHREAD"
+    directories:
+      source: "/Users/meetai/source/echo-lang/runtime/build/CMakeFiles/CMakeScratch/TryCompile-kAQLSs"
+      binary: "/Users/meetai/source/echo-lang/runtime/build/CMakeFiles/CMakeScratch/TryCompile-kAQLSs"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_OSX_ARCHITECTURES: ""
+      CMAKE_OSX_DEPLOYMENT_TARGET: ""
+      CMAKE_OSX_SYSROOT: ""
+    buildResult:
+      variable: "CMAKE_HAVE_LIBC_PTHREAD"
+      cached: true
+      stdout: |
+        Change Dir: '/Users/meetai/source/echo-lang/runtime/build/CMakeFiles/CMakeScratch/TryCompile-kAQLSs'
+        
+        Run Build Command(s): /opt/homebrew/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_8f337/fast
+        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_8f337.dir/build.make CMakeFiles/cmTC_8f337.dir/build
+        Building C object CMakeFiles/cmTC_8f337.dir/src.c.o
+        /usr/bin/cc -DCMAKE_HAVE_LIBC_PTHREAD  -std=gnu11 -arch arm64 -MD -MT CMakeFiles/cmTC_8f337.dir/src.c.o -MF CMakeFiles/cmTC_8f337.dir/src.c.o.d -o CMakeFiles/cmTC_8f337.dir/src.c.o -c /Users/meetai/source/echo-lang/runtime/build/CMakeFiles/CMakeScratch/TryCompile-kAQLSs/src.c
+        Linking C executable cmTC_8f337
+        /opt/homebrew/bin/cmake -E cmake_link_script CMakeFiles/cmTC_8f337.dir/link.txt --verbose=1
+        /usr/bin/cc  -arch arm64 -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/cmTC_8f337.dir/src.c.o -o cmTC_8f337
+        
+      exitCode: 0
+...

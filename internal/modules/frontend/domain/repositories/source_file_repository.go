@@ -3,7 +3,7 @@ package repositories
 import (
 	"context"
 
-	"github.com/meetai/echo-lang/internal/modules/frontend/domain/entities"
+	"echo/internal/modules/frontend/domain/entities"
 )
 
 // SourceFileRepository defines the interface for source file persistence operations.

@@ -2,8 +2,6 @@ package events
 
 import (
 	"time"
-
-	"github.com/meetai/echo-lang/internal/modules/frontend"
 )
 
 // AnalysisCompleted 分析完成事件

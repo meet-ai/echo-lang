@@ -1,0 +1,17 @@
+// generics_functions_basic_test.eo - 泛型函数基本测试
+func identity[T](value: T) -> T {
+    return value
+}
+
+// 泛型函数调用
+func testGenericFunctions() -> void {
+    let intResult: int = identity[int](42)
+    let strResult: string = identity[string]("hello")
+    let boolResult: bool = identity[bool](true)
+
+    print intResult
+    print strResult
+    print boolResult
+}
+
+testGenericFunctions()

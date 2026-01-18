@@ -6,12 +6,25 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/meetai/echo-lang/internal/modules/frontend/domain/entities"
+	"echo/internal/modules/frontend/domain/entities"
 )
 
 // sourceFileRepositoryImpl 源文件仓储实现
 type sourceFileRepositoryImpl struct {
 	db *sql.DB
+}
+
+// SourceFileRepository 源文件仓储接口
+type SourceFileRepository interface {
+	Save(ctx context.Context, sourceFile *entities.SourceFile) error
+	FindByID(ctx context.Context, id string) (*entities.SourceFile, error)
+	FindByPath(ctx context.Context, filePath string) (*entities.SourceFile, error)
+	FindByStatus(ctx context.Context, status entities.AnalysisStatus) ([]*entities.SourceFile, error)
+	Update(ctx context.Context, sourceFile *entities.SourceFile) error
+	Delete(ctx context.Context, id string) error
+	Exists(ctx context.Context, id string) (bool, error)
+	List(ctx context.Context, limit, offset int) ([]*entities.SourceFile, error)
+	Count(ctx context.Context) (int64, error)
 }
 
 // NewSourceFileRepository 创建源文件仓储
@@ -63,16 +76,15 @@ func (r *sourceFileRepositoryImpl) FindByID(ctx context.Context, id string) (*en
 		WHERE id = ?
 	`
 
-	var sourceFile entities.SourceFile
-	var content, contentHash string
+	var dbID, filePath, content, contentHash string
 	var fileSize int64
 	var analysisStatus string
 	var lastAnalyzedAt sql.NullTime
 	var createdAt, modifiedAt time.Time
 
 	err := r.db.QueryRowContext(ctx, query, id).Scan(
-		&sourceFile.id,
-		&sourceFile.filePath,
+		&dbID,
+		&filePath,
 		&content,
 		&contentHash,
 		&fileSize,
@@ -89,34 +101,31 @@ func (r *sourceFileRepositoryImpl) FindByID(ctx context.Context, id string) (*en
 		return nil, fmt.Errorf("failed to find source file: %w", err)
 	}
 
-	// 构建实体（简化版，实际需要完整的实体构造）
-	sourceFile.content = content
-	sourceFile.contentHash = contentHash
-	sourceFile.fileSize = fileSize
-	sourceFile.createdAt = createdAt
-	sourceFile.modifiedAt = modifiedAt
+	// 使用构造函数创建实体
+	sourceFile, err := entities.NewSourceFile(dbID, filePath, content)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create source file entity: %w", err)
+	}
 
-	// 转换分析状态
+	// 设置分析状态
+	var status entities.AnalysisStatus
 	switch analysisStatus {
 	case "pending":
-		sourceFile.analysisStatus = entities.AnalysisStatusPending
+		status = entities.AnalysisStatusPending
 	case "lexical_completed":
-		sourceFile.analysisStatus = entities.AnalysisStatusLexical
+		status = entities.AnalysisStatusLexical
 	case "syntax_completed":
-		sourceFile.analysisStatus = entities.AnalysisStatusSyntax
+		status = entities.AnalysisStatusSyntax
 	case "semantic_completed":
-		sourceFile.analysisStatus = entities.AnalysisStatusSemantic
+		status = entities.AnalysisStatusSemantic
 	case "failed":
-		sourceFile.analysisStatus = entities.AnalysisStatusFailed
+		status = entities.AnalysisStatusFailed
 	default:
-		sourceFile.analysisStatus = entities.AnalysisStatusPending
+		status = entities.AnalysisStatusPending
 	}
+	sourceFile.SetAnalysisStatus(status)
 
-	if lastAnalyzedAt.Valid {
-		sourceFile.lastAnalyzedAt = &lastAnalyzedAt.Time
-	}
-
-	return &sourceFile, nil
+	return sourceFile, nil
 }
 
 // FindByPath 根据路径查找源文件
@@ -234,6 +243,43 @@ func (r *sourceFileRepositoryImpl) ListAll(ctx context.Context, offset, limit in
 	rows, err := r.db.QueryContext(ctx, query, limit, offset)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list source files: %w", err)
+	}
+	defer rows.Close()
+
+	var ids []string
+	for rows.Next() {
+		var id string
+		if err := rows.Scan(&id); err != nil {
+			return nil, fmt.Errorf("failed to scan source file id: %w", err)
+		}
+		ids = append(ids, id)
+	}
+
+	// 获取完整的源文件实体
+	var sourceFiles []*entities.SourceFile
+	for _, id := range ids {
+		sourceFile, err := r.FindByID(ctx, id)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get source file %s: %w", id, err)
+		}
+		sourceFiles = append(sourceFiles, sourceFile)
+	}
+
+	return sourceFiles, nil
+}
+
+// List 返回分页的源文件列表
+func (r *sourceFileRepositoryImpl) List(ctx context.Context, limit, offset int) ([]*entities.SourceFile, error) {
+	query := `
+		SELECT id
+		FROM source_files
+		ORDER BY modified_at DESC
+		LIMIT ? OFFSET ?
+	`
+
+	rows, err := r.db.QueryContext(ctx, query, limit, offset)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query source files: %w", err)
 	}
 	defer rows.Close()
 

@@ -1,0 +1,24 @@
+// trait_associated_types_minimal_test.eo - 最小化关联类型测试
+trait Container[T] {
+    type Item;
+
+    func get() -> Item
+}
+
+@impl Container[int]
+
+type Item = int;
+
+struct IntBox {
+    value: int
+}
+
+func (ib IntBox) get() -> int {
+    return ib.value
+}
+
+func main() -> int {
+    let box: IntBox = {value: 42}
+    print box.get()
+    return 0
+}

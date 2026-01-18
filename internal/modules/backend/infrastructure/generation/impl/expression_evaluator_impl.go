@@ -2,14 +2,14 @@ package impl
 
 import (
 	"fmt"
-	"os"
 	"strings"
+
+	"echo/internal/modules/backend/domain/services/generation"
+	"echo/internal/modules/frontend/domain/entities"
 
 	"github.com/llir/llvm/ir/constant"
 	"github.com/llir/llvm/ir/types"
 	llvalue "github.com/llir/llvm/ir/value"
-	"github.com/meetai/echo-lang/internal/modules/backend/domain/services/generation"
-	"github.com/meetai/echo-lang/internal/modules/frontend/domain/entities"
 )
 
 // ExpressionEvaluatorImpl 表达式求值器实现
@@ -17,6 +17,9 @@ type ExpressionEvaluatorImpl struct {
 	symbolManager   generation.SymbolManager
 	typeMapper      generation.TypeMapper
 	irModuleManager generation.IRModuleManager
+
+	// 用于生成唯一的二进制操作变量名
+	binaryOpCounter int
 }
 
 // NewExpressionEvaluatorImpl 创建表达式求值器实现
@@ -29,6 +32,7 @@ func NewExpressionEvaluatorImpl(
 		symbolManager:   symbolMgr,
 		typeMapper:      typeMapper,
 		irModuleManager: irManager,
+		binaryOpCounter: 0,
 	}
 }
 
@@ -124,10 +128,16 @@ func (ee *ExpressionEvaluatorImpl) EvaluateIdentifier(irManager generation.IRMod
 		return nil, fmt.Errorf("symbol value is not a valid LLVM value: %T", symbol.Value)
 	}
 
-	// 根据Echo类型映射到LLVM类型
-	llvmType, err := ee.typeMapper.MapPrimitiveType(symbol.Type)
+	// 根据Echo类型映射到LLVM类型（支持复杂类型如Future[T]）
+	llvmTypeInterface, err := ee.typeMapper.MapType(symbol.Type)
 	if err != nil {
 		return nil, fmt.Errorf("failed to map type %s: %w", symbol.Type, err)
+	}
+
+	// 类型断言
+	llvmType, ok := llvmTypeInterface.(types.Type)
+	if !ok {
+		return nil, fmt.Errorf("mapped type %v is not a valid LLVM type", llvmTypeInterface)
 	}
 
 	// 对于标识符求值，我们通常需要加载它的值
@@ -153,8 +163,10 @@ func (ee *ExpressionEvaluatorImpl) EvaluateBinaryExpr(irManager generation.IRMod
 		return "", fmt.Errorf("failed to evaluate right operand: %w", err)
 	}
 
-	// 使用irManager创建二元运算指令
-	result, err := irManager.CreateBinaryOp(expr.Op, leftResult, rightResult, "binop")
+	// 使用irManager创建二元运算指令，为每个操作生成唯一的名称
+	ee.binaryOpCounter++
+	uniqueName := fmt.Sprintf("binop_%d", ee.binaryOpCounter)
+	result, err := irManager.CreateBinaryOp(expr.Op, leftResult, rightResult, uniqueName)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create binary operation: %w", err)
 	}
@@ -596,7 +608,6 @@ func (ee *ExpressionEvaluatorImpl) EvaluateArrayMethodCallExpr(irManager generat
 
 // EvaluateSpawnExpr 求值spawn表达式 - 创建新协程
 func (ee *ExpressionEvaluatorImpl) EvaluateSpawnExpr(irManager generation.IRModuleManager, expr *entities.SpawnExpr) (interface{}, error) {
-	fmt.Fprintf(os.Stderr, "DEBUG: EvaluateSpawnExpr entered\n")
 
 	// 检查是否是函数标识符
 	ident, ok := expr.Function.(*entities.Identifier)
@@ -609,11 +620,9 @@ func (ee *ExpressionEvaluatorImpl) EvaluateSpawnExpr(irManager generation.IRModu
 	// 获取目标函数
 	targetFunc, exists := irManager.GetFunction(funcName)
 	if !exists {
-		fmt.Fprintf(os.Stderr, "DEBUG: Target function %s not found\n", funcName)
 		return nil, fmt.Errorf("target function %s not declared", funcName)
 	}
 
-	fmt.Fprintf(os.Stderr, "DEBUG: Target function %s found\n", funcName)
 
 	// 创建Future
 	futureNewFunc, exists := irManager.GetExternalFunction("future_new")
@@ -625,29 +634,36 @@ func (ee *ExpressionEvaluatorImpl) EvaluateSpawnExpr(irManager generation.IRModu
 		return nil, fmt.Errorf("failed to create future: %w", err)
 	}
 
-	fmt.Fprintf(os.Stderr, "DEBUG: Future created for spawn\n")
 
-	// spawn协程 - 传递目标函数和future作为参数
+	// spawn协程 - 传递目标函数、参数和future
 	spawnFunc, spawnExists := irManager.GetExternalFunction("coroutine_spawn")
 	if spawnExists {
-		fmt.Fprintf(os.Stderr, "DEBUG: Spawning task with function %s\n", funcName)
+		// 求值所有参数
+		var args []interface{}
+		for _, argExpr := range expr.Args {
+			argValue, err := ee.Evaluate(irManager, argExpr)
+			if err != nil {
+				return nil, fmt.Errorf("failed to evaluate spawn argument: %w", err)
+			}
+			args = append(args, argValue)
+		}
+
+		// 构建spawn参数
 		spawnArgs := []interface{}{
 			targetFunc,                             // target function
-			constant.NewInt(types.I32, 0),         // arg_count (no args for now)
-			constant.NewNull(types.NewPointer(types.I8)), // args (null)
+			constant.NewInt(types.I32, int64(len(args))), // arg_count
+			constant.NewNull(types.NewPointer(types.I8)), // args (暂时使用null，后续需要传递实际参数)
 			futureValue,                            // future
 		}
+
 		_, err = irManager.CreateCall(spawnFunc, spawnArgs...)
 		if err != nil {
 			return nil, fmt.Errorf("failed to create spawn call: %w", err)
 		}
 
-		fmt.Fprintf(os.Stderr, "DEBUG: Spawn call created\n")
 	} else {
-		fmt.Fprintf(os.Stderr, "DEBUG: coroutine_spawn function not found\n")
 	}
 
-	fmt.Fprintf(os.Stderr, "DEBUG: Spawn expression evaluation completed\n")
 
 	// spawn表达式返回Future
 	return futureValue, nil

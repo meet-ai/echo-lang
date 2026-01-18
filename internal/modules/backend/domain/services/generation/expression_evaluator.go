@@ -1,7 +1,7 @@
 package generation
 
 import (
-	"github.com/meetai/echo-lang/internal/modules/frontend/domain/entities"
+	"echo/internal/modules/frontend/domain/entities"
 )
 
 // ExpressionEvaluator 表达式求值领域服务接口

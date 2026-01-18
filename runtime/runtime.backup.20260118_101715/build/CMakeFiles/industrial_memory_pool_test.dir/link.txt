@@ -1,0 +1,1 @@
+/usr/bin/cc  -arch arm64 -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/industrial_memory_pool_test.dir/tests/industrial_memory_pool_test.c.o -o industrial_memory_pool_test  libecho_runtime.a -lpthread

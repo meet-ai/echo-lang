@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/meetai/echo-lang/internal/modules/frontend/domain/valueobjects"
+	"echo/internal/modules/frontend/domain/valueobjects"
 )
 
 // SourceFile represents a source file entity in the frontend domain.

@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/meetai/echo-lang/internal/modules/backend/domain/services"
-	generationInfra "github.com/meetai/echo-lang/internal/modules/backend/infrastructure/generation"
-	"github.com/meetai/echo-lang/internal/modules/frontend/domain/entities"
+	"echo/internal/modules/backend/domain/services"
+	generationInfra "echo/internal/modules/backend/infrastructure/generation"
+	"echo/internal/modules/frontend/domain/entities"
 )
 
 // LLVMGenerator 是基于DDD架构的LLVM IR代码生成器
@@ -28,23 +28,6 @@ func NewLLVMGenerator() services.CodeGenerator {
 
 // GenerateCode 生成LLVM IR代码（实现CodeGenerator接口）
 func (g *LLVMGenerator) GenerateCode(prog *entities.Program) string {
-	// 调试：打印AST信息
-	fmt.Fprintf(os.Stderr, "DEBUG: ===== AST DEBUG =====\n")
-	fmt.Fprintf(os.Stderr, "DEBUG: Program has %d statements\n", len(prog.Statements))
-	for i, stmt := range prog.Statements {
-		fmt.Fprintf(os.Stderr, "DEBUG: Statement %d: %T\n", i, stmt)
-		if funcDef, ok := stmt.(*entities.FuncDef); ok {
-			fmt.Fprintf(os.Stderr, "DEBUG: Function %s has %d body statements\n", funcDef.Name, len(funcDef.Body))
-			for j, bodyStmt := range funcDef.Body {
-				fmt.Fprintf(os.Stderr, "DEBUG:   Body statement %d: %T\n", j, bodyStmt)
-				if varDecl, ok := bodyStmt.(*entities.VarDecl); ok {
-					fmt.Fprintf(os.Stderr, "DEBUG:     VarDecl: %s = %v\n", varDecl.Name, varDecl.Value != nil)
-				}
-			}
-		}
-	}
-	fmt.Fprintf(os.Stderr, "DEBUG: ===== END AST DEBUG =====\n")
-
 	// 获取IR模块管理器
 	irManager := g.domainContainer.IRModuleManager()
 

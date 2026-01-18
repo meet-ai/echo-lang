@@ -1,0 +1,14 @@
+// else_if_test.eo - 测试else if分支语法
+func main() -> int {
+    let x: int = 5
+
+    if x > 10 {
+        print "x > 10"
+    } else if x > 5 {
+        print "x > 5 but <= 10"
+    } else {
+        print "x <= 5"
+    }
+
+    return 0
+}

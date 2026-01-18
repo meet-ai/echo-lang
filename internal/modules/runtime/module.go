@@ -20,7 +20,7 @@ type Module struct {
 	gcController  GCController
 
 	// Infrastructure
-	processManager ProcessManager
+	processManager  ProcessManager
 	resourceMonitor ResourceMonitor
 }
 

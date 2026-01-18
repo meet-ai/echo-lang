@@ -1,0 +1,24 @@
+// trait_associated_types_simple_test.eo - 简单关联类型测试
+trait Container[T] {
+    type Item;  // 关联类型声明
+
+    func get() -> Item;
+}
+
+@impl Container[int]
+
+type Item = int;  // 关联类型实现
+
+struct IntBox {
+    value: int;
+}
+
+func (ib IntBox) get() -> int {
+    return ib.value;
+}
+
+func main() -> int {
+    let box: IntBox = {value: 42}
+    print box.get()
+    return 0
+}

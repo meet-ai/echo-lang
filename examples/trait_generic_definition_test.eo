@@ -1,0 +1,39 @@
+// trait_generic_definition_test.eo - 泛型Trait定义测试
+trait Container[T] {
+    func get(index: int) -> Option[T]
+    func size() -> int
+}
+
+@impl Container[int]
+
+struct IntArray {
+    data: [int]
+}
+
+func (ia IntArray) get(index: int) -> Option[int] {
+    // 简化条件判断，避免&&运算符
+    if index >= 0 {
+        if index < len(ia.data) {
+            return Some(ia.data[index])
+        }
+    }
+    return None
+}
+
+func (ia IntArray) size() -> int {
+    return len(ia.data)
+}
+
+func main() -> int {
+    // 测试泛型Trait
+    let arr: IntArray = {data: [1, 2, 3, 4, 5]}
+    print arr.size()
+
+    let value: Option[int] = arr.get(2)
+    match value {
+        Some(v) => print "Value at index 2: " + v
+        None => print "Index out of bounds"
+    }
+
+    return 0
+}

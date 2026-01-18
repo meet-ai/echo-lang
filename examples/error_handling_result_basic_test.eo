@@ -1,0 +1,24 @@
+// error_handling_result_basic_test.eo - Result类型基本测试
+func divide(a: int, b: int) -> Result[int] {
+    if b == 0 {
+        return Err("Division by zero")
+    }
+    return Ok(a / b)
+}
+
+// 测试Result模式匹配
+func testResultBasic() -> void {
+    // 成功情况
+    match divide(10, 2) {
+        Ok(value) => print "Success: " + value
+        Err(error) => print "Error: " + error
+    }
+
+    // 失败情况
+    match divide(10, 0) {
+        Ok(value) => print "Success: " + value
+        Err(error) => print "Error: " + error
+    }
+}
+
+testResultBasic()

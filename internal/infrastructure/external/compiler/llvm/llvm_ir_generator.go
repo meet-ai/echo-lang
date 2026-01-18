@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/meetai/echo-lang/internal/modules/middleend"
+	"echo/internal/modules/middleend"
 )
 
 // LLVMIRGenerator LLVM IR生成器适配器

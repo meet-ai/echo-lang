@@ -1,0 +1,18 @@
+// pattern_match_enum_test.eo - 枚举模式匹配测试
+enum Color {
+    Red,
+    Green,
+    Blue
+}
+
+func getColorName(c: Color) -> string {
+    match c {
+        Red => "red"
+        Green => "green"
+        Blue => "blue"
+    }
+}
+
+let color: Color = Green
+let name: string = getColorName(color)
+print name

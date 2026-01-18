@@ -1,0 +1,7 @@
+// functions_params_test.eo - 函数参数测试
+func add(x: int, y: int) -> int {
+    return x + y
+}
+
+let result: int = add(5, 3)
+print result

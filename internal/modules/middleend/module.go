@@ -6,8 +6,30 @@ import (
 	"context"
 	"fmt"
 
+	applicationServices "echo/internal/modules/middleend/application/services"
+	"echo/internal/modules/middleend/domain/adapters"
+	"echo/internal/modules/middleend/domain/commands"
+	"echo/internal/modules/middleend/domain/repositories"
+	domainServices "echo/internal/modules/middleend/domain/services"
+
 	"github.com/samber/do"
 )
+
+// 类型别名，引用domain层的类型
+type GenerateIRCommand = commands.GenerateIRCommand
+type IRGenerationResult = commands.IRGenerationResult
+type OptimizeIRCommand = commands.OptimizeIRCommand
+type OptimizationResult = commands.OptimizationResult
+type ApplyOptimizationsCommand = commands.ApplyOptimizationsCommand
+type GetOptimizationStatusQuery = commands.GetOptimizationStatusQuery
+type OptimizationStatusDTO = commands.OptimizationStatusDTO
+
+// 类型别名，引用domain层服务和接口
+type IRGenerator = domainServices.IRGenerator
+type MachineIndependentOptimizer = domainServices.MachineIndependentOptimizer
+type IRRepository = repositories.IRRepository
+type OptimizationRepository = repositories.OptimizationRepository
+type LLVMIRAdapter = adapters.LLVMIRAdapter
 
 // Module represents the middle-end processing module
 type Module struct {
@@ -56,8 +78,8 @@ func NewModule(i *do.Injector) (*Module, error) {
 	llvmAdapter := do.MustInvoke[LLVMIRAdapter](i)
 
 	// Create application services
-	irSvc := NewIRService(irGenerator, optimizer, irRepo, optimizationRepo)
-	optSvc := NewOptimizationService(optimizer, optimizationRepo)
+	irSvc := applicationServices.NewIRService(irGenerator, optimizer, irRepo, optimizationRepo)
+	optSvc := applicationServices.NewOptimizationService(optimizer, optimizationRepo)
 
 	return &Module{
 		irService:        irSvc,

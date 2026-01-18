@@ -2,15 +2,15 @@ package impl
 
 import (
 	"fmt"
-	"os"
 	"strings"
 	"time"
+
+	"echo/internal/modules/backend/domain/services/generation"
+	"echo/internal/modules/frontend/domain/entities"
 
 	"github.com/llir/llvm/ir"
 	"github.com/llir/llvm/ir/constant"
 	"github.com/llir/llvm/ir/types"
-	"github.com/meetai/echo-lang/internal/modules/backend/domain/services/generation"
-	"github.com/meetai/echo-lang/internal/modules/frontend/domain/entities"
 )
 
 // StatementGeneratorImpl 语句生成器实现
@@ -42,6 +42,19 @@ func NewStatementGeneratorImpl(
 		irModuleManager:      irManager,
 		stats:                generation.StatementGenerationStats{},
 		startTime:            time.Now(),
+	}
+}
+
+// getLLVMTypeFromMappedType 从映射的类型获取LLVM类型
+func (sg *StatementGeneratorImpl) getLLVMTypeFromMappedType(mappedType interface{}) (types.Type, error) {
+	switch t := mappedType.(type) {
+	case types.Type:
+		return t, nil
+	case *FutureType, *ChanType:
+		// Future和Channel类型在运行时都是i8*指针
+		return types.NewPointer(types.I8), nil
+	default:
+		return nil, fmt.Errorf("unsupported mapped type: %T", t)
 	}
 }
 
@@ -102,7 +115,6 @@ func (sg *StatementGeneratorImpl) hasAwaitInExpr(expr entities.Expr) bool {
 
 // createCoroutineWrapper 创建协程包装器
 func (sg *StatementGeneratorImpl) createCoroutineWrapper(irManager generation.IRModuleManager) error {
-	fmt.Fprintf(os.Stderr, "DEBUG: Creating coroutine wrapper for async/await support\n")
 
 	// 创建一个包装器函数来处理await调用
 	// 这个函数将在协程中执行包含await的代码
@@ -110,7 +122,6 @@ func (sg *StatementGeneratorImpl) createCoroutineWrapper(irManager generation.IR
 	// 外部函数应该在其他地方声明，这里只是设置必要的上下文
 	// 实际的协程创建逻辑将在GenerateAsyncFuncDefinition中实现
 
-	fmt.Fprintf(os.Stderr, "DEBUG: Coroutine wrapper setup complete\n")
 	return nil
 }
 
@@ -147,7 +158,6 @@ func (sg *StatementGeneratorImpl) GenerateProgram(irManager generation.IRModuleM
 	hasAwait := sg.hasAwaitInStatements(statements)
 
 	if hasAwait {
-		fmt.Fprintf(os.Stderr, "DEBUG: Detected await calls, setting up coroutine support\n")
 		// 如果有await，创建协程包装器
 		err := sg.createCoroutineWrapper(irManager)
 		if err != nil {
@@ -160,15 +170,9 @@ func (sg *StatementGeneratorImpl) GenerateProgram(irManager generation.IRModuleM
 	}
 
 	// 生成每个语句
-	fmt.Fprintf(os.Stderr, "DEBUG: Total statements: %d\n", len(statements))
 	for i, stmt := range statements {
-		fmt.Fprintf(os.Stderr, "DEBUG: Generating top-level statement %d: %T\n", i, stmt)
-		if funcDef, ok := stmt.(*entities.FuncDef); ok {
-			fmt.Fprintf(os.Stderr, "DEBUG: Function name: %s, body statements: %d\n", funcDef.Name, len(funcDef.Body))
-		}
 		stmtResult, err := sg.GenerateStatement(irManager, stmt)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "DEBUG: Failed to generate statement %d (%T): %v\n", i, stmt, err)
 			result.Success = false
 			result.Error = fmt.Errorf("failed to generate statement %d: %w", i, err)
 			sg.stats.FailedGenerations++
@@ -299,16 +303,13 @@ func (sg *StatementGeneratorImpl) GeneratePrintStatement(irManager generation.IR
 	}
 
 	// 获取外部打印函数
-	// 这里需要类型断言，因为IRModuleManager接口没有GetExternalFunction方法
-	// TODO: 应该在IRModuleManager接口中添加GetExternalFunction方法
-	if irManagerImpl, ok := irManager.(*IRModuleManagerImpl); ok {
-		printFunc, exists := irManagerImpl.GetExternalFunction(printFuncName)
-		if !exists {
-			return &generation.StatementGenerationResult{
-				Success: false,
-				Error:   fmt.Errorf("external function %s not declared", printFuncName),
-			}, nil
-		}
+	printFunc, exists := irManager.GetExternalFunction(printFuncName)
+	if !exists {
+		return &generation.StatementGenerationResult{
+			Success: false,
+			Error:   fmt.Errorf("external function %s not declared", printFuncName),
+		}, nil
+	}
 
 		// 生成函数调用
 		callResult, err := irManager.CreateCall(printFunc, exprResult)
@@ -321,12 +322,6 @@ func (sg *StatementGeneratorImpl) GeneratePrintStatement(irManager generation.IR
 
 		// callResult 包含了函数调用的结果，通常我们不需要使用它
 		_ = callResult
-	} else {
-		return &generation.StatementGenerationResult{
-			Success: false,
-			Error:   fmt.Errorf("IRManager does not support external functions"),
-		}, nil
-	}
 
 	return &generation.StatementGenerationResult{
 		Success: true,
@@ -372,7 +367,6 @@ func (sg *StatementGeneratorImpl) GenerateVarDeclaration(irManager generation.IR
 
 	// 如果有初始值，生成赋值
 	if stmt.Value != nil {
-		fmt.Fprintf(os.Stderr, "DEBUG: Variable %s has initial value, generating assignment\n", stmt.Name)
 		assignResult, err := sg.GenerateAssignmentStatement(irManager, &entities.AssignStmt{
 			Name:  stmt.Name,
 			Value: stmt.Value,
@@ -404,6 +398,7 @@ func (sg *StatementGeneratorImpl) GenerateVarDeclaration(irManager generation.IR
 
 // GenerateAssignmentStatement 生成赋值语句
 func (sg *StatementGeneratorImpl) GenerateAssignmentStatement(irManager generation.IRModuleManager, stmt *entities.AssignStmt) (*generation.StatementGenerationResult, error) {
+
 	// 求值右侧表达式
 	valueResult, err := sg.expressionEvaluator.Evaluate(irManager, stmt.Value)
 	if err != nil {
@@ -473,22 +468,36 @@ func (sg *StatementGeneratorImpl) GenerateFuncDefinition(irManager generation.IR
 	}
 
 	// 映射返回类型
-	returnType, err := sg.typeMapper.MapPrimitiveType(returnTypeStr)
+	returnTypeMapped, err := sg.typeMapper.MapType(returnTypeStr)
 	if err != nil {
 		return &generation.StatementGenerationResult{
 			Success: false,
 			Error:   fmt.Errorf("failed to map return type %s: %w", returnTypeStr, err),
 		}, nil
 	}
+	returnType, err := sg.getLLVMTypeFromMappedType(returnTypeMapped)
+	if err != nil {
+		return &generation.StatementGenerationResult{
+			Success: false,
+			Error:   fmt.Errorf("failed to get LLVM return type: %w", err),
+		}, nil
+	}
 
 	// 映射参数类型
 	paramTypes := make([]interface{}, len(stmt.Params))
 	for i, param := range stmt.Params {
-		paramType, err := sg.typeMapper.MapPrimitiveType(param.Type)
+		paramTypeMapped, err := sg.typeMapper.MapType(param.Type)
 		if err != nil {
 			return &generation.StatementGenerationResult{
 				Success: false,
 				Error:   fmt.Errorf("failed to map parameter type %s: %w", param.Type, err),
+			}, nil
+		}
+		paramType, err := sg.getLLVMTypeFromMappedType(paramTypeMapped)
+		if err != nil {
+			return &generation.StatementGenerationResult{
+				Success: false,
+				Error:   fmt.Errorf("failed to get LLVM parameter type: %w", err),
 			}, nil
 		}
 		paramTypes[i] = paramType
@@ -714,7 +723,6 @@ func (sg *StatementGeneratorImpl) GenerateTraitDefinition(irManager generation.I
 	// 为动态分发记录虚表信息（简化实现）
 	// 在实际实现中，这里应该生成虚表类型和全局虚表实例
 	if len(stmt.Methods) > 0 {
-		fmt.Fprintf(os.Stderr, "DEBUG: Trait %s supports dynamic dispatch with %d methods\n", stmt.Name, len(stmt.Methods))
 
 		// 记录虚表结构信息（用于后续代码生成）
 		vtableInfo := map[string]interface{}{
@@ -731,9 +739,6 @@ func (sg *StatementGeneratorImpl) GenerateTraitDefinition(irManager generation.I
 		result.Error = fmt.Errorf("failed to register trait symbol %s: %w", stmt.Name, err)
 		return result, result.Error
 	}
-
-	fmt.Fprintf(os.Stderr, "DEBUG: Registered trait %s with %d type parameters and %d methods\n",
-		stmt.Name, len(stmt.TypeParams), len(stmt.Methods))
 
 	return result, nil
 }
@@ -766,7 +771,6 @@ func (sg *StatementGeneratorImpl) GenerateEnumDefinition(irManager generation.IR
 // GenerateMethodDefinition 生成方法定义
 // 方法在LLVM IR中实现为普通函数，接收者作为第一个参数
 func (sg *StatementGeneratorImpl) GenerateMethodDefinition(irManager generation.IRModuleManager, stmt *entities.MethodDef) (*generation.StatementGenerationResult, error) {
-	fmt.Fprintf(os.Stderr, "DEBUG: Generating method: %s for receiver %s\n", stmt.Name, stmt.Receiver)
 	result := &generation.StatementGenerationResult{
 		Success: true,
 	}
@@ -886,9 +890,11 @@ func (sg *StatementGeneratorImpl) getPrintFunctionName(expr entities.Expr) (stri
 		case "int":
 			return "print_int", nil
 		case "bool":
-			return "print_int", nil // 布尔值用int表示
+			return "print_bool", nil
+		case "float":
+			return "print_float", nil
 		default:
-			return "print_string", nil // 默认当作字符串处理
+			return "", fmt.Errorf("unsupported type for printing: %s", symbolInfo.Type)
 		}
 	case *entities.BinaryExpr:
 		// 对于二元表达式，特别是字符串拼接，结果是字符串
@@ -934,19 +940,6 @@ func (sg *StatementGeneratorImpl) getExprType(expr entities.Expr) string {
 		return "unknown"
 	}
 }
-			return "print_bool", nil
-		case "float":
-			return "print_float", nil
-		default:
-			return "", fmt.Errorf("unsupported type for printing: %s", symbolInfo.Type)
-		}
-	case *entities.BinaryExpr:
-		// 对于二元表达式，假设结果是int类型
-		return "print_int", nil
-	default:
-		return "", fmt.Errorf("unsupported expression type for printing: %T", expr)
-	}
-}
 
 // mapParameterType 映射参数类型
 // 对于复杂类型，使用指针类型简化处理
@@ -985,7 +978,6 @@ func (sg *StatementGeneratorImpl) GenerateSelectStatement(irManager generation.I
 
 	// 简化策略：按顺序尝试每个case，第一个成功的就执行
 	for i, caseBranch := range stmt.Cases {
-		fmt.Fprintf(os.Stderr, "DEBUG: Processing select case %d\n", i)
 
 		if caseBranch.IsSend {
 			// 发送case: channel <- value
@@ -1078,7 +1070,6 @@ func (sg *StatementGeneratorImpl) GenerateSelectStatement(irManager generation.I
 
 	// 处理default分支（如果有的话）
 	if stmt.DefaultBody != nil && len(stmt.DefaultBody) > 0 {
-		fmt.Fprintf(os.Stderr, "DEBUG: Processing select default branch\n")
 		for _, defaultStmt := range stmt.DefaultBody {
 			result, err := sg.GenerateStatement(irManager, defaultStmt)
 			if err != nil {
@@ -1100,13 +1091,11 @@ func (sg *StatementGeneratorImpl) GenerateSelectStatement(irManager generation.I
 
 // GenerateAsyncFuncDefinition 生成异步函数定义
 func (sg *StatementGeneratorImpl) GenerateAsyncFuncDefinition(irManager generation.IRModuleManager, stmt *entities.AsyncFuncDef) (*generation.StatementGenerationResult, error) {
-	fmt.Fprintf(os.Stderr, "DEBUG: GenerateAsyncFuncDefinition called for %s\n", stmt.Name)
-	// async函数的代码生成策略：
-	// 1. 创建返回Future指针的函数
-	// 2. 函数体创建一个Future并启动协程执行实际逻辑
-	// 3. 返回Future给调用者
+	// 简化策略：async函数的行为和普通函数完全一样
+	// async关键字只是一个标记，表示这个函数可以被异步调用
+	// 实际的异步行为由spawn和await表达式实现
 
-	// 注册async函数符号
+	// 注册async函数符号（返回Future类型）
 	returnTypeStr := fmt.Sprintf("Future[%s]", stmt.ReturnType)
 	err := sg.symbolManager.RegisterFunctionSymbol(stmt.Name, returnTypeStr, nil, true)
 	if err != nil {
@@ -1116,33 +1105,54 @@ func (sg *StatementGeneratorImpl) GenerateAsyncFuncDefinition(irManager generati
 		}, nil
 	}
 
-	// 创建函数 - async函数返回Future指针
-	funcName := stmt.Name
-	returnType := types.NewPointer(types.I8) // Future指针类型
+	// 创建普通的同步函数（不返回Future）
+	funcName := stmt.Name + "_sync" // 内部同步函数名
+	returnType, err := sg.typeMapper.MapType(stmt.ReturnType)
+	if err != nil {
+		return &generation.StatementGenerationResult{
+			Success: false,
+			Error:   fmt.Errorf("failed to map return type %s: %w", stmt.ReturnType, err),
+		}, nil
+	}
+	returnType, err = sg.getLLVMTypeFromMappedType(returnType)
+	if err != nil {
+		return &generation.StatementGenerationResult{
+			Success: false,
+			Error:   fmt.Errorf("failed to get LLVM return type: %w", err),
+		}, nil
+	}
 
+	// 映射参数类型
 	var paramTypes []interface{}
-	for range stmt.Params {
-		paramTypes = append(paramTypes, types.I32) // 简化处理
+	for _, param := range stmt.Params {
+		paramType, err := sg.typeMapper.MapType(param.Type)
+		if err != nil {
+			return &generation.StatementGenerationResult{
+				Success: false,
+				Error:   fmt.Errorf("failed to map parameter type %s: %w", param.Type, err),
+			}, nil
+		}
+		paramTypes = append(paramTypes, paramType)
 	}
 
-	funcPtr, err := irManager.CreateFunction(funcName, returnType, paramTypes)
+	// 创建同步函数
+	syncFuncPtr, err := irManager.CreateFunction(funcName, returnType, paramTypes)
 	if err != nil {
 		return &generation.StatementGenerationResult{
 			Success: false,
-			Error:   fmt.Errorf("failed to create async function: %v", err),
+			Error:   fmt.Errorf("failed to create sync function: %v", err),
 		}, nil
 	}
 
-	// 设置当前函数上下文
-	err = irManager.SetCurrentFunction(funcPtr)
+	// 设置同步函数上下文并生成函数体
+	err = irManager.SetCurrentFunction(syncFuncPtr)
 	if err != nil {
 		return &generation.StatementGenerationResult{
 			Success: false,
-			Error:   fmt.Errorf("failed to set current function: %v", err),
+			Error:   fmt.Errorf("failed to set sync function: %v", err),
 		}, nil
 	}
 
-	// 创建函数入口基本块
 	entryBlock, err := irManager.CreateBasicBlock("entry")
 	if err != nil {
 		return &generation.StatementGenerationResult{
@@ -1155,233 +1165,32 @@ func (sg *StatementGeneratorImpl) GenerateAsyncFuncDefinition(irManager generati
 	if err != nil {
 		return &generation.StatementGenerationResult{
 			Success: false,
-			Error:   fmt.Errorf("failed to set current block: %v", err),
+			Error:   fmt.Errorf("failed to set entry block: %v", err),
 		}, nil
 	}
 
-	// 生成async函数体：
-	// 1. 创建Future
-	// 2. spawn协程执行实际函数体
-	// 3. 返回Future
-
-	// 获取future_new函数
-	fmt.Fprintf(os.Stderr, "DEBUG: Looking for future_new function\n")
-	futureNewFunc, exists := irManager.GetExternalFunction("future_new")
-	if !exists {
-		fmt.Fprintf(os.Stderr, "DEBUG: future_new function not found\n")
-		return &generation.StatementGenerationResult{
-			Success: false,
-			Error:   fmt.Errorf("future_new function not declared"),
-		}, nil
-	}
-	fmt.Fprintf(os.Stderr, "DEBUG: future_new function found\n")
-
-	// 调用future_new创建Future
-	futurePtr, err := irManager.CreateCall(futureNewFunc)
-	if err != nil {
-		return &generation.StatementGenerationResult{
-			Success: false,
-			Error:   fmt.Errorf("failed to create future_new call: %v", err),
-		}, nil
-	}
-
-	// 🚨 修复：async函数不再同步执行函数体
-	// 这修复了严重的架构缺陷：async函数之前在创建时就同步执行了函数体
-	//
-	// 新的实现：
-	// 1. async函数只创建Future并返回，不执行函数体
-	// 2. 函数体的执行推迟到协程调度器中
-	// 3. 这实现了真正的异步语义
-	//
-	// 注意：这只是第一步修复，完整的实现需要状态机转换
-	// TODO: 实现async执行器来执行函数体
-
-	// 为async函数生成对应的执行器函数
-	// 执行器函数负责执行async函数体并resolve Future
-	executorFuncName := stmt.Name + "_executor"
-
-	// 创建执行器函数: void executor(i8* future, ...)
-	// 执行器函数接收Future指针和async函数的所有参数
-	var executorParamTypes []interface{}
-	executorParamTypes = append(executorParamTypes, types.NewPointer(types.I8)) // Future指针
-
-	// 添加async函数的参数类型
-	for range stmt.Params {
-		executorParamTypes = append(executorParamTypes, types.I32) // 简化：所有参数都作为i32传递
-	}
-
-	executorFuncPtr, err := irManager.CreateFunction(executorFuncName, types.Void, executorParamTypes)
-	if err != nil {
-		return &generation.StatementGenerationResult{
-			Success: false,
-			Error:   fmt.Errorf("failed to create async executor function: %v", err),
-		}, nil
-	}
-	fmt.Fprintf(os.Stderr, "DEBUG: Created executor function, type: %T\n", executorFuncPtr)
-
-	// 将执行器函数注册为外部函数，以便await时可以找到
-	// 注意：这是一个临时方案，理想情况下应该有更好的机制
-	if irManagerImpl, ok := irManager.(*IRModuleManagerImpl); ok {
-		if funcPtr, ok := executorFuncPtr.(*ir.Func); ok {
-			fmt.Fprintf(os.Stderr, "DEBUG: Registering executor function %s\n", executorFuncName)
-			irManagerImpl.externalFunctions[executorFuncName] = funcPtr
-		} else {
-			fmt.Fprintf(os.Stderr, "DEBUG: executorFuncPtr is not *ir.Func, type: %T\n", executorFuncPtr)
-		}
-	} else {
-		fmt.Fprintf(os.Stderr, "DEBUG: irManager is not IRModuleManagerImpl in async func generation\n")
-	}
-
-	// 设置执行器函数上下文
-	err = irManager.SetCurrentFunction(executorFuncPtr)
-	if err != nil {
-		return &generation.StatementGenerationResult{
-			Success: false,
-			Error:   fmt.Errorf("failed to set executor function: %v", err),
-		}, nil
-	}
-
-	// 创建执行器函数体
-	executorEntryBlock, err := irManager.CreateBasicBlock("entry")
-	if err != nil {
-		return &generation.StatementGenerationResult{
-			Success: false,
-			Error:   fmt.Errorf("failed to create executor entry block: %v", err),
-		}, nil
-	}
-
-	err = irManager.SetCurrentBasicBlock(executorEntryBlock)
-	if err != nil {
-		return &generation.StatementGenerationResult{
-			Success: false,
-			Error:   fmt.Errorf("failed to set executor block: %v", err),
-		}, nil
-	}
-
-	// 在执行器中执行async函数体
+	// 生成函数体
 	if stmt.Body != nil && len(stmt.Body) > 0 {
-		for i, bodyStmt := range stmt.Body {
-			fmt.Fprintf(os.Stderr, "DEBUG: Processing statement %d in function %s: %T\n", i, stmt.Name, bodyStmt)
-			if returnStmt, ok := bodyStmt.(*entities.ReturnStmt); ok && returnStmt.Value != nil {
-				// 求值返回值
-				returnValue, err := sg.expressionEvaluator.Evaluate(irManager, returnStmt.Value)
-				if err != nil {
-					return &generation.StatementGenerationResult{
-						Success: false,
-						Error:   fmt.Errorf("failed to evaluate return value in executor: %v", err),
-					}, nil
-				}
-
-				// 获取Future指针（第一个参数）
-				currentFunc := irManager.GetCurrentFunction()
-				var futureParam interface{}
-				if funcPtr, ok := currentFunc.(*ir.Func); ok {
-					futureParam = funcPtr.Params[0]
-				} else {
-					return &generation.StatementGenerationResult{
-						Success: false,
-						Error:   fmt.Errorf("invalid function type for executor"),
-					}, nil
-				}
-
-				// 调用future_resolve
-				futureResolveFunc, exists := irManager.GetExternalFunction("future_resolve")
-				if !exists {
-					return &generation.StatementGenerationResult{
-						Success: false,
-						Error:   fmt.Errorf("future_resolve function not declared"),
-					}, nil
-				}
-
-				// 转换返回值类型并resolve Future
-				if stringValue, ok := returnValue.(*ir.Global); ok {
-				_, err = irManager.CreateCall(futureResolveFunc, futureParam, stringValue)
-			} else {
-				_, err = irManager.CreateCall(futureResolveFunc, futureParam, returnValue)
-			}
-			fmt.Fprintf(os.Stderr, "DEBUG: Added future_resolve call in executor for async function %s\n", stmt.Name)
+		for _, bodyStmt := range stmt.Body {
+			result, err := sg.GenerateStatement(irManager, bodyStmt)
 			if err != nil {
 				return &generation.StatementGenerationResult{
 					Success: false,
-					Error:   fmt.Errorf("failed to create future_resolve call in executor: %v", err),
+					Error:   fmt.Errorf("failed to generate statement: %v", err),
 				}, nil
 			}
-				break
+			if !result.Success {
+				return result, nil
 			}
 		}
 	}
 
-	// 执行器函数返回void
-	err = irManager.CreateRet(nil)
+	// 注册同步函数
+	err = irManager.RegisterFunction(funcName, syncFuncPtr)
 	if err != nil {
 		return &generation.StatementGenerationResult{
 			Success: false,
-			Error:   fmt.Errorf("failed to create executor return: %v", err),
-		}, nil
-	}
-
-	// 回到主async函数，继续生成async函数体
-	err = irManager.SetCurrentFunction(funcPtr)
-	if err != nil {
-		return &generation.StatementGenerationResult{
-			Success: false,
-			Error:   fmt.Errorf("failed to restore async function context: %v", err),
-		}, nil
-	}
-
-	err = irManager.SetCurrentBasicBlock(entryBlock)
-	if err != nil {
-		return &generation.StatementGenerationResult{
-			Success: false,
-			Error:   fmt.Errorf("failed to restore async function block: %v", err),
-		}, nil
-	}
-
-	// 临时解决方案：在await的函数中添加run_scheduler调用
-	// 这确保了协程调度器会在await完成后启动
-	// TODO: 实现更优雅的调度器启动机制
-
-	// 在返回Future之前，spawn executor协程
-	spawnFunc, spawnExists := irManager.GetExternalFunction("coroutine_spawn")
-	if spawnExists {
-		fmt.Fprintf(os.Stderr, "DEBUG: Spawning executor %s for async function %s\n", executorFuncName, stmt.Name)
-		spawnArgs := []interface{}{
-			executorFuncPtr,                      // target executor function
-			constant.NewInt(types.I32, 1),        // arg_count (1 arg: future)
-			constant.NewNull(types.NewPointer(types.I8)), // args (null - we'll pass future as first param)
-			futurePtr,                            // future
-		}
-		_, err = irManager.CreateCall(spawnFunc, spawnArgs...)
-		if err != nil {
-			return &generation.StatementGenerationResult{
-				Success: false,
-				Error:   fmt.Errorf("failed to create spawn call for executor: %v", err),
-			}, nil
-		}
-		fmt.Fprintf(os.Stderr, "DEBUG: Spawn call created for executor\n")
-	} else {
-		fmt.Fprintf(os.Stderr, "DEBUG: coroutine_spawn function not found, async function will not execute\n")
-	}
-
-	// 在返回Future之前，添加run_scheduler调用确保调度器启动
-	runSchedulerFunc, runExists := irManager.GetExternalFunction("run_scheduler")
-	if runExists {
-		fmt.Fprintf(os.Stderr, "DEBUG: Adding run_scheduler call\n")
-		_, err = irManager.CreateCall(runSchedulerFunc)
-		if err != nil {
-			return &generation.StatementGenerationResult{
-				Success: false,
-				Error:   fmt.Errorf("failed to create run_scheduler call: %v", err),
-			}, nil
-		}
-	}
-
-	// 返回Future指针
-	err = irManager.CreateRet(futurePtr)
-	if err != nil {
-		return &generation.StatementGenerationResult{
-			Success: false,
-			Error:   fmt.Errorf("failed to create return: %v", err),
+			Error:   fmt.Errorf("failed to register sync function: %w", err),
 		}, nil
 	}
 
@@ -1389,3 +1198,4 @@ func (sg *StatementGeneratorImpl) GenerateAsyncFuncDefinition(irManager generati
 		Success: true,
 	}, nil
 }
+

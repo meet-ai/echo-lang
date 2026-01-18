@@ -1,0 +1,6 @@
+// functions_basic_test.eo - 基本函数测试
+func greet() -> void {
+    print "Hello, Echo!"
+}
+
+greet()

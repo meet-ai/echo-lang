@@ -1,0 +1,7 @@
+// test_len_simple.eo - 简单测试len函数
+func main() -> int {
+    let arr: [int] = [1, 2, 3, 4, 5]
+    let length: int = len(arr)
+    print length
+    return 0
+}

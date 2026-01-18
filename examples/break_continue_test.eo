@@ -1,8 +1,11 @@
 // break_continue_test.eo - break测试
-while 1 == 1 {
-    print 1
-    break
-    print 2
-}
+func main() -> int {
+    while 1 == 1 {
+        print 1
+        break
+        print 2
+    }
 
-print 100
+    print 100
+    return 0
+}

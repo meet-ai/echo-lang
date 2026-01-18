@@ -1,0 +1,16 @@
+// methods_value_receiver_test.eo - 值接收者方法测试
+struct Point {
+    x: int,
+    y: int
+}
+
+func (p Point) distance(other: Point) -> int {
+    let dx: int = other.x - p.x
+    let dy: int = other.y - p.y
+    return dx + dy
+}
+
+let p1: Point = {x: 0, y: 0}
+let p2: Point = {x: 3, y: 4}
+let dist: int = p1.distance(p2)
+print dist

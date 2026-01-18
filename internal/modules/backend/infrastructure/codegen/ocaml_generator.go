@@ -1,13 +1,19 @@
 package codegen
 
 import (
+	"echo/internal/modules/backend/domain/services"
+	"echo/internal/modules/frontend/domain/entities"
 	"strings"
-	"github.com/meetai/echo-lang/internal/modules/backend/domain/services"
-	"github.com/meetai/echo-lang/internal/modules/frontend/domain/entities"
 )
 
 // OCamlGenerator OCaml代码生成器实现（基础设施层）
 type OCamlGenerator struct{}
+
+// CGenerator C代码生成器实现（基础设施层，从历史版本恢复）
+type CGenerator struct {
+	stringLiterals []string
+	stringIndexMap map[string]int
+}
 
 // NewOCamlGenerator 创建新的OCaml代码生成器
 func NewOCamlGenerator() services.CodeGenerator {

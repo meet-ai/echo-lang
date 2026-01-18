@@ -1,8 +1,9 @@
 package generation
 
 import (
+	"echo/internal/modules/frontend/domain/entities"
+
 	"github.com/llir/llvm/ir"
-	"github.com/meetai/echo-lang/internal/modules/frontend/domain/entities"
 )
 
 // StatementGenerationResult 语句生成结果
@@ -89,6 +90,8 @@ type IRModuleManager interface {
 	// 外部函数管理
 	GetExternalFunction(name string) (interface{}, bool)
 	GetFunction(name string) (interface{}, bool)
+	RegisterFunction(name string, fn interface{}) error
+	RegisterExternalFunction(name string, fn interface{}) error
 
 	// 函数管理
 	CreateFunction(name string, returnType interface{}, paramTypes []interface{}) (interface{}, error)

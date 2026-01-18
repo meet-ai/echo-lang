@@ -1,0 +1,8 @@
+// operators_arithmetic_test.eo - 算术运算测试
+let a: int = 10
+let b: int = 3
+
+print a + b  // 13
+print a - b  // 7
+print a * b  // 30
+print a / b  // 3

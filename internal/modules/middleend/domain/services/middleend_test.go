@@ -4,8 +4,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/meetai/echo-lang/internal/modules/frontend/domain/entities"
-	"github.com/meetai/echo-lang/internal/modules/frontend/domain/services"
+	"echo/internal/modules/frontend/domain/entities"
+	"echo/internal/modules/frontend/domain/services"
 )
 
 func TestTypeInference(t *testing.T) {

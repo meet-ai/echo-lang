@@ -13,6 +13,16 @@ type TypeMapperImpl struct {
 	customTypes    map[string]interface{} // 自定义类型注册表
 }
 
+// FutureType 表示Future类型，包含元素类型信息
+type FutureType struct {
+	ElementType interface{} // 元素类型 (string, int, etc.)
+}
+
+// ChanType 表示Channel类型，包含元素类型信息
+type ChanType struct {
+	ElementType interface{} // 元素类型
+}
+
 // NewTypeMapperImpl 创建类型映射器实现
 func NewTypeMapperImpl() *TypeMapperImpl {
 	return &TypeMapperImpl{
@@ -183,15 +193,28 @@ func (tm *TypeMapperImpl) MapType(echoType string) (interface{}, error) {
 
 	// 3. 检查是否是Future类型 (Future[T])
 	if strings.HasPrefix(echoType, "Future[") && strings.HasSuffix(echoType, "]") {
-		// Future在运行时层面是一个不透明的指针 (i8*)
-		// 无论T是什么类型，在运行时都统一为i8*指针
-		return types.NewPointer(types.I8), nil
+		// 解析元素类型
+		elementTypeStr := echoType[7 : len(echoType)-1] // 移除 "Future[" 和 "]"
+		elementType, err := tm.MapType(elementTypeStr)
+		if err != nil {
+			return nil, fmt.Errorf("invalid Future element type %s: %w", elementTypeStr, err)
+		}
+
+		// 返回结构化的Future类型（运行时仍然是i8*指针，但在编译时保留类型信息）
+		return &FutureType{ElementType: elementType}, nil
 	}
 
 	// 4. 检查是否是Chan类型 (chan T)
 	if strings.HasPrefix(echoType, "chan ") {
-		// Channel在运行时层面也是一个不透明的指针 (i8*)
-		return types.NewPointer(types.I8), nil
+		// 解析元素类型
+		elementTypeStr := strings.TrimSpace(echoType[5:]) // 移除 "chan "
+		elementType, err := tm.MapType(elementTypeStr)
+		if err != nil {
+			return nil, fmt.Errorf("invalid channel element type %s: %w", elementTypeStr, err)
+		}
+
+		// 返回结构化的Channel类型（运行时仍然是i8*指针，但在编译时保留类型信息）
+		return &ChanType{ElementType: elementType}, nil
 	}
 
 	// 5. 检查是否是Result类型 (Result[T, E])
