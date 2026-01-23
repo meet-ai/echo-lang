@@ -1,6 +1,6 @@
 #include "task.h"
-#include "future.h"
-#include "coroutine.h"
+// #include "../async/entity/future.h" // 暂时禁用future支持
+#include "../coroutine/coroutine.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -33,7 +33,7 @@ Task* task_create(void (*entry_point)(void*), void* arg) {
     task->status = TASK_READY;
     task->entry_point = entry_point;  // 设置入口点函数
     task->arg = arg;                  // 设置参数
-    task->future = NULL;
+    // task->future = NULL; // 暂时禁用future支持
     task->coroutine = NULL;
     task->result = NULL;
     task->stack = NULL;
@@ -60,10 +60,10 @@ void task_destroy(Task* task) {
     }
 
     // 清理关联的Future
-    if (task->future) {
-        future_destroy(task->future);
-        task->future = NULL;
-    }
+    // if (task->future) {
+    //     future_destroy(task->future);
+    //     task->future = NULL; // 暂时禁用future支持
+    // } // 暂时禁用future支持
 
     // 清理栈内存
     if (task->stack) {
@@ -104,10 +104,10 @@ void task_execute(Task* task) {
             task->status = TASK_COMPLETED;
 
             // 如果有Future，解决它（spawn任务通常没有返回值，所以传递NULL）
-            if (task->future) {
-                future_resolve(task->future, NULL);
-                printf("DEBUG: Task %llu resolved its future %llu\n", task->id, task->future->id);
-            }
+            // if (task->future) {
+            //     future_resolve(task->future, NULL);
+            //     printf("DEBUG: Task %llu resolved its future %llu\n", task->id, task->future->id);
+            // } // 暂时禁用future支持
         }
 
         // 调用完成回调
@@ -142,15 +142,15 @@ void task_wait(Task* task) {
 }
 
 // 设置任务的Future
-void task_set_future(Task* task, Future* future) {
-    if (!task || !future) return;
+// void task_set_future(Task* task, Future* future) {
+//     if (!task || !future) return;
 
-    pthread_mutex_lock(&task->mutex);
-    task->future = future;
-    task->status = TASK_WAITING;
-    printf("DEBUG: Task %llu now waiting on future %llu\n", task->id, future->id);
-    pthread_mutex_unlock(&task->mutex);
-}
+//     pthread_mutex_lock(&task->mutex);
+//     task->future = future;
+//     task->status = TASK_WAITING;
+//     printf("DEBUG: Task %llu now waiting on future %llu\n", task->id, future->id);
+//     pthread_mutex_unlock(&task->mutex);
+// } // 暂时禁用future支持
 
 // 唤醒任务
 void task_wake(Task* task) {

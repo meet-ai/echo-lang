@@ -330,6 +330,21 @@ func (sg *StatementGeneratorImpl) GeneratePrintStatement(irManager generation.IR
 
 // GenerateVarDeclaration 生成变量声明
 func (sg *StatementGeneratorImpl) GenerateVarDeclaration(irManager generation.IRModuleManager, stmt *entities.VarDecl) (*generation.StatementGenerationResult, error) {
+	// 检查变量是否在当前作用域已经存在
+	// 如果存在，将其视为赋值语句而不是新的变量声明
+	// 这样可以处理 "let i: int = i + 1" 这种情况（在循环中更新循环变量）
+	// 注意：只检查当前作用域，不检查外层作用域（允许 shadowing）
+	existsInCurrentScope := sg.symbolManager.SymbolExistsInCurrentScope(stmt.Name)
+	if existsInCurrentScope {
+		// 变量在当前作用域已存在，生成赋值语句
+		fmt.Printf("DEBUG: VarDecl %s exists in current scope, treating as assignment\n", stmt.Name)
+		return sg.GenerateAssignmentStatement(irManager, &entities.AssignStmt{
+			Name:  stmt.Name,
+			Value: stmt.Value,
+		})
+	}
+	fmt.Printf("DEBUG: VarDecl %s does not exist in current scope, creating new alloca\n", stmt.Name)
+
 	// 映射变量类型（支持复杂类型如Future[T]）
 	typeInterface, err := sg.typeMapper.MapType(stmt.Type)
 	if err != nil {
@@ -349,13 +364,16 @@ func (sg *StatementGeneratorImpl) GenerateVarDeclaration(irManager generation.IR
 	}
 
 	// 使用irManager创建alloca指令
+	fmt.Printf("DEBUG: Creating alloca for %s, current block: %v\n", stmt.Name, irManager.GetCurrentBasicBlock())
 	alloca, err := irManager.CreateAlloca(llvmType, stmt.Name)
 	if err != nil {
+		fmt.Printf("DEBUG: Failed to create alloca for %s: %v\n", stmt.Name, err)
 		return &generation.StatementGenerationResult{
 			Success: false,
 			Error:   fmt.Errorf("failed to create alloca instruction: %w", err),
 		}, nil
 	}
+	fmt.Printf("DEBUG: Successfully created alloca for %s: %v\n", stmt.Name, alloca)
 
 	// 注册符号
 	if err := sg.symbolManager.RegisterSymbol(stmt.Name, stmt.Type, alloca); err != nil {
@@ -411,11 +429,13 @@ func (sg *StatementGeneratorImpl) GenerateAssignmentStatement(irManager generati
 	// 获取目标符号
 	targetSymbol, err := sg.symbolManager.LookupSymbol(stmt.Name)
 	if err != nil {
+		fmt.Printf("DEBUG: Assignment failed - symbol %s not found: %v\n", stmt.Name, err)
 		return &generation.StatementGenerationResult{
 			Success: false,
 			Error:   fmt.Errorf("undefined symbol %s: %w", stmt.Name, err),
 		}, nil
 	}
+	fmt.Printf("DEBUG: Assignment - found symbol %s in scope\n", stmt.Name)
 
 	// 生成存储指令
 	err = irManager.CreateStore(valueResult, targetSymbol.Value)
@@ -578,21 +598,38 @@ func (sg *StatementGeneratorImpl) GenerateFuncDefinition(irManager generation.IR
 		}
 	}
 
+	// 为函数体创建新的作用域
+	if err := sg.symbolManager.EnterScope(); err != nil {
+		return &generation.StatementGenerationResult{
+			Success: false,
+			Error:   fmt.Errorf("failed to enter function body scope: %w", err),
+		}, nil
+	}
+
 	// 生成函数体中的语句
 	if stmt.Body != nil {
 		for _, bodyStmt := range stmt.Body {
 			result, err := sg.GenerateStatement(irManager, bodyStmt)
 			if err != nil {
+				sg.symbolManager.ExitScope() // 清理作用域
 				return &generation.StatementGenerationResult{
 					Success: false,
 					Error:   fmt.Errorf("failed to generate statement in function %s: %w", stmt.Name, err),
 				}, nil
 			}
 			if !result.Success {
+				sg.symbolManager.ExitScope() // 清理作用域
 				return result, nil
 			}
 		}
-	} else {
+	}
+
+	// 退出函数体作用域
+	if err := sg.symbolManager.ExitScope(); err != nil {
+		return &generation.StatementGenerationResult{
+			Success: false,
+			Error:   fmt.Errorf("failed to exit function body scope: %w", err),
+		}, nil
 	}
 
 	return &generation.StatementGenerationResult{
@@ -755,7 +792,7 @@ func (sg *StatementGeneratorImpl) GenerateEnumDefinition(irManager generation.IR
 	for i, variant := range stmt.Variants {
 		// 创建枚举常量值
 		// 注意：这里假设枚举值为i32类型
-		constName := fmt.Sprintf("%s_%s", stmt.Name, variant)
+		constName := fmt.Sprintf("%s_%s", stmt.Name, variant.Name)
 
 		// 将枚举值存储在符号表中，便于后续引用
 		if err := sg.symbolManager.RegisterSymbol(constName, "i32", i); err != nil {

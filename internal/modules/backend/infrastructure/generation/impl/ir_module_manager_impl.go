@@ -17,9 +17,10 @@ type IRModuleManagerImpl struct {
 	module            *ir.Module
 	currentFunc       *ir.Func
 	currentBlock      *ir.Block
-	builder           *ir.Block      // 当前基本块的构建器
-	stringCount       int            // 字符串常量计数器
+	builder           *ir.Block           // 当前基本块的构建器
+	stringCount       int                 // 字符串常量计数器
 	externalFunctions map[string]*ir.Func // 外部函数缓存
+	variableCounters  map[string]int      // 变量名计数器，用于生成唯一的LLVM IR变量名
 }
 
 // NewIRModuleManagerImpl 创建IR模块管理器实现
@@ -28,6 +29,7 @@ func NewIRModuleManagerImpl() *IRModuleManagerImpl {
 		module:            ir.NewModule(),
 		stringCount:       0,
 		externalFunctions: make(map[string]*ir.Func),
+		variableCounters:  make(map[string]int),
 	}
 
 	// 声明协程运行时函数
@@ -41,7 +43,6 @@ func (m *IRModuleManagerImpl) AddGlobalVariable(name string, value interface{}) 
 	// 暂时不支持全局变量
 	return fmt.Errorf("global variables not yet supported")
 }
-
 
 // CreateFunction 创建函数
 func (m *IRModuleManagerImpl) CreateFunction(name string, returnType interface{}, paramTypes []interface{}) (interface{}, error) {
@@ -101,6 +102,12 @@ func (m *IRModuleManagerImpl) CreateFunction(name string, returnType interface{}
 		params = append(params, param)
 	}
 
+	// 检查函数是否已存在（避免重复创建，特别是main函数）
+	existingFunc := m.findFunction(name)
+	if existingFunc != nil {
+		return existingFunc, nil
+	}
+
 	// 创建函数
 	fn := ir.NewFunc(name, llvmReturnType, params...)
 
@@ -119,6 +126,8 @@ func (m *IRModuleManagerImpl) GetCurrentFunction() interface{} {
 func (m *IRModuleManagerImpl) SetCurrentFunction(fn interface{}) error {
 	if llvmFunc, ok := fn.(*ir.Func); ok {
 		m.currentFunc = llvmFunc
+		// 重置变量名计数器，每个函数有独立的变量命名空间
+		m.variableCounters = make(map[string]int)
 		return nil
 	}
 	return fmt.Errorf("invalid function type")
@@ -160,9 +169,23 @@ func (m *IRModuleManagerImpl) CreateAlloca(typ interface{}, name string) (interf
 		return nil, fmt.Errorf("invalid type for alloca: %T", typ)
 	}
 
+	// 生成唯一的变量名，避免同名变量冲突
+	uniqueName := m.generateUniqueVariableName(name)
+
 	alloca := m.currentBlock.NewAlloca(llvmType)
-	alloca.SetName(name)
+	alloca.SetName(uniqueName)
 	return alloca, nil
+}
+
+// generateUniqueVariableName 生成唯一的变量名
+// 为每个变量名添加计数器后缀（如 i_0, i_1, i_2），确保所有变量名都是唯一的
+func (m *IRModuleManagerImpl) generateUniqueVariableName(baseName string) string {
+	// 获取当前计数器值
+	count := m.variableCounters[baseName]
+	// 增加计数器
+	m.variableCounters[baseName] = count + 1
+	// 生成唯一名称（即使是第一次使用也添加 _0 后缀）
+	return fmt.Sprintf("%s_%d", baseName, count)
 }
 
 // CreateStore 创建store指令
@@ -223,7 +246,9 @@ func (m *IRModuleManagerImpl) CreateLoad(typ interface{}, ptr interface{}, name 
 	}
 
 	load := m.currentBlock.NewLoad(llvmType, llvmPtr)
-	load.SetName(name)
+	// 生成唯一的变量名，避免同名变量冲突
+	uniqueName := m.generateUniqueVariableName(name)
+	load.SetName(uniqueName)
 	return load, nil
 }
 
@@ -304,22 +329,71 @@ func (m *IRModuleManagerImpl) CreateBinaryOp(op string, left interface{}, right 
 	var result value.Value
 	switch op {
 	case "+":
-		// 检查是否为字符串拼接（两个操作数都是指针类型）
+		// 检查是否为字符串拼接
 		leftTypeStr := llvmLeft.Type().String()
 		rightTypeStr := llvmRight.Type().String()
 		fmt.Printf("DEBUG: Binary op + with types: left=%s, right=%s\n", leftTypeStr, rightTypeStr)
-		if strings.HasSuffix(leftTypeStr, "*") && strings.HasSuffix(rightTypeStr, "*") {
+		
+		leftIsString := strings.HasSuffix(leftTypeStr, "*")
+		rightIsString := strings.HasSuffix(rightTypeStr, "*")
+		leftIsInt := strings.HasPrefix(leftTypeStr, "i32") || strings.HasPrefix(leftTypeStr, "i64")
+		rightIsInt := strings.HasPrefix(rightTypeStr, "i32") || strings.HasPrefix(rightTypeStr, "i64")
+		
+		if leftIsString || rightIsString {
+			// 字符串拼接：需要将整数转换为字符串
+			var leftStr, rightStr llvalue.Value
+			
+			if leftIsString {
+				leftStr = llvmLeft
+			} else if leftIsInt {
+				// 将整数转换为字符串
+				intToStrFunc, exists := m.externalFunctions["int_to_string"]
+				if !exists {
+					// 声明 int_to_string 函数
+					intToStrFunc = m.module.NewFunc("int_to_string",
+						types.NewPointer(types.I8), // 返回字符串指针
+						ir.NewParam("value", types.I32), // 整数参数
+					)
+					m.externalFunctions["int_to_string"] = intToStrFunc
+				}
+				callResult, err := m.CreateCall(intToStrFunc, llvmLeft)
+				if err != nil {
+					return nil, fmt.Errorf("failed to convert int to string: %w", err)
+				}
+				leftStr = callResult.(llvalue.Value)
+			} else {
+				return nil, fmt.Errorf("unsupported type for string concatenation: %s", leftTypeStr)
+			}
+			
+			if rightIsString {
+				rightStr = llvmRight
+			} else if rightIsInt {
+				// 将整数转换为字符串
+				intToStrFunc, exists := m.externalFunctions["int_to_string"]
+				if !exists {
+					// 声明 int_to_string 函数
+					intToStrFunc = m.module.NewFunc("int_to_string",
+						types.NewPointer(types.I8), // 返回字符串指针
+						ir.NewParam("value", types.I32), // 整数参数
+					)
+					m.externalFunctions["int_to_string"] = intToStrFunc
+				}
+				callResult, err := m.CreateCall(intToStrFunc, llvmRight)
+				if err != nil {
+					return nil, fmt.Errorf("failed to convert int to string: %w", err)
+				}
+				rightStr = callResult.(llvalue.Value)
+			} else {
+				return nil, fmt.Errorf("unsupported type for string concatenation: %s", rightTypeStr)
+			}
+			
+			// 调用 string_concat 函数
 			fmt.Printf("DEBUG: Detected string concatenation, calling string_concat\n")
-			// 字符串拼接：调用 string_concat 函数
-			var err error
-			callResult, err := m.CreateCall("string_concat", llvmLeft, llvmRight)
+			callResult, err := m.CreateCall("string_concat", leftStr, rightStr)
 			if err != nil {
 				return nil, fmt.Errorf("failed to create string concatenation call: %w", err)
 			}
 			result = callResult.(llvalue.Value)
-			if err != nil {
-				return nil, fmt.Errorf("failed to create string concatenation call: %w", err)
-			}
 		} else {
 			fmt.Printf("DEBUG: Performing numeric addition\n")
 			// 数值加法
@@ -331,6 +405,9 @@ func (m *IRModuleManagerImpl) CreateBinaryOp(op string, left interface{}, right 
 		result = m.currentBlock.NewMul(llvmLeft, llvmRight)
 	case "/":
 		result = m.currentBlock.NewSDiv(llvmLeft, llvmRight)
+	case "%":
+		// 模运算符：使用 SRem（有符号取余）
+		result = m.currentBlock.NewSRem(llvmLeft, llvmRight)
 	case "==":
 		result = m.currentBlock.NewICmp(enum.IPredEQ, llvmLeft, llvmRight)
 	case "!=":
@@ -348,7 +425,9 @@ func (m *IRModuleManagerImpl) CreateBinaryOp(op string, left interface{}, right 
 	}
 
 	if name != "" {
-		result.(value.Named).SetName(name)
+		// 生成唯一的变量名，避免同名变量冲突
+		uniqueName := m.generateUniqueVariableName(name)
+		result.(value.Named).SetName(uniqueName)
 	}
 
 	return result, nil
@@ -438,7 +517,13 @@ func (m *IRModuleManagerImpl) CreateBitCast(value interface{}, targetType interf
 		return nil, fmt.Errorf("invalid target type for bitcast")
 	}
 
-	return m.currentBlock.NewBitCast(llvmValue, llvmTargetType), nil
+	bitcast := m.currentBlock.NewBitCast(llvmValue, llvmTargetType)
+	if name != "" {
+		// 生成唯一的变量名，避免同名变量冲突
+		uniqueName := m.generateUniqueVariableName(name)
+		bitcast.SetName(uniqueName)
+	}
+	return bitcast, nil
 }
 
 // GetIRString 获取最终的IR字符串
@@ -486,19 +571,49 @@ func (m *IRModuleManagerImpl) AddStringConstant(s string) (*ir.Global, error) {
 
 // Finalize 完成IR构建
 func (m *IRModuleManagerImpl) Finalize() error {
-	// 为所有函数的最后一个基本块添加terminator
+	// 为所有函数的所有基本块添加terminator（如果缺失）
 	for _, fn := range m.module.Funcs {
-		if len(fn.Blocks) > 0 {
-			lastBlock := fn.Blocks[len(fn.Blocks)-1]
-			if lastBlock.Term == nil {
-				// 根据函数返回类型添加适当的terminator
-				if fn.Sig.RetType == types.Void {
-					lastBlock.NewRet(nil)
-				} else if fn.Sig.RetType == types.I32 {
-					lastBlock.NewRet(constant.NewInt(types.I32, 0))
+		// 检查所有基本块，确保每个基本块都有terminator
+		for i, block := range fn.Blocks {
+			if block.Term == nil {
+				// 如果基本块没有terminator，需要添加
+				// 检查是否是最后一个基本块
+				isLastBlock := (i == len(fn.Blocks)-1)
+				
+				// 检查基本块名称，判断是否是控制流结束块（如 while.end, if.end）
+				// 注意：ir.Block 没有 Name() 方法，我们需要通过其他方式判断
+				// 暂时简化处理：对于非最后一个基本块，如果有后续基本块，跳转到下一个
+				
+				if isLastBlock {
+					// 最后一个基本块：根据函数返回类型添加ret指令
+					if fn.Sig.RetType == types.Void {
+						block.NewRet(nil)
+					} else if fn.Sig.RetType == types.I32 {
+						block.NewRet(constant.NewInt(types.I32, 0))
+					} else {
+						// 对于其他类型，暂时添加unreachable
+						block.NewUnreachable()
+					}
 				} else {
-					// 对于其他类型，暂时添加unreachable
-					lastBlock.NewUnreachable()
+					// 非最后一个基本块缺少terminator
+					// 检查是否有后续基本块，如果有，跳转到下一个
+					// 这通常发生在控制流结束块（如 while.end, if.end）之后还有语句的情况
+					if i+1 < len(fn.Blocks) {
+						nextBlock := fn.Blocks[i+1]
+						block.NewBr(nextBlock)
+					} else {
+						// 没有后续基本块，添加ret指令
+						if fn.Sig.RetType == types.Void {
+							block.NewRet(nil)
+						} else if fn.Sig.RetType == types.I32 {
+							block.NewRet(constant.NewInt(types.I32, 0))
+						} else {
+							block.NewUnreachable()
+						}
+					}
+					// 其他情况：非最后一个基本块缺少terminator，这通常不应该发生
+					// 但为了安全，添加unreachable
+					block.NewUnreachable()
 				}
 			}
 		}
@@ -519,61 +634,61 @@ func (m *IRModuleManagerImpl) Finalize() error {
 	if mainFunc != nil && len(mainFunc.Blocks) > 0 {
 		lastBlock := mainFunc.Blocks[len(mainFunc.Blocks)-1]
 		if lastBlock.Term == nil {
-		// 在return之前调用run_scheduler启动协程调度器
-		if runSchedulerFunc, exists := m.externalFunctions["run_scheduler"]; exists {
-			lastBlock.NewCall(runSchedulerFunc)
-		}
+			// 在return之前调用run_scheduler启动协程调度器
+			if runSchedulerFunc, exists := m.externalFunctions["run_scheduler"]; exists {
+				lastBlock.NewCall(runSchedulerFunc)
+			}
 
-		if mainFunc.Sig.RetType == types.I32 {
-			lastBlock.NewRet(constant.NewInt(types.I32, 0))
-		} else if mainFunc.Sig.RetType == types.Void {
-			lastBlock.NewRet(nil)
-		}
-	} else {
-		// 如果已经有terminator，修改最后的block
-		blocks := mainFunc.Blocks
-		if len(blocks) > 0 {
-			lastBlock := blocks[len(blocks)-1]
+			if mainFunc.Sig.RetType == types.I32 {
+				lastBlock.NewRet(constant.NewInt(types.I32, 0))
+			} else if mainFunc.Sig.RetType == types.Void {
+				lastBlock.NewRet(nil)
+			}
+		} else {
+			// 如果已经有terminator，修改最后的block
+			blocks := mainFunc.Blocks
+			if len(blocks) > 0 {
+				lastBlock := blocks[len(blocks)-1]
 
-			// 检查block是否有terminator，如果有则修改
-			instructions := lastBlock.Insts
-			if len(instructions) > 0 {
-				lastInst := instructions[len(instructions)-1]
-				// 检查是否是return指令（通过类型名）
-				if strings.Contains(fmt.Sprintf("%T", lastInst), "Ret") {
-					// 移除return指令
-					lastBlock.Insts = instructions[:len(instructions)-1]
+				// 检查block是否有terminator，如果有则修改
+				instructions := lastBlock.Insts
+				if len(instructions) > 0 {
+					lastInst := instructions[len(instructions)-1]
+					// 检查是否是return指令（通过类型名）
+					if strings.Contains(fmt.Sprintf("%T", lastInst), "Ret") {
+						// 移除return指令
+						lastBlock.Insts = instructions[:len(instructions)-1]
 
-					// 在return之前调用run_scheduler
+						// 在return之前调用run_scheduler
+						if runSchedulerFunc, exists := m.externalFunctions["run_scheduler"]; exists {
+							lastBlock.NewCall(runSchedulerFunc)
+						}
+
+						// 重新添加return指令
+						if mainFunc.Sig.RetType == types.I32 {
+							lastBlock.NewRet(constant.NewInt(types.I32, 0))
+						} else if mainFunc.Sig.RetType == types.Void {
+							lastBlock.NewRet(nil)
+						}
+					} else {
+						// 如果没有return指令，直接添加run_scheduler调用
+						if runSchedulerFunc, exists := m.externalFunctions["run_scheduler"]; exists {
+							lastBlock.NewCall(runSchedulerFunc)
+						}
+					}
+				} else {
+					// 如果block为空，添加run_scheduler调用和return
 					if runSchedulerFunc, exists := m.externalFunctions["run_scheduler"]; exists {
 						lastBlock.NewCall(runSchedulerFunc)
 					}
-
-					// 重新添加return指令
 					if mainFunc.Sig.RetType == types.I32 {
 						lastBlock.NewRet(constant.NewInt(types.I32, 0))
 					} else if mainFunc.Sig.RetType == types.Void {
 						lastBlock.NewRet(nil)
 					}
-				} else {
-					// 如果没有return指令，直接添加run_scheduler调用
-					if runSchedulerFunc, exists := m.externalFunctions["run_scheduler"]; exists {
-						lastBlock.NewCall(runSchedulerFunc)
-					}
-				}
-			} else {
-				// 如果block为空，添加run_scheduler调用和return
-				if runSchedulerFunc, exists := m.externalFunctions["run_scheduler"]; exists {
-					lastBlock.NewCall(runSchedulerFunc)
-				}
-				if mainFunc.Sig.RetType == types.I32 {
-					lastBlock.NewRet(constant.NewInt(types.I32, 0))
-				} else if mainFunc.Sig.RetType == types.Void {
-					lastBlock.NewRet(nil)
 				}
 			}
 		}
-	}
 	}
 
 	return nil
@@ -593,8 +708,19 @@ func (m *IRModuleManagerImpl) createMainFunction() error {
 	}
 
 	// 用户没有定义main函数，创建一个空的
-	mainFunc := m.module.NewFunc("main", types.I32)
-	m.module.Funcs = append(m.module.Funcs, mainFunc)
+	// 注意：m.module.NewFunc 可能已经自动添加到模块，所以先检查
+	var mainFunc *ir.Func
+	mainFunc = m.findFunction("main")
+	if mainFunc == nil {
+		mainFunc = m.module.NewFunc("main", types.I32)
+		// 只有在函数不存在时才添加到模块（NewFunc可能已经自动添加）
+		if m.findFunction("main") == nil {
+			m.module.Funcs = append(m.module.Funcs, mainFunc)
+		} else {
+			// 如果NewFunc已经自动添加，重新获取
+			mainFunc = m.findFunction("main")
+		}
+	}
 
 	entryBlock := mainFunc.NewBlock("entry")
 	entryBlock.NewRet(constant.NewInt(types.I32, 0))
@@ -665,14 +791,14 @@ func (m *IRModuleManagerImpl) declareCoroutineRuntimeFunctions() {
 	spawnFunc := m.module.NewFunc("coroutine_spawn",
 		types.NewPointer(types.I8), // 返回协程句柄
 		ir.NewParam("entry", types.NewPointer(&types.FuncType{RetType: types.Void, Params: []types.Type{types.NewPointer(types.I8)}})), // 入口函数指针类型
-		ir.NewParam("arg_count", types.I32),              // 参数数量
-		ir.NewParam("args", types.NewPointer(types.I8)),  // 参数数组
+		ir.NewParam("arg_count", types.I32),               // 参数数量
+		ir.NewParam("args", types.NewPointer(types.I8)),   // 参数数组
 		ir.NewParam("future", types.NewPointer(types.I8)), // Future指针
 	)
 	m.externalFunctions["coroutine_spawn"] = spawnFunc
 
 	awaitFunc := m.module.NewFunc("coroutine_await",
-		types.NewPointer(types.I8), // 返回结果
+		types.NewPointer(types.I8),                        // 返回结果
 		ir.NewParam("future", types.NewPointer(types.I8)), // Future指针
 	)
 	m.externalFunctions["coroutine_await"] = awaitFunc
@@ -710,16 +836,16 @@ func (m *IRModuleManagerImpl) declareCoroutineRuntimeFunctions() {
 	m.externalFunctions["channel_send"] = channelSendFunc
 
 	channelReceiveFunc := m.module.NewFunc("channel_receive",
-		types.NewPointer(types.I8), // 返回接收的值
+		types.NewPointer(types.I8),                         // 返回接收的值
 		ir.NewParam("channel", types.NewPointer(types.I8)), // 通道指针
 	)
 	m.externalFunctions["channel_receive"] = channelReceiveFunc
 
 	channelSelectFunc := m.module.NewFunc("channel_select",
 		types.I32, // 返回选择的case索引
-		ir.NewParam("channels", types.NewPointer(types.I8)), // 通道数组
+		ir.NewParam("channels", types.NewPointer(types.I8)),   // 通道数组
 		ir.NewParam("operations", types.NewPointer(types.I8)), // 操作数组
-		ir.NewParam("count", types.I32), // case数量
+		ir.NewParam("count", types.I32),                       // case数量
 	)
 	m.externalFunctions["channel_select"] = channelSelectFunc
 
@@ -737,11 +863,18 @@ func (m *IRModuleManagerImpl) declareCoroutineRuntimeFunctions() {
 
 	// 字符串拼接函数
 	stringConcatFunc := m.module.NewFunc("string_concat",
-		types.NewPointer(types.I8), // 返回拼接后的字符串指针
-		ir.NewParam("left", types.NewPointer(types.I8)),   // 左侧字符串
-		ir.NewParam("right", types.NewPointer(types.I8)),  // 右侧字符串
+		types.NewPointer(types.I8),                       // 返回拼接后的字符串指针
+		ir.NewParam("left", types.NewPointer(types.I8)),  // 左侧字符串
+		ir.NewParam("right", types.NewPointer(types.I8)), // 右侧字符串
 	)
 	m.externalFunctions["string_concat"] = stringConcatFunc
+
+	// 整数转字符串函数
+	intToStringFunc := m.module.NewFunc("int_to_string",
+		types.NewPointer(types.I8),  // 返回字符串指针
+		ir.NewParam("value", types.I32), // 整数参数
+	)
+	m.externalFunctions["int_to_string"] = intToStringFunc
 
 	// 运行调度器函数
 	runSchedulerFunc := m.module.NewFunc("run_scheduler",

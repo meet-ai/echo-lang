@@ -31,3 +31,4 @@ type ErrorDTO struct {
 	Severity string       `json:"severity"`
 	Time     time.Time    `json:"time"`
 }
+

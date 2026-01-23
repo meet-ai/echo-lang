@@ -1,7 +1,7 @@
 #include "channel.h"
-#include "coroutine.h"
-#include "task.h"
-#include "scheduler.h"
+#include "../coroutine/coroutine.h"
+#include "../task/task.h"
+#include "../scheduler/scheduler.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

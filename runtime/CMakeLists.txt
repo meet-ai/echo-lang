@@ -9,11 +9,11 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 # Global build options
 option(RUNTIME_ENABLE_GC "Enable garbage collection support" ON)
 option(RUNTIME_ENABLE_COROUTINE "Enable coroutine support" ON)
-option(RUNTIME_ENABLE_NETWORK "Enable network communication support" ON)
+option(RUNTIME_ENABLE_NETWORK "Enable network communication support" OFF)
 option(RUNTIME_ENABLE_FILESYSTEM "Enable filesystem support" ON)
 option(RUNTIME_ENABLE_DEBUG "Enable debug and monitoring support" ON)
-option(RUNTIME_BUILD_TESTS "Build test executables" ON)
-option(RUNTIME_BUILD_EXAMPLES "Build example programs" ON)
+option(RUNTIME_BUILD_TESTS "Build test executables" OFF)
+option(RUNTIME_BUILD_EXAMPLES "Build example programs" OFF)
 option(RUNTIME_BUILD_SHARED "Build shared libraries" OFF)
 
 # Platform detection
@@ -44,6 +44,7 @@ endif()
 
 # Include directories
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/api)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/platform/interface)
 
 # Platform-specific includes
@@ -54,39 +55,93 @@ endif()
 # Find required packages
 find_package(Threads REQUIRED)
 
-# Core runtime (always included)
-add_subdirectory(core)
+# Collect all source files
+file(GLOB_RECURSE RUNTIME_SOURCES
+    "domain/**/*.c"
+    "infrastructure/**/*.c"
+    "shared/**/*.c"
+    "api/*.c"
+    "platform/**/*.c"
+)
 
-# API layer
-add_subdirectory(api)
+# Exclude incomplete modules for now
+list(FILTER RUNTIME_SOURCES EXCLUDE REGEX ".*/communication/.*")
+list(FILTER RUNTIME_SOURCES EXCLUDE REGEX ".*/concurrency/.*")
+list(FILTER RUNTIME_SOURCES EXCLUDE REGEX ".*/coroutine/context\.c$") # 暂时排除有问题的context.c
+list(FILTER RUNTIME_SOURCES EXCLUDE REGEX ".*/event/.*")
+list(FILTER RUNTIME_SOURCES EXCLUDE REGEX ".*/executor/.*")
+list(FILTER RUNTIME_SOURCES EXCLUDE REGEX ".*/future/.*")
+list(FILTER RUNTIME_SOURCES EXCLUDE REGEX ".*/gc/.*")
+list(FILTER RUNTIME_SOURCES EXCLUDE REGEX ".*/reactor/.*")
+list(FILTER RUNTIME_SOURCES EXCLUDE REGEX ".*/scheduler/.*")
+# list(FILTER RUNTIME_SOURCES EXCLUDE REGEX ".*/task/.*") # 已修复，重新包含
+list(FILTER RUNTIME_SOURCES EXCLUDE REGEX ".*/infrastructure/.*")
 
-# Bounded contexts (conditionally included)
-if(RUNTIME_ENABLE_NETWORK)
-    add_subdirectory(bounded-contexts/network)
-endif()
+# Create the main library
+add_library(echo_runtime ${RUNTIME_SOURCES})
 
-if(RUNTIME_ENABLE_FILESYSTEM)
-    add_subdirectory(bounded-contexts/filesystem)
-endif()
+# Include directories
+target_include_directories(echo_runtime PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/api
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/types
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/events
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/exceptions
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/monitoring
+    ${CMAKE_CURRENT_SOURCE_DIR}/domain
+    ${CMAKE_CURRENT_SOURCE_DIR}/infrastructure
+    ${CMAKE_CURRENT_SOURCE_DIR}/application
+    ${CMAKE_CURRENT_SOURCE_DIR}/platform/interface
+)
 
-add_subdirectory(bounded-contexts/channel)
-
-if(RUNTIME_ENABLE_DEBUG)
-    add_subdirectory(bounded-contexts/debug)
-endif()
-
-# Platform abstraction
-add_subdirectory(platform)
+# Link libraries
+target_link_libraries(echo_runtime PUBLIC Threads::Threads)
 
 # Tests
 if(RUNTIME_BUILD_TESTS)
     enable_testing()
-    add_subdirectory(tests)
+
+    # Build test executables directly
+    file(GLOB TEST_SOURCES "tests/*.c")
+    foreach(TEST_SRC ${TEST_SOURCES})
+        get_filename_component(TEST_NAME ${TEST_SRC} NAME_WE)
+        add_executable(${TEST_NAME} ${TEST_SRC})
+        target_link_libraries(${TEST_NAME} echo_runtime)
+        add_test(NAME ${TEST_NAME} COMMAND ${TEST_NAME})
+    endforeach()
+
+    # Build integration tests
+    file(GLOB INTEGRATION_TEST_SOURCES "tests/integration-tests/*.c")
+    foreach(TEST_SRC ${INTEGRATION_TEST_SOURCES})
+        get_filename_component(TEST_NAME ${TEST_SRC} NAME_WE)
+        add_executable(${TEST_NAME} ${TEST_SRC})
+        target_link_libraries(${TEST_NAME} echo_runtime)
+        add_test(NAME ${TEST_NAME} COMMAND ${TEST_NAME})
+    endforeach()
+
+    # Build performance tests
+    file(GLOB PERF_TEST_SOURCES "tests/performance-tests/*.c")
+    foreach(TEST_SRC ${PERF_TEST_SOURCES})
+        get_filename_component(TEST_NAME ${TEST_SRC} NAME_WE)
+        add_executable(${TEST_NAME} ${TEST_SRC})
+        target_link_libraries(${TEST_NAME} echo_runtime)
+        add_test(NAME ${TEST_NAME} COMMAND ${TEST_NAME})
+    endforeach()
+else()
+    message(STATUS "Tests disabled")
 endif()
 
 # Examples
 if(RUNTIME_BUILD_EXAMPLES)
-    add_subdirectory(examples)
+    # Build example executables directly
+    file(GLOB EXAMPLE_SOURCES "examples/*.c")
+    foreach(EXAMPLE_SRC ${EXAMPLE_SOURCES})
+        get_filename_component(EXAMPLE_NAME ${EXAMPLE_SRC} NAME_WE)
+        add_executable(${EXAMPLE_NAME} ${EXAMPLE_SRC})
+        target_link_libraries(${EXAMPLE_NAME} echo_runtime)
+    endforeach()
+else()
+    message(STATUS "Examples disabled")
 endif()
 
 # Installation

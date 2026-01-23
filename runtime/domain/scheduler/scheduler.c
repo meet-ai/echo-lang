@@ -1,5 +1,7 @@
 #include "scheduler.h"
 #include "processor.h"
+#include "../coroutine/coroutine.h"
+#include "../task/task.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -297,11 +299,50 @@ void scheduler_run(Scheduler* scheduler) {
                     scheduler->tasks_completed++;
                     printf("DEBUG: Task %llu completed\n", task->id);
 
-                    // 清理任务
+                    // 如果任务有关联的协程，检查协程状态
+                    if (task->coroutine) {
+                        Coroutine* coroutine = task->coroutine;
+                        CoroutineState state = coroutine_get_state(coroutine);
+                        
+                        // 如果协程已完成、失败或取消，资源会在 task_destroy 中清理
+                        if (state == COROUTINE_COMPLETED || 
+                            state == COROUTINE_FAILED || 
+                            state == COROUTINE_CANCELLED) {
+                            printf("DEBUG: Task %llu coroutine %llu in terminal state, will be cleaned up\n",
+                                   task->id, coroutine->id);
+                        }
+                    }
+
+                    // 清理任务（这会同时清理关联的协程资源）
                     task_destroy(task);
                 } else {
-                    // 任务未完成，重新放回队列
-                    processor_push_local(processor, task);
+                    // 任务未完成，检查协程状态并决定是否重新调度
+                    if (task->coroutine) {
+                        Coroutine* coroutine = task->coroutine;
+                        CoroutineState state = coroutine_get_state(coroutine);
+                        
+                        // 根据协程状态决定是否重新放回队列
+                        if (state == COROUTINE_SUSPENDED || state == COROUTINE_READY) {
+                            // 协程处于可调度状态，重新放回队列等待恢复
+                            printf("DEBUG: Task %llu coroutine %llu state=%d, pushing back to queue\n",
+                                   task->id, coroutine->id, state);
+                            processor_push_local(processor, task);
+                        } else if (state == COROUTINE_RUNNING) {
+                            // 协程仍在运行，不应该发生（任务应该还在执行）
+                            printf("DEBUG: Task %llu coroutine %llu still running, pushing back to queue\n",
+                                   task->id, coroutine->id);
+                            processor_push_local(processor, task);
+                        } else {
+                            // 其他状态（已完成、失败、取消），不应该重新调度
+                            printf("DEBUG: Task %llu coroutine %llu in terminal state %d, marking task as completed\n",
+                                   task->id, coroutine->id, state);
+                            task->status = TASK_COMPLETED;
+                            task_destroy(task);
+                        }
+                    } else {
+                        // 没有协程，直接放回队列
+                        processor_push_local(processor, task);
+                    }
                 }
             } else {
                 printf("DEBUG: No work found for processor %u\n", processor->id);
@@ -338,6 +379,40 @@ void scheduler_stop(Scheduler* scheduler) {
 
     scheduler->is_running = false;
     printf("DEBUG: Scheduler stop requested\n");
+}
+
+// 通知调度器协程已完成
+void scheduler_notify_coroutine_completed(Scheduler* scheduler, struct Coroutine* coroutine) {
+    if (!scheduler || !coroutine) return;
+
+    printf("DEBUG: Notifying scheduler that coroutine %llu completed\n", coroutine->id);
+
+    // 如果协程有关联的任务，更新任务状态
+    if (coroutine->task) {
+        struct Task* task = coroutine->task;
+        pthread_mutex_lock(&task->mutex);
+        if (task->status == TASK_RUNNING || task->status == TASK_WAITING) {
+            task->status = TASK_COMPLETED;
+            printf("DEBUG: Task %llu marked as completed\n", task->id);
+            
+            // 唤醒等待任务的线程
+            pthread_cond_signal(&task->cond);
+        }
+        pthread_mutex_unlock(&task->mutex);
+    }
+
+    // 更新调度器统计
+    scheduler->tasks_completed++;
+
+    // 调用协程完成回调（如果已设置）
+    if (coroutine->on_complete) {
+        coroutine->on_complete(coroutine);
+    }
+
+    // 清理协程资源（延迟清理，因为可能还有引用）
+    // 注意：这里不立即销毁协程，因为可能还有其他地方在使用
+    // 实际的资源清理应该在确认没有引用后进行
+    printf("DEBUG: Coroutine %llu completion notification processed\n", coroutine->id);
 }
 
 // 打印调度器统计信息

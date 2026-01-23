@@ -109,3 +109,4 @@ bool runtime_quick_start(const runtime_config_t* config);
 void runtime_quick_shutdown(void);
 
 #endif // RUNTIME_SERVICE_H
+

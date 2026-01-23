@@ -4,36 +4,24 @@ set(CMAKE_DEPENDS_IN_PROJECT_ONLY OFF)
 
 # The set of languages for which implicit dependencies are needed:
 set(CMAKE_DEPENDS_LANGUAGES
-  "ASM"
-  )
-# The set of files for implicit dependencies of each language:
-set(CMAKE_DEPENDS_CHECK_ASM
-  "/Users/meetai/source/echo-lang/runtime/src/platform/context/aarch64/context_switch.S" "/Users/meetai/source/echo-lang/runtime/build/CMakeFiles/echo_runtime.dir/src/platform/context/aarch64/context_switch.S.o"
-  )
-set(CMAKE_ASM_COMPILER_ID "AppleClang")
-
-# The include file search paths:
-set(CMAKE_ASM_TARGET_INCLUDE_PATH
-  "/Users/meetai/source/echo-lang/runtime/include"
   )
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/Users/meetai/source/echo-lang/runtime/src/core/async_memory_pool.c" "CMakeFiles/echo_runtime.dir/src/core/async_memory_pool.c.o" "gcc" "CMakeFiles/echo_runtime.dir/src/core/async_memory_pool.c.o.d"
-  "/Users/meetai/source/echo-lang/runtime/src/core/future.c" "CMakeFiles/echo_runtime.dir/src/core/future.c.o" "gcc" "CMakeFiles/echo_runtime.dir/src/core/future.c.o.d"
-  "/Users/meetai/source/echo-lang/runtime/src/core/industrial_memory_pool.c" "CMakeFiles/echo_runtime.dir/src/core/industrial_memory_pool.c.o" "gcc" "CMakeFiles/echo_runtime.dir/src/core/industrial_memory_pool.c.o.d"
-  "/Users/meetai/source/echo-lang/runtime/src/core/memory_pool.c" "CMakeFiles/echo_runtime.dir/src/core/memory_pool.c.o" "gcc" "CMakeFiles/echo_runtime.dir/src/core/memory_pool.c.o.d"
-  "/Users/meetai/source/echo-lang/runtime/src/core/runtime.c" "CMakeFiles/echo_runtime.dir/src/core/runtime.c.o" "gcc" "CMakeFiles/echo_runtime.dir/src/core/runtime.c.o.d"
-  "/Users/meetai/source/echo-lang/runtime/src/core/task.c" "CMakeFiles/echo_runtime.dir/src/core/task.c.o" "gcc" "CMakeFiles/echo_runtime.dir/src/core/task.c.o.d"
-  "/Users/meetai/source/echo-lang/runtime/src/gc/core-gc/application/commands/trigger_gc_command.c" "CMakeFiles/echo_runtime.dir/src/gc/core-gc/application/commands/trigger_gc_command.c.o" "gcc" "CMakeFiles/echo_runtime.dir/src/gc/core-gc/application/commands/trigger_gc_command.c.o.d"
-  "/Users/meetai/source/echo-lang/runtime/src/gc/core-gc/application/services/gc_scheduler.c" "CMakeFiles/echo_runtime.dir/src/gc/core-gc/application/services/gc_scheduler.c.o" "gcc" "CMakeFiles/echo_runtime.dir/src/gc/core-gc/application/services/gc_scheduler.c.o.d"
-  "/Users/meetai/source/echo-lang/runtime/src/gc/core-gc/core_gc.c" "CMakeFiles/echo_runtime.dir/src/gc/core-gc/core_gc.c.o" "gcc" "CMakeFiles/echo_runtime.dir/src/gc/core-gc/core_gc.c.o.d"
-  "/Users/meetai/source/echo-lang/runtime/src/gc/core-gc/domain/aggregates/garbage_collector.c" "CMakeFiles/echo_runtime.dir/src/gc/core-gc/domain/aggregates/garbage_collector.c.o" "gcc" "CMakeFiles/echo_runtime.dir/src/gc/core-gc/domain/aggregates/garbage_collector.c.o.d"
-  "/Users/meetai/source/echo-lang/runtime/src/gc/core-gc/domain/aggregates/heap.c" "CMakeFiles/echo_runtime.dir/src/gc/core-gc/domain/aggregates/heap.c.o" "gcc" "CMakeFiles/echo_runtime.dir/src/gc/core-gc/domain/aggregates/heap.c.o.d"
-  "/Users/meetai/source/echo-lang/runtime/src/gc/core-gc/domain/services/mark_service.c" "CMakeFiles/echo_runtime.dir/src/gc/core-gc/domain/services/mark_service.c.o" "gcc" "CMakeFiles/echo_runtime.dir/src/gc/core-gc/domain/services/mark_service.c.o.d"
-  "/Users/meetai/source/echo-lang/runtime/src/gc/core-gc/domain/services/sweep_service.c" "CMakeFiles/echo_runtime.dir/src/gc/core-gc/domain/services/sweep_service.c.o" "gcc" "CMakeFiles/echo_runtime.dir/src/gc/core-gc/domain/services/sweep_service.c.o.d"
-  "/Users/meetai/source/echo-lang/runtime/src/platform/context/aarch64/makecontext.c" "CMakeFiles/echo_runtime.dir/src/platform/context/aarch64/makecontext.c.o" "gcc" "CMakeFiles/echo_runtime.dir/src/platform/context/aarch64/makecontext.c.o.d"
-  "/Users/meetai/source/echo-lang/runtime/src/platform/event/posix/macos/kqueue.c" "CMakeFiles/echo_runtime.dir/src/platform/event/posix/macos/kqueue.c.o" "gcc" "CMakeFiles/echo_runtime.dir/src/platform/event/posix/macos/kqueue.c.o.d"
+  "/Users/meetai/source/echo-lang/runtime/api/runtime_api.c" "CMakeFiles/echo_runtime.dir/api/runtime_api.c.o" "gcc" "CMakeFiles/echo_runtime.dir/api/runtime_api.c.o.d"
+  "/Users/meetai/source/echo-lang/runtime/domain/async/entity/future.c" "CMakeFiles/echo_runtime.dir/domain/async/entity/future.c.o" "gcc" "CMakeFiles/echo_runtime.dir/domain/async/entity/future.c.o.d"
+  "/Users/meetai/source/echo-lang/runtime/domain/channel/channel.c" "CMakeFiles/echo_runtime.dir/domain/channel/channel.c.o" "gcc" "CMakeFiles/echo_runtime.dir/domain/channel/channel.c.o.d"
+  "/Users/meetai/source/echo-lang/runtime/domain/channel/entity/channel.c" "CMakeFiles/echo_runtime.dir/domain/channel/entity/channel.c.o" "gcc" "CMakeFiles/echo_runtime.dir/domain/channel/entity/channel.c.o.d"
+  "/Users/meetai/source/echo-lang/runtime/domain/channel/select.c" "CMakeFiles/echo_runtime.dir/domain/channel/select.c.o" "gcc" "CMakeFiles/echo_runtime.dir/domain/channel/select.c.o.d"
+  "/Users/meetai/source/echo-lang/runtime/domain/coroutine/coroutine.c" "CMakeFiles/echo_runtime.dir/domain/coroutine/coroutine.c.o" "gcc" "CMakeFiles/echo_runtime.dir/domain/coroutine/coroutine.c.o.d"
+  "/Users/meetai/source/echo-lang/runtime/domain/coroutine/coroutine_runtime.c" "CMakeFiles/echo_runtime.dir/domain/coroutine/coroutine_runtime.c.o" "gcc" "CMakeFiles/echo_runtime.dir/domain/coroutine/coroutine_runtime.c.o.d"
+  "/Users/meetai/source/echo-lang/runtime/domain/coroutine/coroutine_runtime_asm.c" "CMakeFiles/echo_runtime.dir/domain/coroutine/coroutine_runtime_asm.c.o" "gcc" "CMakeFiles/echo_runtime.dir/domain/coroutine/coroutine_runtime_asm.c.o.d"
+  "/Users/meetai/source/echo-lang/runtime/domain/coroutine/switcher.c" "CMakeFiles/echo_runtime.dir/domain/coroutine/switcher.c.o" "gcc" "CMakeFiles/echo_runtime.dir/domain/coroutine/switcher.c.o.d"
+  "/Users/meetai/source/echo-lang/runtime/domain/coroutine/yield.c" "CMakeFiles/echo_runtime.dir/domain/coroutine/yield.c.o" "gcc" "CMakeFiles/echo_runtime.dir/domain/coroutine/yield.c.o.d"
+  "/Users/meetai/source/echo-lang/runtime/domain/runtime/echo_runtime.c" "CMakeFiles/echo_runtime.dir/domain/runtime/echo_runtime.c.o" "gcc" "CMakeFiles/echo_runtime.dir/domain/runtime/echo_runtime.c.o.d"
+  "/Users/meetai/source/echo-lang/runtime/domain/task/entity/task.c" "CMakeFiles/echo_runtime.dir/domain/task/entity/task.c.o" "gcc" "CMakeFiles/echo_runtime.dir/domain/task/entity/task.c.o.d"
+  "/Users/meetai/source/echo-lang/runtime/domain/task/service/task_scheduler.c" "CMakeFiles/echo_runtime.dir/domain/task/service/task_scheduler.c.o" "gcc" "CMakeFiles/echo_runtime.dir/domain/task/service/task_scheduler.c.o.d"
+  "/Users/meetai/source/echo-lang/runtime/domain/task/task.c" "CMakeFiles/echo_runtime.dir/domain/task/task.c.o" "gcc" "CMakeFiles/echo_runtime.dir/domain/task/task.c.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

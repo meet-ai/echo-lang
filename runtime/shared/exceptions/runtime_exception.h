@@ -71,3 +71,4 @@ void runtime_exception_destroy(runtime_exception_t* exception);
 void runtime_exception_add_stack_frame(runtime_exception_t* exception, const char* function, const char* file, int line);
 
 #endif // RUNTIME_EXCEPTION_H
+

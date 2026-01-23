@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 #include <pthread.h>
-#include "task.h"
+#include "../task/task.h"
 
 // 前向声明
 struct Machine;

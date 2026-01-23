@@ -4,9 +4,9 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <pthread.h>
-#include "task.h"
-#include "processor.h"
-#include "machine.h"
+#include "../task/task.h"
+#include "concurrency/processor.h"
+#include "concurrency/machine.h"
 
 // 调度器结构体
 typedef struct Scheduler {
@@ -37,6 +37,9 @@ bool scheduler_steal_work(Scheduler* scheduler, struct Processor* thief);
 
 // 统计信息函数
 void scheduler_print_stats(Scheduler* scheduler);
+
+// 协程完成通知函数
+void scheduler_notify_coroutine_completed(Scheduler* scheduler, struct Coroutine* coroutine);
 
 // 全局调度器访问函数
 Scheduler* get_global_scheduler(void);

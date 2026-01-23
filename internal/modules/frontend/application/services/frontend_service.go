@@ -52,6 +52,12 @@ type EventPublisher interface {
 	Publish(ctx context.Context, event interface{}) error
 }
 
+// BackendService 后端服务接口（可选依赖）
+type BackendService interface {
+	GenerateCode(program *entities.Program, target string) (string, error)
+	GenerateExecutable(program *entities.Program, target string) (string, error)
+}
+
 // frontendService 前端应用服务实现
 type frontendService struct {
 	lexicalAnalyzer  services.LexicalAnalyzer
@@ -62,6 +68,7 @@ type frontendService struct {
 	astRepo          ASTRepository
 	eventPublisher   EventPublisher
 	parser           services.Parser
+	backendService   BackendService // 后端服务（可选）
 }
 
 // NewFrontendService 创建前端应用服务
@@ -84,7 +91,14 @@ func NewFrontendService(
 		astRepo:          astRepo,
 		eventPublisher:   eventPublisher,
 		parser:           parser,
+		backendService:   nil, // 默认不注入，可通过WithBackendService设置
 	}
+}
+
+// WithBackendService 设置后端服务（可选）
+func (s *frontendService) WithBackendService(backendService BackendService) *frontendService {
+	s.backendService = backendService
+	return s
 }
 
 // PerformLexicalAnalysis 执行词法分析用例
@@ -321,12 +335,36 @@ func (s *frontendService) CompileFile(filePath string) (*dtos.CompilationResult,
 		}, nil
 	}
 
-	// 这里应该调用backend服务生成代码
-	// 暂时返回解析结果
+	// 调用backend服务生成代码
+	var generatedCode string
+	if s.backendService != nil {
+		// 将解析结果转换为Program实体（这里假设parser.Parse返回的是*entities.Program）
+		// 注意：如果parser返回的是其他类型，需要添加转换逻辑
+		if programEntity, ok := program.(*entities.Program); ok {
+			code, err := s.backendService.GenerateCode(programEntity, "ocaml")
+			if err != nil {
+				return &dtos.CompilationResult{
+					SourceFile:    filePath,
+					AST:           program.String(),
+					GeneratedCode: "",
+					Success:       false,
+					Error:         fmt.Sprintf("code generation failed: %v", err),
+				}, nil
+			}
+			generatedCode = code
+		} else {
+			// 如果类型不匹配，返回占位符
+			generatedCode = fmt.Sprintf("(* Warning: Program type mismatch, expected *entities.Program, got %T *)", program)
+		}
+	} else {
+		// 如果没有注入backend服务，返回占位符
+		generatedCode = "(* Backend service not configured. Please inject BackendService via WithBackendService() *)"
+	}
+
 	return &dtos.CompilationResult{
 		SourceFile:    filePath,
 		AST:           program.String(),
-		GeneratedCode: "(* TODO: Call backend service *)",
+		GeneratedCode: generatedCode,
 		Success:       true,
 		Error:         "",
 	}, nil

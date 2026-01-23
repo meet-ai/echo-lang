@@ -32,6 +32,7 @@ type ASTVisitor interface {
 	VisitMethodDef(stmt *MethodDef) interface{}
 	VisitEnumDef(stmt *EnumDef) interface{}
 	VisitTraitDef(stmt *TraitDef) interface{}
+	VisitImplDef(stmt *ImplDef) interface{}
 	VisitAssociatedTypeDef(stmt *AssociatedTypeDef) interface{}
 	VisitDynamicTraitRef(expr *DynamicTraitRef) interface{}
 	VisitMatchExpr(expr *MatchExpr) interface{}
@@ -103,10 +104,10 @@ func (e *ExprStmt) Accept(visitor ASTVisitor) interface{} {
 
 // VarDecl 变量声明节点
 type VarDecl struct {
-	Name      string
-	Type      string
-	Value     Expr
-	Inferred  bool // 是否需要类型推断
+	Name     string
+	Type     string
+	Value    Expr
+	Inferred bool // 是否需要类型推断
 }
 
 func (v *VarDecl) String() string {
@@ -142,6 +143,7 @@ type FuncDef struct {
 	Params     []Param
 	ReturnType string
 	Body       []ASTNode
+	IsAsync    bool // 是否为异步函数
 }
 
 func (f *FuncDef) String() string {
@@ -1052,6 +1054,20 @@ type TraitDef struct {
 	SuperTraits     []string         // 继承的Trait列表
 	AssociatedTypes []AssociatedType // 关联类型声明
 	Methods         []TraitMethod    // 方法列表
+}
+
+// ImplDef Trait实现定义
+type ImplDef struct {
+	TraitName string      // 实现的Trait名称
+	Methods   []MethodDef // 实现的方法列表
+}
+
+func (i *ImplDef) String() string {
+	return fmt.Sprintf("ImplDef{TraitName: %s, Methods: %d}", i.TraitName, len(i.Methods))
+}
+
+func (i *ImplDef) Accept(visitor ASTVisitor) interface{} {
+	return visitor.VisitImplDef(i)
 }
 
 func (t *TraitDef) String() string {

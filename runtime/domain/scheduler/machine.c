@@ -1,7 +1,7 @@
 #include "machine.h"
 #include "scheduler.h"
 #include "processor.h"
-#include "coroutine.h"
+#include "../coroutine/coroutine.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -54,7 +54,8 @@ Machine* machine_create(uint32_t id, struct Scheduler* scheduler) {
     machine->should_stop = false;
 
     // 初始化上下文（用于可能的上下文切换）
-    coro_context_init(&machine->context, NULL, 0, NULL, NULL);
+    // 简化实现：不初始化平台上下文
+    // machine->context 现在是 void*，不需要初始化
 
     printf("DEBUG: Created Machine %u\n", id);
     return machine;

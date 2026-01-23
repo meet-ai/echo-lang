@@ -20,3 +20,4 @@ test: $(TARGET)
 	./$(TARGET)
 
 .PHONY: clean test
+

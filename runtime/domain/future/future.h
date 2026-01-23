@@ -34,6 +34,14 @@ typedef struct WaitNode {
     struct WaitNode* next;      // 下一个节点
 } WaitNode;
 
+// Future优先级枚举
+typedef enum {
+    FUTURE_PRIORITY_LOW,
+    FUTURE_PRIORITY_NORMAL,
+    FUTURE_PRIORITY_HIGH,
+    FUTURE_PRIORITY_CRITICAL
+} FuturePriority;
+
 // Future结构体
 typedef struct Future {
     uint64_t id;               // Future唯一ID
@@ -49,6 +57,19 @@ typedef struct Future {
     // 同步机制
     pthread_mutex_t mutex;     // 保护Future状态
     pthread_cond_t cond;       // 条件变量，用于等待
+
+    // 时间戳
+    time_t created_at;         // 创建时间
+    time_t resolved_at;        // 完成时间（成功）
+    time_t rejected_at;        // 完成时间（失败）
+
+    // 统计信息
+    uint64_t poll_count;       // 轮询次数
+    uint64_t wait_time_ms;     // 等待时间（毫秒）
+    FuturePriority priority;   // Future优先级
+
+    // 资源管理
+    bool result_needs_free;    // 结果是否需要释放
 
     // 可选方法
     void (*cancel)(struct Future* self);     // 取消异步操作

@@ -25,15 +25,15 @@ static void init_current_coroutine_key(void) {
 /**
  * @brief 获取当前线程正在执行的协程
  */
-static coroutine_t* get_current_coroutine(void) {
+static Coroutine* get_current_coroutine(void) {
     pthread_once(&key_once, init_current_coroutine_key);
-    return (coroutine_t*)pthread_getspecific(current_coroutine_key);
+    return (Coroutine*)pthread_getspecific(current_coroutine_key);
 }
 
 /**
  * @brief 设置当前线程正在执行的协程
  */
-void set_current_coroutine(coroutine_t* coroutine) {
+void set_current_coroutine(Coroutine* coroutine) {
     pthread_once(&key_once, init_current_coroutine_key);
     pthread_setspecific(current_coroutine_key, coroutine);
 }
@@ -49,10 +49,10 @@ void yield_set_scheduler_context(context_t* context) {
 /**
  * @brief 执行yield操作
  */
-void coroutine_yield_operation(coroutine_t* coroutine) {
+void coroutine_yield_operation(Coroutine* coroutine) {
     if (!coroutine) return;
 
-    printf("DEBUG: Executing yield for coroutine %llu\n", coroutine_get_id(coroutine));
+    printf("DEBUG: Executing yield for coroutine %llu\n", coroutine->id);
 
     if (!scheduler_context) {
         fprintf(stderr, "ERROR: No scheduler context set for yield\n");
@@ -63,28 +63,28 @@ void coroutine_yield_operation(coroutine_t* coroutine) {
     coroutine_suspend(coroutine);
 
     // 执行上下文切换：从协程切换到调度器
-    printf("DEBUG: Yielding from coroutine %llu to scheduler\n", coroutine_get_id(coroutine));
+    printf("DEBUG: Yielding from coroutine %llu to scheduler\n", coroutine->id);
     context_switch(coroutine->context, scheduler_context);
 }
 
 /**
  * @brief 从调度器恢复协程执行
  */
-void coroutine_resume_from_yield(coroutine_t* coroutine) {
+void coroutine_resume_from_yield(Coroutine* coroutine) {
     if (!coroutine || !scheduler_context) {
         fprintf(stderr, "ERROR: Cannot resume coroutine from yield\n");
         return;
     }
 
-    printf("DEBUG: Resuming coroutine %llu from yield\n", coroutine_get_id(coroutine));
+    printf("DEBUG: Resuming coroutine %llu from yield\n", coroutine->id);
 
     // 设置当前协程
     set_current_coroutine(coroutine);
 
     // 恢复协程状态
-    coroutine->state = COROUTINE_STATE_RUNNING;
+    coroutine->state = COROUTINE_RUNNING;
 
     // 执行上下文切换：从调度器切换到协程
-    printf("DEBUG: Switching back to coroutine %llu\n", coroutine_get_id(coroutine));
+    printf("DEBUG: Switching back to coroutine %llu\n", coroutine->id);
     context_switch(scheduler_context, coroutine->context);
 }

@@ -200,3 +200,4 @@ int main(int argc, char* argv[]) {
     printf("All GC tests passed!\n");
     return 0;
 }
+

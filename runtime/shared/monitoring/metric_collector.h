@@ -69,3 +69,4 @@ metric_collector_t* create_graphite_collector(void);
 extern metric_collector_t* default_metric_collector;
 
 #endif // METRIC_COLLECTOR_H
+

@@ -83,3 +83,4 @@ bool is_network_event(const char* event_type);
 bool is_filesystem_event(const char* event_type);
 
 #endif // EVENT_TYPES_H
+

@@ -87,3 +87,4 @@ ECHO_API echo_error_t echo_gc_get_object_info(echo_gc_t* gc, void* object, void*
 #endif
 
 #endif // ECHO_GC_H
+

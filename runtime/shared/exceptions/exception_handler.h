@@ -54,3 +54,4 @@ void exception_handler_destroy(exception_handler_t* handler);
 extern exception_handler_t* default_exception_handler;
 
 #endif // EXCEPTION_HANDLER_H
+

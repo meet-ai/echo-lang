@@ -52,7 +52,7 @@ func (sm *SymbolManagerImpl) LookupSymbol(name string) (*generation.SymbolInfo, 
 	return nil, fmt.Errorf("symbol '%s' not found", name)
 }
 
-// SymbolExists 检查符号是否存在
+// SymbolExists 检查符号是否存在（在所有作用域中）
 func (sm *SymbolManagerImpl) SymbolExists(name string) bool {
 	for i := len(sm.scopes) - 1; i >= 0; i-- {
 		if _, exists := sm.scopes[i][name]; exists {
@@ -60,6 +60,16 @@ func (sm *SymbolManagerImpl) SymbolExists(name string) bool {
 		}
 	}
 	return false
+}
+
+// SymbolExistsInCurrentScope 检查符号是否在当前作用域存在
+func (sm *SymbolManagerImpl) SymbolExistsInCurrentScope(name string) bool {
+	if len(sm.scopes) == 0 {
+		return false
+	}
+	currentScope := sm.scopes[len(sm.scopes)-1]
+	_, exists := currentScope[name]
+	return exists
 }
 
 // EnterScope 进入新的作用域

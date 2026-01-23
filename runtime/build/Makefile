@@ -65,16 +65,6 @@ CMAKE_BINARY_DIR = /Users/meetai/source/echo-lang/runtime/build
 #=============================================================================
 # Targets provided globally by CMake.
 
-# Special rule for the target test
-test:
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Running tests..."
-	/opt/homebrew/bin/ctest $(ARGS)
-.PHONY : test
-
-# Special rule for the target test
-test/fast: test
-.PHONY : test/fast
-
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Running CMake cache editor..."
@@ -184,669 +174,341 @@ echo_runtime/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/build
 .PHONY : echo_runtime/fast
 
-#=============================================================================
-# Target rules for targets named async_await_example
-
-# Build rule for target.
-async_await_example: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 async_await_example
-.PHONY : async_await_example
-
-# fast build rule for target.
-async_await_example/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/async_await_example.dir/build.make CMakeFiles/async_await_example.dir/build
-.PHONY : async_await_example/fast
-
-#=============================================================================
-# Target rules for targets named basic_usage_example
-
-# Build rule for target.
-basic_usage_example: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 basic_usage_example
-.PHONY : basic_usage_example
-
-# fast build rule for target.
-basic_usage_example/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/basic_usage_example.dir/build.make CMakeFiles/basic_usage_example.dir/build
-.PHONY : basic_usage_example/fast
-
-#=============================================================================
-# Target rules for targets named performance_comparison_example
-
-# Build rule for target.
-performance_comparison_example: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 performance_comparison_example
-.PHONY : performance_comparison_example
-
-# fast build rule for target.
-performance_comparison_example/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/performance_comparison_example.dir/build.make CMakeFiles/performance_comparison_example.dir/build
-.PHONY : performance_comparison_example/fast
-
-#=============================================================================
-# Target rules for targets named runtime_test
-
-# Build rule for target.
-runtime_test: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 runtime_test
-.PHONY : runtime_test
-
-# fast build rule for target.
-runtime_test/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/runtime_test.dir/build.make CMakeFiles/runtime_test.dir/build
-.PHONY : runtime_test/fast
-
-#=============================================================================
-# Target rules for targets named advanced_memory_pool_test
-
-# Build rule for target.
-advanced_memory_pool_test: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 advanced_memory_pool_test
-.PHONY : advanced_memory_pool_test
-
-# fast build rule for target.
-advanced_memory_pool_test/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/advanced_memory_pool_test.dir/build.make CMakeFiles/advanced_memory_pool_test.dir/build
-.PHONY : advanced_memory_pool_test/fast
-
-#=============================================================================
-# Target rules for targets named industrial_memory_pool_test
-
-# Build rule for target.
-industrial_memory_pool_test: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 industrial_memory_pool_test
-.PHONY : industrial_memory_pool_test
-
-# fast build rule for target.
-industrial_memory_pool_test/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/industrial_memory_pool_test.dir/build.make CMakeFiles/industrial_memory_pool_test.dir/build
-.PHONY : industrial_memory_pool_test/fast
-
-#=============================================================================
-# Target rules for targets named async_memory_pool_test
-
-# Build rule for target.
-async_memory_pool_test: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 async_memory_pool_test
-.PHONY : async_memory_pool_test
-
-# fast build rule for target.
-async_memory_pool_test/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/async_memory_pool_test.dir/build.make CMakeFiles/async_memory_pool_test.dir/build
-.PHONY : async_memory_pool_test/fast
-
-#=============================================================================
-# Target rules for targets named gc_test
-
-# Build rule for target.
-gc_test: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 gc_test
-.PHONY : gc_test
-
-# fast build rule for target.
-gc_test/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/gc_test.dir/build.make CMakeFiles/gc_test.dir/build
-.PHONY : gc_test/fast
-
-examples/async_await.o: examples/async_await.c.o
-.PHONY : examples/async_await.o
+api/runtime_api.o: api/runtime_api.c.o
+.PHONY : api/runtime_api.o
 
 # target to build an object file
-examples/async_await.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/async_await_example.dir/build.make CMakeFiles/async_await_example.dir/examples/async_await.c.o
-.PHONY : examples/async_await.c.o
+api/runtime_api.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/api/runtime_api.c.o
+.PHONY : api/runtime_api.c.o
 
-examples/async_await.i: examples/async_await.c.i
-.PHONY : examples/async_await.i
+api/runtime_api.i: api/runtime_api.c.i
+.PHONY : api/runtime_api.i
 
 # target to preprocess a source file
-examples/async_await.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/async_await_example.dir/build.make CMakeFiles/async_await_example.dir/examples/async_await.c.i
-.PHONY : examples/async_await.c.i
+api/runtime_api.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/api/runtime_api.c.i
+.PHONY : api/runtime_api.c.i
 
-examples/async_await.s: examples/async_await.c.s
-.PHONY : examples/async_await.s
+api/runtime_api.s: api/runtime_api.c.s
+.PHONY : api/runtime_api.s
 
 # target to generate assembly for a file
-examples/async_await.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/async_await_example.dir/build.make CMakeFiles/async_await_example.dir/examples/async_await.c.s
-.PHONY : examples/async_await.c.s
+api/runtime_api.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/api/runtime_api.c.s
+.PHONY : api/runtime_api.c.s
 
-examples/basic_usage.o: examples/basic_usage.c.o
-.PHONY : examples/basic_usage.o
+domain/async/entity/future.o: domain/async/entity/future.c.o
+.PHONY : domain/async/entity/future.o
 
 # target to build an object file
-examples/basic_usage.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/basic_usage_example.dir/build.make CMakeFiles/basic_usage_example.dir/examples/basic_usage.c.o
-.PHONY : examples/basic_usage.c.o
+domain/async/entity/future.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/async/entity/future.c.o
+.PHONY : domain/async/entity/future.c.o
 
-examples/basic_usage.i: examples/basic_usage.c.i
-.PHONY : examples/basic_usage.i
+domain/async/entity/future.i: domain/async/entity/future.c.i
+.PHONY : domain/async/entity/future.i
 
 # target to preprocess a source file
-examples/basic_usage.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/basic_usage_example.dir/build.make CMakeFiles/basic_usage_example.dir/examples/basic_usage.c.i
-.PHONY : examples/basic_usage.c.i
+domain/async/entity/future.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/async/entity/future.c.i
+.PHONY : domain/async/entity/future.c.i
 
-examples/basic_usage.s: examples/basic_usage.c.s
-.PHONY : examples/basic_usage.s
+domain/async/entity/future.s: domain/async/entity/future.c.s
+.PHONY : domain/async/entity/future.s
 
 # target to generate assembly for a file
-examples/basic_usage.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/basic_usage_example.dir/build.make CMakeFiles/basic_usage_example.dir/examples/basic_usage.c.s
-.PHONY : examples/basic_usage.c.s
+domain/async/entity/future.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/async/entity/future.c.s
+.PHONY : domain/async/entity/future.c.s
 
-examples/performance_comparison.o: examples/performance_comparison.c.o
-.PHONY : examples/performance_comparison.o
+domain/channel/channel.o: domain/channel/channel.c.o
+.PHONY : domain/channel/channel.o
 
 # target to build an object file
-examples/performance_comparison.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/performance_comparison_example.dir/build.make CMakeFiles/performance_comparison_example.dir/examples/performance_comparison.c.o
-.PHONY : examples/performance_comparison.c.o
+domain/channel/channel.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/channel/channel.c.o
+.PHONY : domain/channel/channel.c.o
 
-examples/performance_comparison.i: examples/performance_comparison.c.i
-.PHONY : examples/performance_comparison.i
+domain/channel/channel.i: domain/channel/channel.c.i
+.PHONY : domain/channel/channel.i
 
 # target to preprocess a source file
-examples/performance_comparison.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/performance_comparison_example.dir/build.make CMakeFiles/performance_comparison_example.dir/examples/performance_comparison.c.i
-.PHONY : examples/performance_comparison.c.i
+domain/channel/channel.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/channel/channel.c.i
+.PHONY : domain/channel/channel.c.i
 
-examples/performance_comparison.s: examples/performance_comparison.c.s
-.PHONY : examples/performance_comparison.s
+domain/channel/channel.s: domain/channel/channel.c.s
+.PHONY : domain/channel/channel.s
 
 # target to generate assembly for a file
-examples/performance_comparison.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/performance_comparison_example.dir/build.make CMakeFiles/performance_comparison_example.dir/examples/performance_comparison.c.s
-.PHONY : examples/performance_comparison.c.s
+domain/channel/channel.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/channel/channel.c.s
+.PHONY : domain/channel/channel.c.s
 
-src/core/async_memory_pool.o: src/core/async_memory_pool.c.o
-.PHONY : src/core/async_memory_pool.o
+domain/channel/entity/channel.o: domain/channel/entity/channel.c.o
+.PHONY : domain/channel/entity/channel.o
 
 # target to build an object file
-src/core/async_memory_pool.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/src/core/async_memory_pool.c.o
-.PHONY : src/core/async_memory_pool.c.o
+domain/channel/entity/channel.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/channel/entity/channel.c.o
+.PHONY : domain/channel/entity/channel.c.o
 
-src/core/async_memory_pool.i: src/core/async_memory_pool.c.i
-.PHONY : src/core/async_memory_pool.i
+domain/channel/entity/channel.i: domain/channel/entity/channel.c.i
+.PHONY : domain/channel/entity/channel.i
 
 # target to preprocess a source file
-src/core/async_memory_pool.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/src/core/async_memory_pool.c.i
-.PHONY : src/core/async_memory_pool.c.i
+domain/channel/entity/channel.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/channel/entity/channel.c.i
+.PHONY : domain/channel/entity/channel.c.i
 
-src/core/async_memory_pool.s: src/core/async_memory_pool.c.s
-.PHONY : src/core/async_memory_pool.s
+domain/channel/entity/channel.s: domain/channel/entity/channel.c.s
+.PHONY : domain/channel/entity/channel.s
 
 # target to generate assembly for a file
-src/core/async_memory_pool.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/src/core/async_memory_pool.c.s
-.PHONY : src/core/async_memory_pool.c.s
+domain/channel/entity/channel.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/channel/entity/channel.c.s
+.PHONY : domain/channel/entity/channel.c.s
 
-src/core/future.o: src/core/future.c.o
-.PHONY : src/core/future.o
+domain/channel/select.o: domain/channel/select.c.o
+.PHONY : domain/channel/select.o
 
 # target to build an object file
-src/core/future.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/src/core/future.c.o
-.PHONY : src/core/future.c.o
+domain/channel/select.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/channel/select.c.o
+.PHONY : domain/channel/select.c.o
 
-src/core/future.i: src/core/future.c.i
-.PHONY : src/core/future.i
+domain/channel/select.i: domain/channel/select.c.i
+.PHONY : domain/channel/select.i
 
 # target to preprocess a source file
-src/core/future.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/src/core/future.c.i
-.PHONY : src/core/future.c.i
+domain/channel/select.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/channel/select.c.i
+.PHONY : domain/channel/select.c.i
 
-src/core/future.s: src/core/future.c.s
-.PHONY : src/core/future.s
+domain/channel/select.s: domain/channel/select.c.s
+.PHONY : domain/channel/select.s
 
 # target to generate assembly for a file
-src/core/future.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/src/core/future.c.s
-.PHONY : src/core/future.c.s
+domain/channel/select.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/channel/select.c.s
+.PHONY : domain/channel/select.c.s
 
-src/core/industrial_memory_pool.o: src/core/industrial_memory_pool.c.o
-.PHONY : src/core/industrial_memory_pool.o
+domain/coroutine/coroutine.o: domain/coroutine/coroutine.c.o
+.PHONY : domain/coroutine/coroutine.o
 
 # target to build an object file
-src/core/industrial_memory_pool.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/src/core/industrial_memory_pool.c.o
-.PHONY : src/core/industrial_memory_pool.c.o
+domain/coroutine/coroutine.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/coroutine/coroutine.c.o
+.PHONY : domain/coroutine/coroutine.c.o
 
-src/core/industrial_memory_pool.i: src/core/industrial_memory_pool.c.i
-.PHONY : src/core/industrial_memory_pool.i
+domain/coroutine/coroutine.i: domain/coroutine/coroutine.c.i
+.PHONY : domain/coroutine/coroutine.i
 
 # target to preprocess a source file
-src/core/industrial_memory_pool.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/src/core/industrial_memory_pool.c.i
-.PHONY : src/core/industrial_memory_pool.c.i
+domain/coroutine/coroutine.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/coroutine/coroutine.c.i
+.PHONY : domain/coroutine/coroutine.c.i
 
-src/core/industrial_memory_pool.s: src/core/industrial_memory_pool.c.s
-.PHONY : src/core/industrial_memory_pool.s
+domain/coroutine/coroutine.s: domain/coroutine/coroutine.c.s
+.PHONY : domain/coroutine/coroutine.s
 
 # target to generate assembly for a file
-src/core/industrial_memory_pool.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/src/core/industrial_memory_pool.c.s
-.PHONY : src/core/industrial_memory_pool.c.s
+domain/coroutine/coroutine.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/coroutine/coroutine.c.s
+.PHONY : domain/coroutine/coroutine.c.s
 
-src/core/memory_pool.o: src/core/memory_pool.c.o
-.PHONY : src/core/memory_pool.o
+domain/coroutine/coroutine_runtime.o: domain/coroutine/coroutine_runtime.c.o
+.PHONY : domain/coroutine/coroutine_runtime.o
 
 # target to build an object file
-src/core/memory_pool.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/src/core/memory_pool.c.o
-.PHONY : src/core/memory_pool.c.o
+domain/coroutine/coroutine_runtime.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/coroutine/coroutine_runtime.c.o
+.PHONY : domain/coroutine/coroutine_runtime.c.o
 
-src/core/memory_pool.i: src/core/memory_pool.c.i
-.PHONY : src/core/memory_pool.i
+domain/coroutine/coroutine_runtime.i: domain/coroutine/coroutine_runtime.c.i
+.PHONY : domain/coroutine/coroutine_runtime.i
 
 # target to preprocess a source file
-src/core/memory_pool.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/src/core/memory_pool.c.i
-.PHONY : src/core/memory_pool.c.i
+domain/coroutine/coroutine_runtime.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/coroutine/coroutine_runtime.c.i
+.PHONY : domain/coroutine/coroutine_runtime.c.i
 
-src/core/memory_pool.s: src/core/memory_pool.c.s
-.PHONY : src/core/memory_pool.s
+domain/coroutine/coroutine_runtime.s: domain/coroutine/coroutine_runtime.c.s
+.PHONY : domain/coroutine/coroutine_runtime.s
 
 # target to generate assembly for a file
-src/core/memory_pool.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/src/core/memory_pool.c.s
-.PHONY : src/core/memory_pool.c.s
+domain/coroutine/coroutine_runtime.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/coroutine/coroutine_runtime.c.s
+.PHONY : domain/coroutine/coroutine_runtime.c.s
 
-src/core/runtime.o: src/core/runtime.c.o
-.PHONY : src/core/runtime.o
+domain/coroutine/coroutine_runtime_asm.o: domain/coroutine/coroutine_runtime_asm.c.o
+.PHONY : domain/coroutine/coroutine_runtime_asm.o
 
 # target to build an object file
-src/core/runtime.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/src/core/runtime.c.o
-.PHONY : src/core/runtime.c.o
+domain/coroutine/coroutine_runtime_asm.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/coroutine/coroutine_runtime_asm.c.o
+.PHONY : domain/coroutine/coroutine_runtime_asm.c.o
 
-src/core/runtime.i: src/core/runtime.c.i
-.PHONY : src/core/runtime.i
+domain/coroutine/coroutine_runtime_asm.i: domain/coroutine/coroutine_runtime_asm.c.i
+.PHONY : domain/coroutine/coroutine_runtime_asm.i
 
 # target to preprocess a source file
-src/core/runtime.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/src/core/runtime.c.i
-.PHONY : src/core/runtime.c.i
+domain/coroutine/coroutine_runtime_asm.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/coroutine/coroutine_runtime_asm.c.i
+.PHONY : domain/coroutine/coroutine_runtime_asm.c.i
 
-src/core/runtime.s: src/core/runtime.c.s
-.PHONY : src/core/runtime.s
+domain/coroutine/coroutine_runtime_asm.s: domain/coroutine/coroutine_runtime_asm.c.s
+.PHONY : domain/coroutine/coroutine_runtime_asm.s
 
 # target to generate assembly for a file
-src/core/runtime.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/src/core/runtime.c.s
-.PHONY : src/core/runtime.c.s
+domain/coroutine/coroutine_runtime_asm.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/coroutine/coroutine_runtime_asm.c.s
+.PHONY : domain/coroutine/coroutine_runtime_asm.c.s
 
-src/core/task.o: src/core/task.c.o
-.PHONY : src/core/task.o
+domain/coroutine/switcher.o: domain/coroutine/switcher.c.o
+.PHONY : domain/coroutine/switcher.o
 
 # target to build an object file
-src/core/task.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/src/core/task.c.o
-.PHONY : src/core/task.c.o
+domain/coroutine/switcher.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/coroutine/switcher.c.o
+.PHONY : domain/coroutine/switcher.c.o
 
-src/core/task.i: src/core/task.c.i
-.PHONY : src/core/task.i
+domain/coroutine/switcher.i: domain/coroutine/switcher.c.i
+.PHONY : domain/coroutine/switcher.i
 
 # target to preprocess a source file
-src/core/task.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/src/core/task.c.i
-.PHONY : src/core/task.c.i
+domain/coroutine/switcher.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/coroutine/switcher.c.i
+.PHONY : domain/coroutine/switcher.c.i
 
-src/core/task.s: src/core/task.c.s
-.PHONY : src/core/task.s
+domain/coroutine/switcher.s: domain/coroutine/switcher.c.s
+.PHONY : domain/coroutine/switcher.s
 
 # target to generate assembly for a file
-src/core/task.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/src/core/task.c.s
-.PHONY : src/core/task.c.s
+domain/coroutine/switcher.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/coroutine/switcher.c.s
+.PHONY : domain/coroutine/switcher.c.s
 
-src/gc/core-gc/application/commands/trigger_gc_command.o: src/gc/core-gc/application/commands/trigger_gc_command.c.o
-.PHONY : src/gc/core-gc/application/commands/trigger_gc_command.o
+domain/coroutine/yield.o: domain/coroutine/yield.c.o
+.PHONY : domain/coroutine/yield.o
 
 # target to build an object file
-src/gc/core-gc/application/commands/trigger_gc_command.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/src/gc/core-gc/application/commands/trigger_gc_command.c.o
-.PHONY : src/gc/core-gc/application/commands/trigger_gc_command.c.o
+domain/coroutine/yield.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/coroutine/yield.c.o
+.PHONY : domain/coroutine/yield.c.o
 
-src/gc/core-gc/application/commands/trigger_gc_command.i: src/gc/core-gc/application/commands/trigger_gc_command.c.i
-.PHONY : src/gc/core-gc/application/commands/trigger_gc_command.i
+domain/coroutine/yield.i: domain/coroutine/yield.c.i
+.PHONY : domain/coroutine/yield.i
 
 # target to preprocess a source file
-src/gc/core-gc/application/commands/trigger_gc_command.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/src/gc/core-gc/application/commands/trigger_gc_command.c.i
-.PHONY : src/gc/core-gc/application/commands/trigger_gc_command.c.i
+domain/coroutine/yield.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/coroutine/yield.c.i
+.PHONY : domain/coroutine/yield.c.i
 
-src/gc/core-gc/application/commands/trigger_gc_command.s: src/gc/core-gc/application/commands/trigger_gc_command.c.s
-.PHONY : src/gc/core-gc/application/commands/trigger_gc_command.s
+domain/coroutine/yield.s: domain/coroutine/yield.c.s
+.PHONY : domain/coroutine/yield.s
 
 # target to generate assembly for a file
-src/gc/core-gc/application/commands/trigger_gc_command.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/src/gc/core-gc/application/commands/trigger_gc_command.c.s
-.PHONY : src/gc/core-gc/application/commands/trigger_gc_command.c.s
+domain/coroutine/yield.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/coroutine/yield.c.s
+.PHONY : domain/coroutine/yield.c.s
 
-src/gc/core-gc/application/services/gc_scheduler.o: src/gc/core-gc/application/services/gc_scheduler.c.o
-.PHONY : src/gc/core-gc/application/services/gc_scheduler.o
+domain/runtime/echo_runtime.o: domain/runtime/echo_runtime.c.o
+.PHONY : domain/runtime/echo_runtime.o
 
 # target to build an object file
-src/gc/core-gc/application/services/gc_scheduler.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/src/gc/core-gc/application/services/gc_scheduler.c.o
-.PHONY : src/gc/core-gc/application/services/gc_scheduler.c.o
+domain/runtime/echo_runtime.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/runtime/echo_runtime.c.o
+.PHONY : domain/runtime/echo_runtime.c.o
 
-src/gc/core-gc/application/services/gc_scheduler.i: src/gc/core-gc/application/services/gc_scheduler.c.i
-.PHONY : src/gc/core-gc/application/services/gc_scheduler.i
+domain/runtime/echo_runtime.i: domain/runtime/echo_runtime.c.i
+.PHONY : domain/runtime/echo_runtime.i
 
 # target to preprocess a source file
-src/gc/core-gc/application/services/gc_scheduler.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/src/gc/core-gc/application/services/gc_scheduler.c.i
-.PHONY : src/gc/core-gc/application/services/gc_scheduler.c.i
+domain/runtime/echo_runtime.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/runtime/echo_runtime.c.i
+.PHONY : domain/runtime/echo_runtime.c.i
 
-src/gc/core-gc/application/services/gc_scheduler.s: src/gc/core-gc/application/services/gc_scheduler.c.s
-.PHONY : src/gc/core-gc/application/services/gc_scheduler.s
+domain/runtime/echo_runtime.s: domain/runtime/echo_runtime.c.s
+.PHONY : domain/runtime/echo_runtime.s
 
 # target to generate assembly for a file
-src/gc/core-gc/application/services/gc_scheduler.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/src/gc/core-gc/application/services/gc_scheduler.c.s
-.PHONY : src/gc/core-gc/application/services/gc_scheduler.c.s
+domain/runtime/echo_runtime.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/runtime/echo_runtime.c.s
+.PHONY : domain/runtime/echo_runtime.c.s
 
-src/gc/core-gc/core_gc.o: src/gc/core-gc/core_gc.c.o
-.PHONY : src/gc/core-gc/core_gc.o
+domain/task/entity/task.o: domain/task/entity/task.c.o
+.PHONY : domain/task/entity/task.o
 
 # target to build an object file
-src/gc/core-gc/core_gc.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/src/gc/core-gc/core_gc.c.o
-.PHONY : src/gc/core-gc/core_gc.c.o
+domain/task/entity/task.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/task/entity/task.c.o
+.PHONY : domain/task/entity/task.c.o
 
-src/gc/core-gc/core_gc.i: src/gc/core-gc/core_gc.c.i
-.PHONY : src/gc/core-gc/core_gc.i
+domain/task/entity/task.i: domain/task/entity/task.c.i
+.PHONY : domain/task/entity/task.i
 
 # target to preprocess a source file
-src/gc/core-gc/core_gc.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/src/gc/core-gc/core_gc.c.i
-.PHONY : src/gc/core-gc/core_gc.c.i
+domain/task/entity/task.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/task/entity/task.c.i
+.PHONY : domain/task/entity/task.c.i
 
-src/gc/core-gc/core_gc.s: src/gc/core-gc/core_gc.c.s
-.PHONY : src/gc/core-gc/core_gc.s
+domain/task/entity/task.s: domain/task/entity/task.c.s
+.PHONY : domain/task/entity/task.s
 
 # target to generate assembly for a file
-src/gc/core-gc/core_gc.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/src/gc/core-gc/core_gc.c.s
-.PHONY : src/gc/core-gc/core_gc.c.s
+domain/task/entity/task.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/task/entity/task.c.s
+.PHONY : domain/task/entity/task.c.s
 
-src/gc/core-gc/domain/aggregates/garbage_collector.o: src/gc/core-gc/domain/aggregates/garbage_collector.c.o
-.PHONY : src/gc/core-gc/domain/aggregates/garbage_collector.o
+domain/task/service/task_scheduler.o: domain/task/service/task_scheduler.c.o
+.PHONY : domain/task/service/task_scheduler.o
 
 # target to build an object file
-src/gc/core-gc/domain/aggregates/garbage_collector.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/src/gc/core-gc/domain/aggregates/garbage_collector.c.o
-.PHONY : src/gc/core-gc/domain/aggregates/garbage_collector.c.o
+domain/task/service/task_scheduler.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/task/service/task_scheduler.c.o
+.PHONY : domain/task/service/task_scheduler.c.o
 
-src/gc/core-gc/domain/aggregates/garbage_collector.i: src/gc/core-gc/domain/aggregates/garbage_collector.c.i
-.PHONY : src/gc/core-gc/domain/aggregates/garbage_collector.i
+domain/task/service/task_scheduler.i: domain/task/service/task_scheduler.c.i
+.PHONY : domain/task/service/task_scheduler.i
 
 # target to preprocess a source file
-src/gc/core-gc/domain/aggregates/garbage_collector.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/src/gc/core-gc/domain/aggregates/garbage_collector.c.i
-.PHONY : src/gc/core-gc/domain/aggregates/garbage_collector.c.i
+domain/task/service/task_scheduler.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/task/service/task_scheduler.c.i
+.PHONY : domain/task/service/task_scheduler.c.i
 
-src/gc/core-gc/domain/aggregates/garbage_collector.s: src/gc/core-gc/domain/aggregates/garbage_collector.c.s
-.PHONY : src/gc/core-gc/domain/aggregates/garbage_collector.s
+domain/task/service/task_scheduler.s: domain/task/service/task_scheduler.c.s
+.PHONY : domain/task/service/task_scheduler.s
 
 # target to generate assembly for a file
-src/gc/core-gc/domain/aggregates/garbage_collector.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/src/gc/core-gc/domain/aggregates/garbage_collector.c.s
-.PHONY : src/gc/core-gc/domain/aggregates/garbage_collector.c.s
+domain/task/service/task_scheduler.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/task/service/task_scheduler.c.s
+.PHONY : domain/task/service/task_scheduler.c.s
 
-src/gc/core-gc/domain/aggregates/heap.o: src/gc/core-gc/domain/aggregates/heap.c.o
-.PHONY : src/gc/core-gc/domain/aggregates/heap.o
+domain/task/task.o: domain/task/task.c.o
+.PHONY : domain/task/task.o
 
 # target to build an object file
-src/gc/core-gc/domain/aggregates/heap.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/src/gc/core-gc/domain/aggregates/heap.c.o
-.PHONY : src/gc/core-gc/domain/aggregates/heap.c.o
+domain/task/task.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/task/task.c.o
+.PHONY : domain/task/task.c.o
 
-src/gc/core-gc/domain/aggregates/heap.i: src/gc/core-gc/domain/aggregates/heap.c.i
-.PHONY : src/gc/core-gc/domain/aggregates/heap.i
+domain/task/task.i: domain/task/task.c.i
+.PHONY : domain/task/task.i
 
 # target to preprocess a source file
-src/gc/core-gc/domain/aggregates/heap.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/src/gc/core-gc/domain/aggregates/heap.c.i
-.PHONY : src/gc/core-gc/domain/aggregates/heap.c.i
+domain/task/task.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/task/task.c.i
+.PHONY : domain/task/task.c.i
 
-src/gc/core-gc/domain/aggregates/heap.s: src/gc/core-gc/domain/aggregates/heap.c.s
-.PHONY : src/gc/core-gc/domain/aggregates/heap.s
-
-# target to generate assembly for a file
-src/gc/core-gc/domain/aggregates/heap.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/src/gc/core-gc/domain/aggregates/heap.c.s
-.PHONY : src/gc/core-gc/domain/aggregates/heap.c.s
-
-src/gc/core-gc/domain/services/mark_service.o: src/gc/core-gc/domain/services/mark_service.c.o
-.PHONY : src/gc/core-gc/domain/services/mark_service.o
-
-# target to build an object file
-src/gc/core-gc/domain/services/mark_service.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/src/gc/core-gc/domain/services/mark_service.c.o
-.PHONY : src/gc/core-gc/domain/services/mark_service.c.o
-
-src/gc/core-gc/domain/services/mark_service.i: src/gc/core-gc/domain/services/mark_service.c.i
-.PHONY : src/gc/core-gc/domain/services/mark_service.i
-
-# target to preprocess a source file
-src/gc/core-gc/domain/services/mark_service.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/src/gc/core-gc/domain/services/mark_service.c.i
-.PHONY : src/gc/core-gc/domain/services/mark_service.c.i
-
-src/gc/core-gc/domain/services/mark_service.s: src/gc/core-gc/domain/services/mark_service.c.s
-.PHONY : src/gc/core-gc/domain/services/mark_service.s
+domain/task/task.s: domain/task/task.c.s
+.PHONY : domain/task/task.s
 
 # target to generate assembly for a file
-src/gc/core-gc/domain/services/mark_service.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/src/gc/core-gc/domain/services/mark_service.c.s
-.PHONY : src/gc/core-gc/domain/services/mark_service.c.s
-
-src/gc/core-gc/domain/services/sweep_service.o: src/gc/core-gc/domain/services/sweep_service.c.o
-.PHONY : src/gc/core-gc/domain/services/sweep_service.o
-
-# target to build an object file
-src/gc/core-gc/domain/services/sweep_service.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/src/gc/core-gc/domain/services/sweep_service.c.o
-.PHONY : src/gc/core-gc/domain/services/sweep_service.c.o
-
-src/gc/core-gc/domain/services/sweep_service.i: src/gc/core-gc/domain/services/sweep_service.c.i
-.PHONY : src/gc/core-gc/domain/services/sweep_service.i
-
-# target to preprocess a source file
-src/gc/core-gc/domain/services/sweep_service.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/src/gc/core-gc/domain/services/sweep_service.c.i
-.PHONY : src/gc/core-gc/domain/services/sweep_service.c.i
-
-src/gc/core-gc/domain/services/sweep_service.s: src/gc/core-gc/domain/services/sweep_service.c.s
-.PHONY : src/gc/core-gc/domain/services/sweep_service.s
-
-# target to generate assembly for a file
-src/gc/core-gc/domain/services/sweep_service.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/src/gc/core-gc/domain/services/sweep_service.c.s
-.PHONY : src/gc/core-gc/domain/services/sweep_service.c.s
-
-src/platform/context/aarch64/context_switch.o: src/platform/context/aarch64/context_switch.S.o
-.PHONY : src/platform/context/aarch64/context_switch.o
-
-# target to build an object file
-src/platform/context/aarch64/context_switch.S.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/src/platform/context/aarch64/context_switch.S.o
-.PHONY : src/platform/context/aarch64/context_switch.S.o
-
-src/platform/context/aarch64/makecontext.o: src/platform/context/aarch64/makecontext.c.o
-.PHONY : src/platform/context/aarch64/makecontext.o
-
-# target to build an object file
-src/platform/context/aarch64/makecontext.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/src/platform/context/aarch64/makecontext.c.o
-.PHONY : src/platform/context/aarch64/makecontext.c.o
-
-src/platform/context/aarch64/makecontext.i: src/platform/context/aarch64/makecontext.c.i
-.PHONY : src/platform/context/aarch64/makecontext.i
-
-# target to preprocess a source file
-src/platform/context/aarch64/makecontext.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/src/platform/context/aarch64/makecontext.c.i
-.PHONY : src/platform/context/aarch64/makecontext.c.i
-
-src/platform/context/aarch64/makecontext.s: src/platform/context/aarch64/makecontext.c.s
-.PHONY : src/platform/context/aarch64/makecontext.s
-
-# target to generate assembly for a file
-src/platform/context/aarch64/makecontext.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/src/platform/context/aarch64/makecontext.c.s
-.PHONY : src/platform/context/aarch64/makecontext.c.s
-
-src/platform/event/posix/macos/kqueue.o: src/platform/event/posix/macos/kqueue.c.o
-.PHONY : src/platform/event/posix/macos/kqueue.o
-
-# target to build an object file
-src/platform/event/posix/macos/kqueue.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/src/platform/event/posix/macos/kqueue.c.o
-.PHONY : src/platform/event/posix/macos/kqueue.c.o
-
-src/platform/event/posix/macos/kqueue.i: src/platform/event/posix/macos/kqueue.c.i
-.PHONY : src/platform/event/posix/macos/kqueue.i
-
-# target to preprocess a source file
-src/platform/event/posix/macos/kqueue.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/src/platform/event/posix/macos/kqueue.c.i
-.PHONY : src/platform/event/posix/macos/kqueue.c.i
-
-src/platform/event/posix/macos/kqueue.s: src/platform/event/posix/macos/kqueue.c.s
-.PHONY : src/platform/event/posix/macos/kqueue.s
-
-# target to generate assembly for a file
-src/platform/event/posix/macos/kqueue.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/src/platform/event/posix/macos/kqueue.c.s
-.PHONY : src/platform/event/posix/macos/kqueue.c.s
-
-tests/advanced_memory_pool_test.o: tests/advanced_memory_pool_test.c.o
-.PHONY : tests/advanced_memory_pool_test.o
-
-# target to build an object file
-tests/advanced_memory_pool_test.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/advanced_memory_pool_test.dir/build.make CMakeFiles/advanced_memory_pool_test.dir/tests/advanced_memory_pool_test.c.o
-.PHONY : tests/advanced_memory_pool_test.c.o
-
-tests/advanced_memory_pool_test.i: tests/advanced_memory_pool_test.c.i
-.PHONY : tests/advanced_memory_pool_test.i
-
-# target to preprocess a source file
-tests/advanced_memory_pool_test.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/advanced_memory_pool_test.dir/build.make CMakeFiles/advanced_memory_pool_test.dir/tests/advanced_memory_pool_test.c.i
-.PHONY : tests/advanced_memory_pool_test.c.i
-
-tests/advanced_memory_pool_test.s: tests/advanced_memory_pool_test.c.s
-.PHONY : tests/advanced_memory_pool_test.s
-
-# target to generate assembly for a file
-tests/advanced_memory_pool_test.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/advanced_memory_pool_test.dir/build.make CMakeFiles/advanced_memory_pool_test.dir/tests/advanced_memory_pool_test.c.s
-.PHONY : tests/advanced_memory_pool_test.c.s
-
-tests/async_memory_pool_test.o: tests/async_memory_pool_test.c.o
-.PHONY : tests/async_memory_pool_test.o
-
-# target to build an object file
-tests/async_memory_pool_test.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/async_memory_pool_test.dir/build.make CMakeFiles/async_memory_pool_test.dir/tests/async_memory_pool_test.c.o
-.PHONY : tests/async_memory_pool_test.c.o
-
-tests/async_memory_pool_test.i: tests/async_memory_pool_test.c.i
-.PHONY : tests/async_memory_pool_test.i
-
-# target to preprocess a source file
-tests/async_memory_pool_test.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/async_memory_pool_test.dir/build.make CMakeFiles/async_memory_pool_test.dir/tests/async_memory_pool_test.c.i
-.PHONY : tests/async_memory_pool_test.c.i
-
-tests/async_memory_pool_test.s: tests/async_memory_pool_test.c.s
-.PHONY : tests/async_memory_pool_test.s
-
-# target to generate assembly for a file
-tests/async_memory_pool_test.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/async_memory_pool_test.dir/build.make CMakeFiles/async_memory_pool_test.dir/tests/async_memory_pool_test.c.s
-.PHONY : tests/async_memory_pool_test.c.s
-
-tests/gc_test.o: tests/gc_test.c.o
-.PHONY : tests/gc_test.o
-
-# target to build an object file
-tests/gc_test.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/gc_test.dir/build.make CMakeFiles/gc_test.dir/tests/gc_test.c.o
-.PHONY : tests/gc_test.c.o
-
-tests/gc_test.i: tests/gc_test.c.i
-.PHONY : tests/gc_test.i
-
-# target to preprocess a source file
-tests/gc_test.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/gc_test.dir/build.make CMakeFiles/gc_test.dir/tests/gc_test.c.i
-.PHONY : tests/gc_test.c.i
-
-tests/gc_test.s: tests/gc_test.c.s
-.PHONY : tests/gc_test.s
-
-# target to generate assembly for a file
-tests/gc_test.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/gc_test.dir/build.make CMakeFiles/gc_test.dir/tests/gc_test.c.s
-.PHONY : tests/gc_test.c.s
-
-tests/industrial_memory_pool_test.o: tests/industrial_memory_pool_test.c.o
-.PHONY : tests/industrial_memory_pool_test.o
-
-# target to build an object file
-tests/industrial_memory_pool_test.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/industrial_memory_pool_test.dir/build.make CMakeFiles/industrial_memory_pool_test.dir/tests/industrial_memory_pool_test.c.o
-.PHONY : tests/industrial_memory_pool_test.c.o
-
-tests/industrial_memory_pool_test.i: tests/industrial_memory_pool_test.c.i
-.PHONY : tests/industrial_memory_pool_test.i
-
-# target to preprocess a source file
-tests/industrial_memory_pool_test.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/industrial_memory_pool_test.dir/build.make CMakeFiles/industrial_memory_pool_test.dir/tests/industrial_memory_pool_test.c.i
-.PHONY : tests/industrial_memory_pool_test.c.i
-
-tests/industrial_memory_pool_test.s: tests/industrial_memory_pool_test.c.s
-.PHONY : tests/industrial_memory_pool_test.s
-
-# target to generate assembly for a file
-tests/industrial_memory_pool_test.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/industrial_memory_pool_test.dir/build.make CMakeFiles/industrial_memory_pool_test.dir/tests/industrial_memory_pool_test.c.s
-.PHONY : tests/industrial_memory_pool_test.c.s
-
-tests/runtime_test.o: tests/runtime_test.c.o
-.PHONY : tests/runtime_test.o
-
-# target to build an object file
-tests/runtime_test.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/runtime_test.dir/build.make CMakeFiles/runtime_test.dir/tests/runtime_test.c.o
-.PHONY : tests/runtime_test.c.o
-
-tests/runtime_test.i: tests/runtime_test.c.i
-.PHONY : tests/runtime_test.i
-
-# target to preprocess a source file
-tests/runtime_test.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/runtime_test.dir/build.make CMakeFiles/runtime_test.dir/tests/runtime_test.c.i
-.PHONY : tests/runtime_test.c.i
-
-tests/runtime_test.s: tests/runtime_test.c.s
-.PHONY : tests/runtime_test.s
-
-# target to generate assembly for a file
-tests/runtime_test.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/runtime_test.dir/build.make CMakeFiles/runtime_test.dir/tests/runtime_test.c.s
-.PHONY : tests/runtime_test.c.s
+domain/task/task.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/task/task.c.s
+.PHONY : domain/task/task.c.s
 
 # Help Target
 help:
@@ -860,86 +522,49 @@ help:
 	@echo "... install/strip"
 	@echo "... list_install_components"
 	@echo "... rebuild_cache"
-	@echo "... test"
-	@echo "... advanced_memory_pool_test"
-	@echo "... async_await_example"
-	@echo "... async_memory_pool_test"
-	@echo "... basic_usage_example"
 	@echo "... echo_runtime"
-	@echo "... gc_test"
-	@echo "... industrial_memory_pool_test"
-	@echo "... performance_comparison_example"
-	@echo "... runtime_test"
-	@echo "... examples/async_await.o"
-	@echo "... examples/async_await.i"
-	@echo "... examples/async_await.s"
-	@echo "... examples/basic_usage.o"
-	@echo "... examples/basic_usage.i"
-	@echo "... examples/basic_usage.s"
-	@echo "... examples/performance_comparison.o"
-	@echo "... examples/performance_comparison.i"
-	@echo "... examples/performance_comparison.s"
-	@echo "... src/core/async_memory_pool.o"
-	@echo "... src/core/async_memory_pool.i"
-	@echo "... src/core/async_memory_pool.s"
-	@echo "... src/core/future.o"
-	@echo "... src/core/future.i"
-	@echo "... src/core/future.s"
-	@echo "... src/core/industrial_memory_pool.o"
-	@echo "... src/core/industrial_memory_pool.i"
-	@echo "... src/core/industrial_memory_pool.s"
-	@echo "... src/core/memory_pool.o"
-	@echo "... src/core/memory_pool.i"
-	@echo "... src/core/memory_pool.s"
-	@echo "... src/core/runtime.o"
-	@echo "... src/core/runtime.i"
-	@echo "... src/core/runtime.s"
-	@echo "... src/core/task.o"
-	@echo "... src/core/task.i"
-	@echo "... src/core/task.s"
-	@echo "... src/gc/core-gc/application/commands/trigger_gc_command.o"
-	@echo "... src/gc/core-gc/application/commands/trigger_gc_command.i"
-	@echo "... src/gc/core-gc/application/commands/trigger_gc_command.s"
-	@echo "... src/gc/core-gc/application/services/gc_scheduler.o"
-	@echo "... src/gc/core-gc/application/services/gc_scheduler.i"
-	@echo "... src/gc/core-gc/application/services/gc_scheduler.s"
-	@echo "... src/gc/core-gc/core_gc.o"
-	@echo "... src/gc/core-gc/core_gc.i"
-	@echo "... src/gc/core-gc/core_gc.s"
-	@echo "... src/gc/core-gc/domain/aggregates/garbage_collector.o"
-	@echo "... src/gc/core-gc/domain/aggregates/garbage_collector.i"
-	@echo "... src/gc/core-gc/domain/aggregates/garbage_collector.s"
-	@echo "... src/gc/core-gc/domain/aggregates/heap.o"
-	@echo "... src/gc/core-gc/domain/aggregates/heap.i"
-	@echo "... src/gc/core-gc/domain/aggregates/heap.s"
-	@echo "... src/gc/core-gc/domain/services/mark_service.o"
-	@echo "... src/gc/core-gc/domain/services/mark_service.i"
-	@echo "... src/gc/core-gc/domain/services/mark_service.s"
-	@echo "... src/gc/core-gc/domain/services/sweep_service.o"
-	@echo "... src/gc/core-gc/domain/services/sweep_service.i"
-	@echo "... src/gc/core-gc/domain/services/sweep_service.s"
-	@echo "... src/platform/context/aarch64/context_switch.o"
-	@echo "... src/platform/context/aarch64/makecontext.o"
-	@echo "... src/platform/context/aarch64/makecontext.i"
-	@echo "... src/platform/context/aarch64/makecontext.s"
-	@echo "... src/platform/event/posix/macos/kqueue.o"
-	@echo "... src/platform/event/posix/macos/kqueue.i"
-	@echo "... src/platform/event/posix/macos/kqueue.s"
-	@echo "... tests/advanced_memory_pool_test.o"
-	@echo "... tests/advanced_memory_pool_test.i"
-	@echo "... tests/advanced_memory_pool_test.s"
-	@echo "... tests/async_memory_pool_test.o"
-	@echo "... tests/async_memory_pool_test.i"
-	@echo "... tests/async_memory_pool_test.s"
-	@echo "... tests/gc_test.o"
-	@echo "... tests/gc_test.i"
-	@echo "... tests/gc_test.s"
-	@echo "... tests/industrial_memory_pool_test.o"
-	@echo "... tests/industrial_memory_pool_test.i"
-	@echo "... tests/industrial_memory_pool_test.s"
-	@echo "... tests/runtime_test.o"
-	@echo "... tests/runtime_test.i"
-	@echo "... tests/runtime_test.s"
+	@echo "... api/runtime_api.o"
+	@echo "... api/runtime_api.i"
+	@echo "... api/runtime_api.s"
+	@echo "... domain/async/entity/future.o"
+	@echo "... domain/async/entity/future.i"
+	@echo "... domain/async/entity/future.s"
+	@echo "... domain/channel/channel.o"
+	@echo "... domain/channel/channel.i"
+	@echo "... domain/channel/channel.s"
+	@echo "... domain/channel/entity/channel.o"
+	@echo "... domain/channel/entity/channel.i"
+	@echo "... domain/channel/entity/channel.s"
+	@echo "... domain/channel/select.o"
+	@echo "... domain/channel/select.i"
+	@echo "... domain/channel/select.s"
+	@echo "... domain/coroutine/coroutine.o"
+	@echo "... domain/coroutine/coroutine.i"
+	@echo "... domain/coroutine/coroutine.s"
+	@echo "... domain/coroutine/coroutine_runtime.o"
+	@echo "... domain/coroutine/coroutine_runtime.i"
+	@echo "... domain/coroutine/coroutine_runtime.s"
+	@echo "... domain/coroutine/coroutine_runtime_asm.o"
+	@echo "... domain/coroutine/coroutine_runtime_asm.i"
+	@echo "... domain/coroutine/coroutine_runtime_asm.s"
+	@echo "... domain/coroutine/switcher.o"
+	@echo "... domain/coroutine/switcher.i"
+	@echo "... domain/coroutine/switcher.s"
+	@echo "... domain/coroutine/yield.o"
+	@echo "... domain/coroutine/yield.i"
+	@echo "... domain/coroutine/yield.s"
+	@echo "... domain/runtime/echo_runtime.o"
+	@echo "... domain/runtime/echo_runtime.i"
+	@echo "... domain/runtime/echo_runtime.s"
+	@echo "... domain/task/entity/task.o"
+	@echo "... domain/task/entity/task.i"
+	@echo "... domain/task/entity/task.s"
+	@echo "... domain/task/service/task_scheduler.o"
+	@echo "... domain/task/service/task_scheduler.i"
+	@echo "... domain/task/service/task_scheduler.s"
+	@echo "... domain/task/task.o"
+	@echo "... domain/task/task.i"
+	@echo "... domain/task/task.s"
 .PHONY : help
 
 

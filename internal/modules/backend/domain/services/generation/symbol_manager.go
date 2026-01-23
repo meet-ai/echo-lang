@@ -22,8 +22,11 @@ type SymbolManager interface {
 	// 更新符号值
 	UpdateSymbolValue(name string, value interface{}) error
 
-	// 检查符号是否存在
+	// 检查符号是否存在（在所有作用域中）
 	SymbolExists(name string) bool
+
+	// 检查符号是否在当前作用域存在
+	SymbolExistsInCurrentScope(name string) bool
 
 	// 进入新的作用域
 	EnterScope() error

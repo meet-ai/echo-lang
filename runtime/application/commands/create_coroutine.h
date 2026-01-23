@@ -40,14 +40,8 @@ typedef struct {
     const char* error_message;    // 错误信息，无效时填写
 } command_validation_result_t;
 
-// 便利函数
-create_coroutine_command_t* create_coroutine_command_create(
-    void (*entry_point)(void*),
-    void* argument,
-    const coroutine_config_t* config
-);
-
-void create_coroutine_command_destroy(create_coroutine_command_t* command);
+// 注意：create_coroutine_command_create 和 create_coroutine_command_destroy
+// 函数已在 coroutine_commands.h 中定义，请勿在此重复定义
 
 // 验证命令
 command_validation_result_t create_coroutine_command_validate(
@@ -58,3 +52,4 @@ command_validation_result_t create_coroutine_command_validate(
 coroutine_config_t create_coroutine_command_default_config(void);
 
 #endif // CREATE_COROUTINE_COMMAND_H
+

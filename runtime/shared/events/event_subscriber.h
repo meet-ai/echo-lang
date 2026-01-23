@@ -71,3 +71,4 @@ bool subscription_set_mode(subscription_t* subscription, subscription_mode_t mod
 extern event_subscriber_t* default_event_subscriber;
 
 #endif // EVENT_SUBSCRIBER_H
+

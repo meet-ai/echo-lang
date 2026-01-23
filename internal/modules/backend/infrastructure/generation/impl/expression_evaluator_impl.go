@@ -100,12 +100,10 @@ func (ee *ExpressionEvaluatorImpl) EvaluateStringLiteral(irManager generation.IR
 		return nil, fmt.Errorf("failed to add string constant: %w", err)
 	}
 
-	// 对于字符串常量，我们直接返回全局变量的地址
-	// 因为全局变量已经是 i8* 类型（指向字符串的指针）
-	// LLVM中，全局字符串常量就是可以直接作为字符串指针使用的
-
 	// 全局字符串变量的类型是 [N x i8]*
-	// 但我们需要 i8* 类型，所以需要bitcast
+	// 我们需要将其转换为 i8* 类型
+	// 对于字符串常量，最简单且正确的方法是使用 bitcast
+	// 因为 [N x i8]* 和 i8* 在内存布局上是兼容的（都是指向连续内存的指针）
 	targetType := types.NewPointer(types.I8)
 	bitcastInst, err := irManager.CreateBitCast(strGlobal, targetType, "")
 	if err != nil {

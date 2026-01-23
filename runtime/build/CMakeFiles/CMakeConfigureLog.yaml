@@ -5,7 +5,7 @@ events:
     kind: "find-v1"
     backtrace:
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineSystem.cmake:12 (find_program)"
-      - "CMakeLists.txt:2 (project)"
+      - "CMakeLists.txt:3 (project)"
     mode: "program"
     variable: "CMAKE_UNAME"
     description: "Path to a program."
@@ -20,7 +20,6 @@ events:
     names:
       - "uname"
     candidate_directories:
-      - "/Users/meetai/.opam/default/bin/"
       - "/Users/meetai/.local/bin/"
       - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin/"
       - "/Users/meetai/.x-cmd.root/bin/"
@@ -39,13 +38,13 @@ events:
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
       - "/usr/local/go/bin/"
+      - "/Users/meetai/.opam/default/bin/"
       - "/Users/meetai/.sdkman/candidates/quarkus/current/bin/"
       - "/Users/meetai/.sdkman/candidates/java/current/bin/"
       - "/Users/meetai/.cargo/bin/"
       - "/Users/meetai/.fzf/bin/"
       - "/Users/meetai/.x-cmd.root/local/data/triarii/bin/"
     searched_directories:
-      - "/Users/meetai/.opam/default/bin/uname"
       - "/Users/meetai/.local/bin/uname"
       - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin/uname"
       - "/Users/meetai/.x-cmd.root/bin/uname"
@@ -59,7 +58,6 @@ events:
     found: "/usr/bin/uname"
     search_context:
       ENV{PATH}:
-        - "/Users/meetai/.opam/default/bin"
         - "/Users/meetai/.local/bin"
         - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin"
         - "/Users/meetai/.x-cmd.root/bin"
@@ -78,6 +76,7 @@ events:
         - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
         - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
         - "/usr/local/go/bin"
+        - "/Users/meetai/.opam/default/bin"
         - "/Users/meetai/.local/bin"
         - "/Users/meetai/.sdkman/candidates/quarkus/current/bin"
         - "/Users/meetai/.sdkman/candidates/java/current/bin"
@@ -88,14 +87,14 @@ events:
     kind: "message-v1"
     backtrace:
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineSystem.cmake:212 (message)"
-      - "CMakeLists.txt:2 (project)"
+      - "CMakeLists.txt:3 (project)"
     message: |
       The system is: Darwin - 24.3.0 - arm64
   -
     kind: "find-v1"
     backtrace:
       - "/opt/homebrew/share/cmake/Modules/CMakeUnixFindMake.cmake:5 (find_program)"
-      - "CMakeLists.txt:2 (project)"
+      - "CMakeLists.txt:3 (project)"
     mode: "program"
     variable: "CMAKE_MAKE_PROGRAM"
     description: "Path to a program."
@@ -112,7 +111,6 @@ events:
       - "make"
       - "smake"
     candidate_directories:
-      - "/Users/meetai/.opam/default/bin/"
       - "/Users/meetai/.local/bin/"
       - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin/"
       - "/Users/meetai/.x-cmd.root/bin/"
@@ -131,13 +129,13 @@ events:
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
       - "/usr/local/go/bin/"
+      - "/Users/meetai/.opam/default/bin/"
       - "/Users/meetai/.sdkman/candidates/quarkus/current/bin/"
       - "/Users/meetai/.sdkman/candidates/java/current/bin/"
       - "/Users/meetai/.cargo/bin/"
       - "/Users/meetai/.fzf/bin/"
       - "/Users/meetai/.x-cmd.root/local/data/triarii/bin/"
     searched_directories:
-      - "/Users/meetai/.opam/default/bin/gmake"
       - "/Users/meetai/.local/bin/gmake"
       - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin/gmake"
       - "/Users/meetai/.x-cmd.root/bin/gmake"
@@ -156,12 +154,12 @@ events:
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/gmake"
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/gmake"
       - "/usr/local/go/bin/gmake"
+      - "/Users/meetai/.opam/default/bin/gmake"
       - "/Users/meetai/.sdkman/candidates/quarkus/current/bin/gmake"
       - "/Users/meetai/.sdkman/candidates/java/current/bin/gmake"
       - "/Users/meetai/.cargo/bin/gmake"
       - "/Users/meetai/.fzf/bin/gmake"
       - "/Users/meetai/.x-cmd.root/local/data/triarii/bin/gmake"
-      - "/Users/meetai/.opam/default/bin/make"
       - "/Users/meetai/.local/bin/make"
       - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin/make"
       - "/Users/meetai/.x-cmd.root/bin/make"
@@ -175,7 +173,6 @@ events:
     found: "/usr/bin/make"
     search_context:
       ENV{PATH}:
-        - "/Users/meetai/.opam/default/bin"
         - "/Users/meetai/.local/bin"
         - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin"
         - "/Users/meetai/.x-cmd.root/bin"
@@ -194,6 +191,7 @@ events:
         - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
         - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
         - "/usr/local/go/bin"
+        - "/Users/meetai/.opam/default/bin"
         - "/Users/meetai/.local/bin"
         - "/Users/meetai/.sdkman/candidates/quarkus/current/bin"
         - "/Users/meetai/.sdkman/candidates/java/current/bin"
@@ -205,7 +203,7 @@ events:
     backtrace:
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCompiler.cmake:73 (find_program)"
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCCompiler.cmake:64 (_cmake_find_compiler)"
-      - "CMakeLists.txt:2 (project)"
+      - "CMakeLists.txt:3 (project)"
     mode: "program"
     variable: "CMAKE_C_COMPILER"
     description: "C compiler"
@@ -226,7 +224,6 @@ events:
       - "icx"
       - "clang"
     candidate_directories:
-      - "/Users/meetai/.opam/default/bin/"
       - "/Users/meetai/.local/bin/"
       - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin/"
       - "/Users/meetai/.x-cmd.root/bin/"
@@ -245,13 +242,13 @@ events:
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
       - "/usr/local/go/bin/"
+      - "/Users/meetai/.opam/default/bin/"
       - "/Users/meetai/.sdkman/candidates/quarkus/current/bin/"
       - "/Users/meetai/.sdkman/candidates/java/current/bin/"
       - "/Users/meetai/.cargo/bin/"
       - "/Users/meetai/.fzf/bin/"
       - "/Users/meetai/.x-cmd.root/local/data/triarii/bin/"
     searched_directories:
-      - "/Users/meetai/.opam/default/bin/cc"
       - "/Users/meetai/.local/bin/cc"
       - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin/cc"
       - "/Users/meetai/.x-cmd.root/bin/cc"
@@ -265,7 +262,6 @@ events:
     found: "/usr/bin/cc"
     search_context:
       ENV{PATH}:
-        - "/Users/meetai/.opam/default/bin"
         - "/Users/meetai/.local/bin"
         - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin"
         - "/Users/meetai/.x-cmd.root/bin"
@@ -284,6 +280,7 @@ events:
         - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
         - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
         - "/usr/local/go/bin"
+        - "/Users/meetai/.opam/default/bin"
         - "/Users/meetai/.local/bin"
         - "/Users/meetai/.sdkman/candidates/quarkus/current/bin"
         - "/Users/meetai/.sdkman/candidates/java/current/bin"
@@ -298,7 +295,7 @@ events:
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerId.cmake:8 (CMAKE_DETERMINE_COMPILER_ID_BUILD)"
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCCompiler.cmake:122 (CMAKE_DETERMINE_COMPILER_ID)"
-      - "CMakeLists.txt:2 (project)"
+      - "CMakeLists.txt:3 (project)"
     mode: "file"
     variable: "src_in"
     description: "Path to a file."
@@ -317,7 +314,6 @@ events:
     found: "/opt/homebrew/share/cmake/Modules/CMakeCCompilerId.c.in"
     search_context:
       ENV{PATH}:
-        - "/Users/meetai/.opam/default/bin"
         - "/Users/meetai/.local/bin"
         - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin"
         - "/Users/meetai/.x-cmd.root/bin"
@@ -336,6 +332,7 @@ events:
         - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
         - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
         - "/usr/local/go/bin"
+        - "/Users/meetai/.opam/default/bin"
         - "/Users/meetai/.local/bin"
         - "/Users/meetai/.sdkman/candidates/quarkus/current/bin"
         - "/Users/meetai/.sdkman/candidates/java/current/bin"
@@ -348,7 +345,7 @@ events:
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCCompiler.cmake:122 (CMAKE_DETERMINE_COMPILER_ID)"
-      - "CMakeLists.txt:2 (project)"
+      - "CMakeLists.txt:3 (project)"
     message: |
       Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
       Compiler: /usr/bin/cc 
@@ -369,7 +366,7 @@ events:
     backtrace:
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerId.cmake:290 (message)"
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCCompiler.cmake:122 (CMAKE_DETERMINE_COMPILER_ID)"
-      - "CMakeLists.txt:2 (project)"
+      - "CMakeLists.txt:3 (project)"
     message: |
       Detecting C compiler apple sysroot: "/usr/bin/cc" "-E" "apple-sdk.c"
         # 1 "apple-sdk.c"
@@ -410,7 +407,7 @@ events:
     backtrace:
       - "/opt/homebrew/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
-      - "CMakeLists.txt:2 (project)"
+      - "CMakeLists.txt:3 (project)"
     mode: "program"
     variable: "CMAKE_AR"
     description: "Path to a program."
@@ -426,7 +423,6 @@ events:
       - "ar"
     candidate_directories:
       - "/usr/bin/"
-      - "/Users/meetai/.opam/default/bin/"
       - "/Users/meetai/.local/bin/"
       - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin/"
       - "/Users/meetai/.x-cmd.root/bin/"
@@ -444,6 +440,7 @@ events:
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
       - "/usr/local/go/bin/"
+      - "/Users/meetai/.opam/default/bin/"
       - "/Users/meetai/.sdkman/candidates/quarkus/current/bin/"
       - "/Users/meetai/.sdkman/candidates/java/current/bin/"
       - "/Users/meetai/.cargo/bin/"
@@ -452,7 +449,6 @@ events:
     found: "/usr/bin/ar"
     search_context:
       ENV{PATH}:
-        - "/Users/meetai/.opam/default/bin"
         - "/Users/meetai/.local/bin"
         - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin"
         - "/Users/meetai/.x-cmd.root/bin"
@@ -471,6 +467,7 @@ events:
         - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
         - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
         - "/usr/local/go/bin"
+        - "/Users/meetai/.opam/default/bin"
         - "/Users/meetai/.local/bin"
         - "/Users/meetai/.sdkman/candidates/quarkus/current/bin"
         - "/Users/meetai/.sdkman/candidates/java/current/bin"
@@ -482,7 +479,7 @@ events:
     backtrace:
       - "/opt/homebrew/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
-      - "CMakeLists.txt:2 (project)"
+      - "CMakeLists.txt:3 (project)"
     mode: "program"
     variable: "CMAKE_RANLIB"
     description: "Path to a program."
@@ -498,7 +495,6 @@ events:
       - "ranlib"
     candidate_directories:
       - "/usr/bin/"
-      - "/Users/meetai/.opam/default/bin/"
       - "/Users/meetai/.local/bin/"
       - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin/"
       - "/Users/meetai/.x-cmd.root/bin/"
@@ -516,6 +512,7 @@ events:
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
       - "/usr/local/go/bin/"
+      - "/Users/meetai/.opam/default/bin/"
       - "/Users/meetai/.sdkman/candidates/quarkus/current/bin/"
       - "/Users/meetai/.sdkman/candidates/java/current/bin/"
       - "/Users/meetai/.cargo/bin/"
@@ -524,7 +521,6 @@ events:
     found: "/usr/bin/ranlib"
     search_context:
       ENV{PATH}:
-        - "/Users/meetai/.opam/default/bin"
         - "/Users/meetai/.local/bin"
         - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin"
         - "/Users/meetai/.x-cmd.root/bin"
@@ -543,6 +539,7 @@ events:
         - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
         - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
         - "/usr/local/go/bin"
+        - "/Users/meetai/.opam/default/bin"
         - "/Users/meetai/.local/bin"
         - "/Users/meetai/.sdkman/candidates/quarkus/current/bin"
         - "/Users/meetai/.sdkman/candidates/java/current/bin"
@@ -554,7 +551,7 @@ events:
     backtrace:
       - "/opt/homebrew/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
-      - "CMakeLists.txt:2 (project)"
+      - "CMakeLists.txt:3 (project)"
     mode: "program"
     variable: "CMAKE_STRIP"
     description: "Path to a program."
@@ -570,7 +567,6 @@ events:
       - "strip"
     candidate_directories:
       - "/usr/bin/"
-      - "/Users/meetai/.opam/default/bin/"
       - "/Users/meetai/.local/bin/"
       - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin/"
       - "/Users/meetai/.x-cmd.root/bin/"
@@ -588,6 +584,7 @@ events:
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
       - "/usr/local/go/bin/"
+      - "/Users/meetai/.opam/default/bin/"
       - "/Users/meetai/.sdkman/candidates/quarkus/current/bin/"
       - "/Users/meetai/.sdkman/candidates/java/current/bin/"
       - "/Users/meetai/.cargo/bin/"
@@ -596,7 +593,6 @@ events:
     found: "/usr/bin/strip"
     search_context:
       ENV{PATH}:
-        - "/Users/meetai/.opam/default/bin"
         - "/Users/meetai/.local/bin"
         - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin"
         - "/Users/meetai/.x-cmd.root/bin"
@@ -615,6 +611,7 @@ events:
         - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
         - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
         - "/usr/local/go/bin"
+        - "/Users/meetai/.opam/default/bin"
         - "/Users/meetai/.local/bin"
         - "/Users/meetai/.sdkman/candidates/quarkus/current/bin"
         - "/Users/meetai/.sdkman/candidates/java/current/bin"
@@ -626,7 +623,7 @@ events:
     backtrace:
       - "/opt/homebrew/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
-      - "CMakeLists.txt:2 (project)"
+      - "CMakeLists.txt:3 (project)"
     mode: "program"
     variable: "CMAKE_LINKER"
     description: "Path to a program."
@@ -642,7 +639,6 @@ events:
       - "ld"
     candidate_directories:
       - "/usr/bin/"
-      - "/Users/meetai/.opam/default/bin/"
       - "/Users/meetai/.local/bin/"
       - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin/"
       - "/Users/meetai/.x-cmd.root/bin/"
@@ -660,6 +656,7 @@ events:
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
       - "/usr/local/go/bin/"
+      - "/Users/meetai/.opam/default/bin/"
       - "/Users/meetai/.sdkman/candidates/quarkus/current/bin/"
       - "/Users/meetai/.sdkman/candidates/java/current/bin/"
       - "/Users/meetai/.cargo/bin/"
@@ -668,7 +665,6 @@ events:
     found: "/usr/bin/ld"
     search_context:
       ENV{PATH}:
-        - "/Users/meetai/.opam/default/bin"
         - "/Users/meetai/.local/bin"
         - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin"
         - "/Users/meetai/.x-cmd.root/bin"
@@ -687,6 +683,7 @@ events:
         - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
         - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
         - "/usr/local/go/bin"
+        - "/Users/meetai/.opam/default/bin"
         - "/Users/meetai/.local/bin"
         - "/Users/meetai/.sdkman/candidates/quarkus/current/bin"
         - "/Users/meetai/.sdkman/candidates/java/current/bin"
@@ -698,7 +695,7 @@ events:
     backtrace:
       - "/opt/homebrew/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
-      - "CMakeLists.txt:2 (project)"
+      - "CMakeLists.txt:3 (project)"
     mode: "program"
     variable: "CMAKE_NM"
     description: "Path to a program."
@@ -714,7 +711,6 @@ events:
       - "nm"
     candidate_directories:
       - "/usr/bin/"
-      - "/Users/meetai/.opam/default/bin/"
       - "/Users/meetai/.local/bin/"
       - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin/"
       - "/Users/meetai/.x-cmd.root/bin/"
@@ -732,6 +728,7 @@ events:
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
       - "/usr/local/go/bin/"
+      - "/Users/meetai/.opam/default/bin/"
       - "/Users/meetai/.sdkman/candidates/quarkus/current/bin/"
       - "/Users/meetai/.sdkman/candidates/java/current/bin/"
       - "/Users/meetai/.cargo/bin/"
@@ -740,7 +737,6 @@ events:
     found: "/usr/bin/nm"
     search_context:
       ENV{PATH}:
-        - "/Users/meetai/.opam/default/bin"
         - "/Users/meetai/.local/bin"
         - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin"
         - "/Users/meetai/.x-cmd.root/bin"
@@ -759,6 +755,7 @@ events:
         - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
         - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
         - "/usr/local/go/bin"
+        - "/Users/meetai/.opam/default/bin"
         - "/Users/meetai/.local/bin"
         - "/Users/meetai/.sdkman/candidates/quarkus/current/bin"
         - "/Users/meetai/.sdkman/candidates/java/current/bin"
@@ -770,7 +767,7 @@ events:
     backtrace:
       - "/opt/homebrew/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
-      - "CMakeLists.txt:2 (project)"
+      - "CMakeLists.txt:3 (project)"
     mode: "program"
     variable: "CMAKE_OBJDUMP"
     description: "Path to a program."
@@ -786,7 +783,6 @@ events:
       - "objdump"
     candidate_directories:
       - "/usr/bin/"
-      - "/Users/meetai/.opam/default/bin/"
       - "/Users/meetai/.local/bin/"
       - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin/"
       - "/Users/meetai/.x-cmd.root/bin/"
@@ -804,6 +800,7 @@ events:
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
       - "/usr/local/go/bin/"
+      - "/Users/meetai/.opam/default/bin/"
       - "/Users/meetai/.sdkman/candidates/quarkus/current/bin/"
       - "/Users/meetai/.sdkman/candidates/java/current/bin/"
       - "/Users/meetai/.cargo/bin/"
@@ -812,7 +809,6 @@ events:
     found: "/usr/bin/objdump"
     search_context:
       ENV{PATH}:
-        - "/Users/meetai/.opam/default/bin"
         - "/Users/meetai/.local/bin"
         - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin"
         - "/Users/meetai/.x-cmd.root/bin"
@@ -831,6 +827,7 @@ events:
         - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
         - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
         - "/usr/local/go/bin"
+        - "/Users/meetai/.opam/default/bin"
         - "/Users/meetai/.local/bin"
         - "/Users/meetai/.sdkman/candidates/quarkus/current/bin"
         - "/Users/meetai/.sdkman/candidates/java/current/bin"
@@ -842,7 +839,7 @@ events:
     backtrace:
       - "/opt/homebrew/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
-      - "CMakeLists.txt:2 (project)"
+      - "CMakeLists.txt:3 (project)"
     mode: "program"
     variable: "CMAKE_OBJCOPY"
     description: "Path to a program."
@@ -858,7 +855,6 @@ events:
       - "objcopy"
     candidate_directories:
       - "/usr/bin/"
-      - "/Users/meetai/.opam/default/bin/"
       - "/Users/meetai/.local/bin/"
       - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin/"
       - "/Users/meetai/.x-cmd.root/bin/"
@@ -876,6 +872,7 @@ events:
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
       - "/usr/local/go/bin/"
+      - "/Users/meetai/.opam/default/bin/"
       - "/Users/meetai/.sdkman/candidates/quarkus/current/bin/"
       - "/Users/meetai/.sdkman/candidates/java/current/bin/"
       - "/Users/meetai/.cargo/bin/"
@@ -883,7 +880,6 @@ events:
       - "/Users/meetai/.x-cmd.root/local/data/triarii/bin/"
     searched_directories:
       - "/usr/bin/objcopy"
-      - "/Users/meetai/.opam/default/bin/objcopy"
       - "/Users/meetai/.local/bin/objcopy"
       - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin/objcopy"
       - "/Users/meetai/.x-cmd.root/bin/objcopy"
@@ -901,6 +897,7 @@ events:
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/objcopy"
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/objcopy"
       - "/usr/local/go/bin/objcopy"
+      - "/Users/meetai/.opam/default/bin/objcopy"
       - "/Users/meetai/.sdkman/candidates/quarkus/current/bin/objcopy"
       - "/Users/meetai/.sdkman/candidates/java/current/bin/objcopy"
       - "/Users/meetai/.cargo/bin/objcopy"
@@ -909,7 +906,6 @@ events:
     found: false
     search_context:
       ENV{PATH}:
-        - "/Users/meetai/.opam/default/bin"
         - "/Users/meetai/.local/bin"
         - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin"
         - "/Users/meetai/.x-cmd.root/bin"
@@ -928,6 +924,7 @@ events:
         - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
         - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
         - "/usr/local/go/bin"
+        - "/Users/meetai/.opam/default/bin"
         - "/Users/meetai/.local/bin"
         - "/Users/meetai/.sdkman/candidates/quarkus/current/bin"
         - "/Users/meetai/.sdkman/candidates/java/current/bin"
@@ -939,7 +936,7 @@ events:
     backtrace:
       - "/opt/homebrew/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
-      - "CMakeLists.txt:2 (project)"
+      - "CMakeLists.txt:3 (project)"
     mode: "program"
     variable: "CMAKE_READELF"
     description: "Path to a program."
@@ -955,7 +952,6 @@ events:
       - "readelf"
     candidate_directories:
       - "/usr/bin/"
-      - "/Users/meetai/.opam/default/bin/"
       - "/Users/meetai/.local/bin/"
       - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin/"
       - "/Users/meetai/.x-cmd.root/bin/"
@@ -973,6 +969,7 @@ events:
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
       - "/usr/local/go/bin/"
+      - "/Users/meetai/.opam/default/bin/"
       - "/Users/meetai/.sdkman/candidates/quarkus/current/bin/"
       - "/Users/meetai/.sdkman/candidates/java/current/bin/"
       - "/Users/meetai/.cargo/bin/"
@@ -980,7 +977,6 @@ events:
       - "/Users/meetai/.x-cmd.root/local/data/triarii/bin/"
     searched_directories:
       - "/usr/bin/readelf"
-      - "/Users/meetai/.opam/default/bin/readelf"
       - "/Users/meetai/.local/bin/readelf"
       - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin/readelf"
       - "/Users/meetai/.x-cmd.root/bin/readelf"
@@ -998,6 +994,7 @@ events:
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/readelf"
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/readelf"
       - "/usr/local/go/bin/readelf"
+      - "/Users/meetai/.opam/default/bin/readelf"
       - "/Users/meetai/.sdkman/candidates/quarkus/current/bin/readelf"
       - "/Users/meetai/.sdkman/candidates/java/current/bin/readelf"
       - "/Users/meetai/.cargo/bin/readelf"
@@ -1006,7 +1003,6 @@ events:
     found: false
     search_context:
       ENV{PATH}:
-        - "/Users/meetai/.opam/default/bin"
         - "/Users/meetai/.local/bin"
         - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin"
         - "/Users/meetai/.x-cmd.root/bin"
@@ -1025,6 +1021,7 @@ events:
         - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
         - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
         - "/usr/local/go/bin"
+        - "/Users/meetai/.opam/default/bin"
         - "/Users/meetai/.local/bin"
         - "/Users/meetai/.sdkman/candidates/quarkus/current/bin"
         - "/Users/meetai/.sdkman/candidates/java/current/bin"
@@ -1036,7 +1033,7 @@ events:
     backtrace:
       - "/opt/homebrew/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
-      - "CMakeLists.txt:2 (project)"
+      - "CMakeLists.txt:3 (project)"
     mode: "program"
     variable: "CMAKE_DLLTOOL"
     description: "Path to a program."
@@ -1052,7 +1049,6 @@ events:
       - "dlltool"
     candidate_directories:
       - "/usr/bin/"
-      - "/Users/meetai/.opam/default/bin/"
       - "/Users/meetai/.local/bin/"
       - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin/"
       - "/Users/meetai/.x-cmd.root/bin/"
@@ -1070,6 +1066,7 @@ events:
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
       - "/usr/local/go/bin/"
+      - "/Users/meetai/.opam/default/bin/"
       - "/Users/meetai/.sdkman/candidates/quarkus/current/bin/"
       - "/Users/meetai/.sdkman/candidates/java/current/bin/"
       - "/Users/meetai/.cargo/bin/"
@@ -1077,7 +1074,6 @@ events:
       - "/Users/meetai/.x-cmd.root/local/data/triarii/bin/"
     searched_directories:
       - "/usr/bin/dlltool"
-      - "/Users/meetai/.opam/default/bin/dlltool"
       - "/Users/meetai/.local/bin/dlltool"
       - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin/dlltool"
       - "/Users/meetai/.x-cmd.root/bin/dlltool"
@@ -1095,6 +1091,7 @@ events:
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/dlltool"
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/dlltool"
       - "/usr/local/go/bin/dlltool"
+      - "/Users/meetai/.opam/default/bin/dlltool"
       - "/Users/meetai/.sdkman/candidates/quarkus/current/bin/dlltool"
       - "/Users/meetai/.sdkman/candidates/java/current/bin/dlltool"
       - "/Users/meetai/.cargo/bin/dlltool"
@@ -1103,7 +1100,6 @@ events:
     found: false
     search_context:
       ENV{PATH}:
-        - "/Users/meetai/.opam/default/bin"
         - "/Users/meetai/.local/bin"
         - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin"
         - "/Users/meetai/.x-cmd.root/bin"
@@ -1122,6 +1118,7 @@ events:
         - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
         - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
         - "/usr/local/go/bin"
+        - "/Users/meetai/.opam/default/bin"
         - "/Users/meetai/.local/bin"
         - "/Users/meetai/.sdkman/candidates/quarkus/current/bin"
         - "/Users/meetai/.sdkman/candidates/java/current/bin"
@@ -1133,7 +1130,7 @@ events:
     backtrace:
       - "/opt/homebrew/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
-      - "CMakeLists.txt:2 (project)"
+      - "CMakeLists.txt:3 (project)"
     mode: "program"
     variable: "CMAKE_ADDR2LINE"
     description: "Path to a program."
@@ -1149,7 +1146,6 @@ events:
       - "addr2line"
     candidate_directories:
       - "/usr/bin/"
-      - "/Users/meetai/.opam/default/bin/"
       - "/Users/meetai/.local/bin/"
       - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin/"
       - "/Users/meetai/.x-cmd.root/bin/"
@@ -1167,6 +1163,7 @@ events:
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
       - "/usr/local/go/bin/"
+      - "/Users/meetai/.opam/default/bin/"
       - "/Users/meetai/.sdkman/candidates/quarkus/current/bin/"
       - "/Users/meetai/.sdkman/candidates/java/current/bin/"
       - "/Users/meetai/.cargo/bin/"
@@ -1174,7 +1171,6 @@ events:
       - "/Users/meetai/.x-cmd.root/local/data/triarii/bin/"
     searched_directories:
       - "/usr/bin/addr2line"
-      - "/Users/meetai/.opam/default/bin/addr2line"
       - "/Users/meetai/.local/bin/addr2line"
       - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin/addr2line"
       - "/Users/meetai/.x-cmd.root/bin/addr2line"
@@ -1192,6 +1188,7 @@ events:
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/addr2line"
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/addr2line"
       - "/usr/local/go/bin/addr2line"
+      - "/Users/meetai/.opam/default/bin/addr2line"
       - "/Users/meetai/.sdkman/candidates/quarkus/current/bin/addr2line"
       - "/Users/meetai/.sdkman/candidates/java/current/bin/addr2line"
       - "/Users/meetai/.cargo/bin/addr2line"
@@ -1200,7 +1197,6 @@ events:
     found: false
     search_context:
       ENV{PATH}:
-        - "/Users/meetai/.opam/default/bin"
         - "/Users/meetai/.local/bin"
         - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin"
         - "/Users/meetai/.x-cmd.root/bin"
@@ -1219,6 +1215,7 @@ events:
         - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
         - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
         - "/usr/local/go/bin"
+        - "/Users/meetai/.opam/default/bin"
         - "/Users/meetai/.local/bin"
         - "/Users/meetai/.sdkman/candidates/quarkus/current/bin"
         - "/Users/meetai/.sdkman/candidates/java/current/bin"
@@ -1230,7 +1227,7 @@ events:
     backtrace:
       - "/opt/homebrew/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
-      - "CMakeLists.txt:2 (project)"
+      - "CMakeLists.txt:3 (project)"
     mode: "program"
     variable: "CMAKE_TAPI"
     description: "Path to a program."
@@ -1246,7 +1243,6 @@ events:
       - "tapi"
     candidate_directories:
       - "/usr/bin/"
-      - "/Users/meetai/.opam/default/bin/"
       - "/Users/meetai/.local/bin/"
       - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin/"
       - "/Users/meetai/.x-cmd.root/bin/"
@@ -1264,6 +1260,7 @@ events:
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
       - "/usr/local/go/bin/"
+      - "/Users/meetai/.opam/default/bin/"
       - "/Users/meetai/.sdkman/candidates/quarkus/current/bin/"
       - "/Users/meetai/.sdkman/candidates/java/current/bin/"
       - "/Users/meetai/.cargo/bin/"
@@ -1271,7 +1268,6 @@ events:
       - "/Users/meetai/.x-cmd.root/local/data/triarii/bin/"
     searched_directories:
       - "/usr/bin/tapi"
-      - "/Users/meetai/.opam/default/bin/tapi"
       - "/Users/meetai/.local/bin/tapi"
       - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin/tapi"
       - "/Users/meetai/.x-cmd.root/bin/tapi"
@@ -1289,6 +1285,7 @@ events:
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/tapi"
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/tapi"
       - "/usr/local/go/bin/tapi"
+      - "/Users/meetai/.opam/default/bin/tapi"
       - "/Users/meetai/.sdkman/candidates/quarkus/current/bin/tapi"
       - "/Users/meetai/.sdkman/candidates/java/current/bin/tapi"
       - "/Users/meetai/.cargo/bin/tapi"
@@ -1297,7 +1294,6 @@ events:
     found: false
     search_context:
       ENV{PATH}:
-        - "/Users/meetai/.opam/default/bin"
         - "/Users/meetai/.local/bin"
         - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin"
         - "/Users/meetai/.x-cmd.root/bin"
@@ -1316,6 +1312,7 @@ events:
         - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
         - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
         - "/usr/local/go/bin"
+        - "/Users/meetai/.opam/default/bin"
         - "/Users/meetai/.local/bin"
         - "/Users/meetai/.sdkman/candidates/quarkus/current/bin"
         - "/Users/meetai/.sdkman/candidates/java/current/bin"
@@ -1327,7 +1324,7 @@ events:
     backtrace:
       - "/opt/homebrew/share/cmake/Modules/Platform/Darwin.cmake:76 (find_program)"
       - "/opt/homebrew/share/cmake/Modules/CMakeSystemSpecificInformation.cmake:32 (include)"
-      - "CMakeLists.txt:2 (project)"
+      - "CMakeLists.txt:3 (project)"
     mode: "program"
     variable: "CMAKE_INSTALL_NAME_TOOL"
     description: "Path to a program."
@@ -1342,7 +1339,6 @@ events:
     names:
       - "install_name_tool"
     candidate_directories:
-      - "/Users/meetai/.opam/default/bin/"
       - "/Users/meetai/.local/bin/"
       - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin/"
       - "/Users/meetai/.x-cmd.root/bin/"
@@ -1361,13 +1357,13 @@ events:
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
       - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
       - "/usr/local/go/bin/"
+      - "/Users/meetai/.opam/default/bin/"
       - "/Users/meetai/.sdkman/candidates/quarkus/current/bin/"
       - "/Users/meetai/.sdkman/candidates/java/current/bin/"
       - "/Users/meetai/.cargo/bin/"
       - "/Users/meetai/.fzf/bin/"
       - "/Users/meetai/.x-cmd.root/local/data/triarii/bin/"
     searched_directories:
-      - "/Users/meetai/.opam/default/bin/install_name_tool"
       - "/Users/meetai/.local/bin/install_name_tool"
       - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin/install_name_tool"
       - "/Users/meetai/.x-cmd.root/bin/install_name_tool"
@@ -1381,7 +1377,6 @@ events:
     found: "/usr/bin/install_name_tool"
     search_context:
       ENV{PATH}:
-        - "/Users/meetai/.opam/default/bin"
         - "/Users/meetai/.local/bin"
         - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin"
         - "/Users/meetai/.x-cmd.root/bin"
@@ -1400,6 +1395,7 @@ events:
         - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
         - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
         - "/usr/local/go/bin"
+        - "/Users/meetai/.opam/default/bin"
         - "/Users/meetai/.local/bin"
         - "/Users/meetai/.sdkman/candidates/quarkus/current/bin"
         - "/Users/meetai/.sdkman/candidates/java/current/bin"
@@ -1412,12 +1408,12 @@ events:
     backtrace:
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerABI.cmake:83 (try_compile)"
       - "/opt/homebrew/share/cmake/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
-      - "CMakeLists.txt:2 (project)"
+      - "CMakeLists.txt:3 (project)"
     checks:
       - "Detecting C compiler ABI info"
     directories:
-      source: "/Users/meetai/source/echo-lang/runtime/build/CMakeFiles/CMakeScratch/TryCompile-I3TAaU"
-      binary: "/Users/meetai/source/echo-lang/runtime/build/CMakeFiles/CMakeScratch/TryCompile-I3TAaU"
+      source: "/Users/meetai/source/echo-lang/runtime/build/CMakeFiles/CMakeScratch/TryCompile-KcIe0M"
+      binary: "/Users/meetai/source/echo-lang/runtime/build/CMakeFiles/CMakeScratch/TryCompile-KcIe0M"
     cmakeVariables:
       CMAKE_C_FLAGS: ""
       CMAKE_C_FLAGS_DEBUG: "-g"
@@ -1429,18 +1425,18 @@ events:
       variable: "CMAKE_C_ABI_COMPILED"
       cached: true
       stdout: |
-        Change Dir: '/Users/meetai/source/echo-lang/runtime/build/CMakeFiles/CMakeScratch/TryCompile-I3TAaU'
+        Change Dir: '/Users/meetai/source/echo-lang/runtime/build/CMakeFiles/CMakeScratch/TryCompile-KcIe0M'
         
-        Run Build Command(s): /opt/homebrew/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_6d5c8/fast
-        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_6d5c8.dir/build.make CMakeFiles/cmTC_6d5c8.dir/build
-        Building C object CMakeFiles/cmTC_6d5c8.dir/CMakeCCompilerABI.c.o
-        /usr/bin/cc   -arch arm64   -v -Wl,-v -MD -MT CMakeFiles/cmTC_6d5c8.dir/CMakeCCompilerABI.c.o -MF CMakeFiles/cmTC_6d5c8.dir/CMakeCCompilerABI.c.o.d -o CMakeFiles/cmTC_6d5c8.dir/CMakeCCompilerABI.c.o -c /opt/homebrew/share/cmake/Modules/CMakeCCompilerABI.c
+        Run Build Command(s): /opt/homebrew/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_f2469/fast
+        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_f2469.dir/build.make CMakeFiles/cmTC_f2469.dir/build
+        Building C object CMakeFiles/cmTC_f2469.dir/CMakeCCompilerABI.c.o
+        /usr/bin/cc   -arch arm64   -v -Wl,-v -MD -MT CMakeFiles/cmTC_f2469.dir/CMakeCCompilerABI.c.o -MF CMakeFiles/cmTC_f2469.dir/CMakeCCompilerABI.c.o.d -o CMakeFiles/cmTC_f2469.dir/CMakeCCompilerABI.c.o -c /opt/homebrew/share/cmake/Modules/CMakeCCompilerABI.c
         Apple clang version 17.0.0 (clang-1700.0.13.5)
         Target: arm64-apple-darwin24.3.0
         Thread model: posix
         InstalledDir: /Library/Developer/CommandLineTools/usr/bin
         clang: warning: -Wl,-v: 'linker' input unused [-Wunused-command-line-argument]
-         "/Library/Developer/CommandLineTools/usr/bin/clang" -cc1 -triple arm64-apple-macosx15.0.0 -Wundef-prefix=TARGET_OS_ -Wdeprecated-objc-isa-usage -Werror=deprecated-objc-isa-usage -Werror=implicit-function-declaration -emit-obj -disable-free -clear-ast-before-backend -disable-llvm-verifier -discard-value-names -main-file-name CMakeCCompilerABI.c -mrelocation-model pic -pic-level 2 -mframe-pointer=non-leaf -fno-strict-return -ffp-contract=on -fno-rounding-math -funwind-tables=1 -fobjc-msgsend-selector-stubs -target-sdk-version=15.5 -fvisibility-inlines-hidden-static-local-var -fdefine-target-os-macros -fno-assume-unique-vtables -fno-modulemap-allow-subdirectory-search -target-cpu apple-m1 -target-feature +zcm -target-feature +zcz -target-feature +v8.5a -target-feature +aes -target-feature +altnzcv -target-feature +ccdp -target-feature +complxnum -target-feature +crc -target-feature +dotprod -target-feature +fp-armv8 -target-feature +fp16fml -target-feature +fptoint -target-feature +fullfp16 -target-feature +jsconv -target-feature +lse -target-feature +neon -target-feature +pauth -target-feature +perfmon -target-feature +predres -target-feature +ras -target-feature +rcpc -target-feature +rdm -target-feature +sb -target-feature +sha2 -target-feature +sha3 -target-feature +specrestrict -target-feature +ssbs -target-abi darwinpcs -debugger-tuning=lldb -fdebug-compilation-dir=/Users/meetai/source/echo-lang/runtime/build/CMakeFiles/CMakeScratch/TryCompile-I3TAaU -target-linker-version 1167.5 -v -fcoverage-compilation-dir=/Users/meetai/source/echo-lang/runtime/build/CMakeFiles/CMakeScratch/TryCompile-I3TAaU -resource-dir /Library/Developer/CommandLineTools/usr/lib/clang/17 -dependency-file CMakeFiles/cmTC_6d5c8.dir/CMakeCCompilerABI.c.o.d -skip-unused-modulemap-deps -MT CMakeFiles/cmTC_6d5c8.dir/CMakeCCompilerABI.c.o -sys-header-deps -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -I/usr/local/include -internal-isystem /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/local/include -internal-isystem /Library/Developer/CommandLineTools/usr/lib/clang/17/include -internal-externc-isystem /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include -internal-externc-isystem /Library/Developer/CommandLineTools/usr/include -Wno-reorder-init-list -Wno-implicit-int-float-conversion -Wno-c99-designator -Wno-final-dtor-non-final-class -Wno-extra-semi-stmt -Wno-misleading-indentation -Wno-quoted-include-in-framework-header -Wno-implicit-fallthrough -Wno-enum-enum-conversion -Wno-enum-float-conversion -Wno-elaborated-enum-base -Wno-reserved-identifier -Wno-gnu-folding-constant -ferror-limit 19 -stack-protector 1 -fstack-check -mdarwin-stkchk-strong-link -fblocks -fencode-extended-block-signature -fregister-global-dtors-with-atexit -fgnuc-version=4.2.1 -fskip-odr-check-in-gmf -fmax-type-align=16 -fcommon -clang-vendor-feature=+disableNonDependentMemberExprInCurrentInstantiation -fno-odr-hash-protocols -clang-vendor-feature=+enableAggressiveVLAFolding -clang-vendor-feature=+revert09abecef7bbf -clang-vendor-feature=+thisNoAlignAttr -clang-vendor-feature=+thisNoNullAttr -clang-vendor-feature=+disableAtImportPrivateFrameworkInImplementationError -D__GCC_HAVE_DWARF2_CFI_ASM=1 -o CMakeFiles/cmTC_6d5c8.dir/CMakeCCompilerABI.c.o -x c /opt/homebrew/share/cmake/Modules/CMakeCCompilerABI.c
+         "/Library/Developer/CommandLineTools/usr/bin/clang" -cc1 -triple arm64-apple-macosx15.0.0 -Wundef-prefix=TARGET_OS_ -Wdeprecated-objc-isa-usage -Werror=deprecated-objc-isa-usage -Werror=implicit-function-declaration -emit-obj -disable-free -clear-ast-before-backend -disable-llvm-verifier -discard-value-names -main-file-name CMakeCCompilerABI.c -mrelocation-model pic -pic-level 2 -mframe-pointer=non-leaf -fno-strict-return -ffp-contract=on -fno-rounding-math -funwind-tables=1 -fobjc-msgsend-selector-stubs -target-sdk-version=15.5 -fvisibility-inlines-hidden-static-local-var -fdefine-target-os-macros -fno-assume-unique-vtables -fno-modulemap-allow-subdirectory-search -target-cpu apple-m1 -target-feature +zcm -target-feature +zcz -target-feature +v8.5a -target-feature +aes -target-feature +altnzcv -target-feature +ccdp -target-feature +complxnum -target-feature +crc -target-feature +dotprod -target-feature +fp-armv8 -target-feature +fp16fml -target-feature +fptoint -target-feature +fullfp16 -target-feature +jsconv -target-feature +lse -target-feature +neon -target-feature +pauth -target-feature +perfmon -target-feature +predres -target-feature +ras -target-feature +rcpc -target-feature +rdm -target-feature +sb -target-feature +sha2 -target-feature +sha3 -target-feature +specrestrict -target-feature +ssbs -target-abi darwinpcs -debugger-tuning=lldb -fdebug-compilation-dir=/Users/meetai/source/echo-lang/runtime/build/CMakeFiles/CMakeScratch/TryCompile-KcIe0M -target-linker-version 1167.5 -v -fcoverage-compilation-dir=/Users/meetai/source/echo-lang/runtime/build/CMakeFiles/CMakeScratch/TryCompile-KcIe0M -resource-dir /Library/Developer/CommandLineTools/usr/lib/clang/17 -dependency-file CMakeFiles/cmTC_f2469.dir/CMakeCCompilerABI.c.o.d -skip-unused-modulemap-deps -MT CMakeFiles/cmTC_f2469.dir/CMakeCCompilerABI.c.o -sys-header-deps -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -I/usr/local/include -internal-isystem /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/local/include -internal-isystem /Library/Developer/CommandLineTools/usr/lib/clang/17/include -internal-externc-isystem /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include -internal-externc-isystem /Library/Developer/CommandLineTools/usr/include -Wno-reorder-init-list -Wno-implicit-int-float-conversion -Wno-c99-designator -Wno-final-dtor-non-final-class -Wno-extra-semi-stmt -Wno-misleading-indentation -Wno-quoted-include-in-framework-header -Wno-implicit-fallthrough -Wno-enum-enum-conversion -Wno-enum-float-conversion -Wno-elaborated-enum-base -Wno-reserved-identifier -Wno-gnu-folding-constant -ferror-limit 19 -stack-protector 1 -fstack-check -mdarwin-stkchk-strong-link -fblocks -fencode-extended-block-signature -fregister-global-dtors-with-atexit -fgnuc-version=4.2.1 -fskip-odr-check-in-gmf -fmax-type-align=16 -fcommon -clang-vendor-feature=+disableNonDependentMemberExprInCurrentInstantiation -fno-odr-hash-protocols -clang-vendor-feature=+enableAggressiveVLAFolding -clang-vendor-feature=+revert09abecef7bbf -clang-vendor-feature=+thisNoAlignAttr -clang-vendor-feature=+thisNoNullAttr -clang-vendor-feature=+disableAtImportPrivateFrameworkInImplementationError -D__GCC_HAVE_DWARF2_CFI_ASM=1 -o CMakeFiles/cmTC_f2469.dir/CMakeCCompilerABI.c.o -x c /opt/homebrew/share/cmake/Modules/CMakeCCompilerABI.c
         clang -cc1 version 17.0.0 (clang-1700.0.13.5) default target arm64-apple-darwin24.3.0
         ignoring nonexistent directory "/usr/local/include"
         ignoring nonexistent directory "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/local/include"
@@ -1453,13 +1449,13 @@ events:
          /Library/Developer/CommandLineTools/usr/include
          /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks (framework directory)
         End of search list.
-        Linking C executable cmTC_6d5c8
-        /opt/homebrew/bin/cmake -E cmake_link_script CMakeFiles/cmTC_6d5c8.dir/link.txt --verbose=1
+        Linking C executable cmTC_f2469
+        /opt/homebrew/bin/cmake -E cmake_link_script CMakeFiles/cmTC_f2469.dir/link.txt --verbose=1
         Apple clang version 17.0.0 (clang-1700.0.13.5)
         Target: arm64-apple-darwin24.3.0
         Thread model: posix
         InstalledDir: /Library/Developer/CommandLineTools/usr/bin
-         "/Library/Developer/CommandLineTools/usr/bin/ld" -demangle -lto_library /Library/Developer/CommandLineTools/usr/lib/libLTO.dylib -dynamic -arch arm64 -platform_version macos 15.0.0 15.5 -syslibroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -mllvm -enable-linkonceodr-outlining -o cmTC_6d5c8 -L/usr/local/lib -search_paths_first -headerpad_max_install_names -v CMakeFiles/cmTC_6d5c8.dir/CMakeCCompilerABI.c.o -lSystem /Library/Developer/CommandLineTools/usr/lib/clang/17/lib/darwin/libclang_rt.osx.a
+         "/Library/Developer/CommandLineTools/usr/bin/ld" -demangle -lto_library /Library/Developer/CommandLineTools/usr/lib/libLTO.dylib -dynamic -arch arm64 -platform_version macos 15.0.0 15.5 -syslibroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -mllvm -enable-linkonceodr-outlining -o cmTC_f2469 -L/usr/local/lib -search_paths_first -headerpad_max_install_names -v CMakeFiles/cmTC_f2469.dir/CMakeCCompilerABI.c.o -lSystem /Library/Developer/CommandLineTools/usr/lib/clang/17/lib/darwin/libclang_rt.osx.a
         @(#)PROGRAM:ld PROJECT:ld-1167.5
         BUILD 01:45:05 Apr 30 2025
         configured to support archs: armv6 armv7 armv7s arm64 arm64e arm64_32 i386 x86_64 x86_64h armv6m armv7k armv7m armv7em
@@ -1471,7 +1467,7 @@ events:
         	/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib/swift
         Framework search paths:
         	/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks
-        /usr/bin/cc  -arch arm64 -Wl,-search_paths_first -Wl,-headerpad_max_install_names  -v -Wl,-v CMakeFiles/cmTC_6d5c8.dir/CMakeCCompilerABI.c.o -o cmTC_6d5c8
+        /usr/bin/cc  -arch arm64 -Wl,-search_paths_first -Wl,-headerpad_max_install_names  -v -Wl,-v CMakeFiles/cmTC_f2469.dir/CMakeCCompilerABI.c.o -o cmTC_f2469
         
       exitCode: 0
   -
@@ -1479,7 +1475,7 @@ events:
     backtrace:
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerABI.cmake:122 (message)"
       - "/opt/homebrew/share/cmake/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
-      - "CMakeLists.txt:2 (project)"
+      - "CMakeLists.txt:3 (project)"
     message: |
       Effective list of requested architectures (possibly empty)  : ""
       Effective list of architectures found in the ABI info binary: "arm64"
@@ -1488,7 +1484,7 @@ events:
     backtrace:
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerABI.cmake:217 (message)"
       - "/opt/homebrew/share/cmake/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
-      - "CMakeLists.txt:2 (project)"
+      - "CMakeLists.txt:3 (project)"
     message: |
       Parsed C implicit include dir info: rv=done
         found start of include info
@@ -1508,23 +1504,23 @@ events:
     backtrace:
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerABI.cmake:253 (message)"
       - "/opt/homebrew/share/cmake/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
-      - "CMakeLists.txt:2 (project)"
+      - "CMakeLists.txt:3 (project)"
     message: |
       Parsed C implicit link information:
         link line regex: [^( *|.*[/\\])(ld[0-9]*(|\\.[a-rt-z][a-z]*|\\.s[a-np-z][a-z]*|\\.so[a-z]+)|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\\]+-)?ld|collect2)[^/\\]*( |$)]
         linker tool regex: [^[ 	]*(->|"|[0-9]+>[ 	-]*Build:[ 	0-9]+ ms[ 	]*)?[ 	]*(([^"]*[/\\])?(ld[0-9]*(|\\.[a-rt-z][a-z]*|\\.s[a-np-z][a-z]*|\\.so[a-z]+)))("|,| |$)]
-        ignore line: [Change Dir: '/Users/meetai/source/echo-lang/runtime/build/CMakeFiles/CMakeScratch/TryCompile-I3TAaU']
+        ignore line: [Change Dir: '/Users/meetai/source/echo-lang/runtime/build/CMakeFiles/CMakeScratch/TryCompile-KcIe0M']
         ignore line: []
-        ignore line: [Run Build Command(s): /opt/homebrew/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_6d5c8/fast]
-        ignore line: [/Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_6d5c8.dir/build.make CMakeFiles/cmTC_6d5c8.dir/build]
-        ignore line: [Building C object CMakeFiles/cmTC_6d5c8.dir/CMakeCCompilerABI.c.o]
-        ignore line: [/usr/bin/cc   -arch arm64   -v -Wl -v -MD -MT CMakeFiles/cmTC_6d5c8.dir/CMakeCCompilerABI.c.o -MF CMakeFiles/cmTC_6d5c8.dir/CMakeCCompilerABI.c.o.d -o CMakeFiles/cmTC_6d5c8.dir/CMakeCCompilerABI.c.o -c /opt/homebrew/share/cmake/Modules/CMakeCCompilerABI.c]
+        ignore line: [Run Build Command(s): /opt/homebrew/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_f2469/fast]
+        ignore line: [/Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_f2469.dir/build.make CMakeFiles/cmTC_f2469.dir/build]
+        ignore line: [Building C object CMakeFiles/cmTC_f2469.dir/CMakeCCompilerABI.c.o]
+        ignore line: [/usr/bin/cc   -arch arm64   -v -Wl -v -MD -MT CMakeFiles/cmTC_f2469.dir/CMakeCCompilerABI.c.o -MF CMakeFiles/cmTC_f2469.dir/CMakeCCompilerABI.c.o.d -o CMakeFiles/cmTC_f2469.dir/CMakeCCompilerABI.c.o -c /opt/homebrew/share/cmake/Modules/CMakeCCompilerABI.c]
         ignore line: [Apple clang version 17.0.0 (clang-1700.0.13.5)]
         ignore line: [Target: arm64-apple-darwin24.3.0]
         ignore line: [Thread model: posix]
         ignore line: [InstalledDir: /Library/Developer/CommandLineTools/usr/bin]
         ignore line: [clang: warning: -Wl -v: 'linker' input unused [-Wunused-command-line-argument]]
-        ignore line: [ "/Library/Developer/CommandLineTools/usr/bin/clang" -cc1 -triple arm64-apple-macosx15.0.0 -Wundef-prefix=TARGET_OS_ -Wdeprecated-objc-isa-usage -Werror=deprecated-objc-isa-usage -Werror=implicit-function-declaration -emit-obj -disable-free -clear-ast-before-backend -disable-llvm-verifier -discard-value-names -main-file-name CMakeCCompilerABI.c -mrelocation-model pic -pic-level 2 -mframe-pointer=non-leaf -fno-strict-return -ffp-contract=on -fno-rounding-math -funwind-tables=1 -fobjc-msgsend-selector-stubs -target-sdk-version=15.5 -fvisibility-inlines-hidden-static-local-var -fdefine-target-os-macros -fno-assume-unique-vtables -fno-modulemap-allow-subdirectory-search -target-cpu apple-m1 -target-feature +zcm -target-feature +zcz -target-feature +v8.5a -target-feature +aes -target-feature +altnzcv -target-feature +ccdp -target-feature +complxnum -target-feature +crc -target-feature +dotprod -target-feature +fp-armv8 -target-feature +fp16fml -target-feature +fptoint -target-feature +fullfp16 -target-feature +jsconv -target-feature +lse -target-feature +neon -target-feature +pauth -target-feature +perfmon -target-feature +predres -target-feature +ras -target-feature +rcpc -target-feature +rdm -target-feature +sb -target-feature +sha2 -target-feature +sha3 -target-feature +specrestrict -target-feature +ssbs -target-abi darwinpcs -debugger-tuning=lldb -fdebug-compilation-dir=/Users/meetai/source/echo-lang/runtime/build/CMakeFiles/CMakeScratch/TryCompile-I3TAaU -target-linker-version 1167.5 -v -fcoverage-compilation-dir=/Users/meetai/source/echo-lang/runtime/build/CMakeFiles/CMakeScratch/TryCompile-I3TAaU -resource-dir /Library/Developer/CommandLineTools/usr/lib/clang/17 -dependency-file CMakeFiles/cmTC_6d5c8.dir/CMakeCCompilerABI.c.o.d -skip-unused-modulemap-deps -MT CMakeFiles/cmTC_6d5c8.dir/CMakeCCompilerABI.c.o -sys-header-deps -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -I/usr/local/include -internal-isystem /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/local/include -internal-isystem /Library/Developer/CommandLineTools/usr/lib/clang/17/include -internal-externc-isystem /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include -internal-externc-isystem /Library/Developer/CommandLineTools/usr/include -Wno-reorder-init-list -Wno-implicit-int-float-conversion -Wno-c99-designator -Wno-final-dtor-non-final-class -Wno-extra-semi-stmt -Wno-misleading-indentation -Wno-quoted-include-in-framework-header -Wno-implicit-fallthrough -Wno-enum-enum-conversion -Wno-enum-float-conversion -Wno-elaborated-enum-base -Wno-reserved-identifier -Wno-gnu-folding-constant -ferror-limit 19 -stack-protector 1 -fstack-check -mdarwin-stkchk-strong-link -fblocks -fencode-extended-block-signature -fregister-global-dtors-with-atexit -fgnuc-version=4.2.1 -fskip-odr-check-in-gmf -fmax-type-align=16 -fcommon -clang-vendor-feature=+disableNonDependentMemberExprInCurrentInstantiation -fno-odr-hash-protocols -clang-vendor-feature=+enableAggressiveVLAFolding -clang-vendor-feature=+revert09abecef7bbf -clang-vendor-feature=+thisNoAlignAttr -clang-vendor-feature=+thisNoNullAttr -clang-vendor-feature=+disableAtImportPrivateFrameworkInImplementationError -D__GCC_HAVE_DWARF2_CFI_ASM=1 -o CMakeFiles/cmTC_6d5c8.dir/CMakeCCompilerABI.c.o -x c /opt/homebrew/share/cmake/Modules/CMakeCCompilerABI.c]
+        ignore line: [ "/Library/Developer/CommandLineTools/usr/bin/clang" -cc1 -triple arm64-apple-macosx15.0.0 -Wundef-prefix=TARGET_OS_ -Wdeprecated-objc-isa-usage -Werror=deprecated-objc-isa-usage -Werror=implicit-function-declaration -emit-obj -disable-free -clear-ast-before-backend -disable-llvm-verifier -discard-value-names -main-file-name CMakeCCompilerABI.c -mrelocation-model pic -pic-level 2 -mframe-pointer=non-leaf -fno-strict-return -ffp-contract=on -fno-rounding-math -funwind-tables=1 -fobjc-msgsend-selector-stubs -target-sdk-version=15.5 -fvisibility-inlines-hidden-static-local-var -fdefine-target-os-macros -fno-assume-unique-vtables -fno-modulemap-allow-subdirectory-search -target-cpu apple-m1 -target-feature +zcm -target-feature +zcz -target-feature +v8.5a -target-feature +aes -target-feature +altnzcv -target-feature +ccdp -target-feature +complxnum -target-feature +crc -target-feature +dotprod -target-feature +fp-armv8 -target-feature +fp16fml -target-feature +fptoint -target-feature +fullfp16 -target-feature +jsconv -target-feature +lse -target-feature +neon -target-feature +pauth -target-feature +perfmon -target-feature +predres -target-feature +ras -target-feature +rcpc -target-feature +rdm -target-feature +sb -target-feature +sha2 -target-feature +sha3 -target-feature +specrestrict -target-feature +ssbs -target-abi darwinpcs -debugger-tuning=lldb -fdebug-compilation-dir=/Users/meetai/source/echo-lang/runtime/build/CMakeFiles/CMakeScratch/TryCompile-KcIe0M -target-linker-version 1167.5 -v -fcoverage-compilation-dir=/Users/meetai/source/echo-lang/runtime/build/CMakeFiles/CMakeScratch/TryCompile-KcIe0M -resource-dir /Library/Developer/CommandLineTools/usr/lib/clang/17 -dependency-file CMakeFiles/cmTC_f2469.dir/CMakeCCompilerABI.c.o.d -skip-unused-modulemap-deps -MT CMakeFiles/cmTC_f2469.dir/CMakeCCompilerABI.c.o -sys-header-deps -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -I/usr/local/include -internal-isystem /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/local/include -internal-isystem /Library/Developer/CommandLineTools/usr/lib/clang/17/include -internal-externc-isystem /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include -internal-externc-isystem /Library/Developer/CommandLineTools/usr/include -Wno-reorder-init-list -Wno-implicit-int-float-conversion -Wno-c99-designator -Wno-final-dtor-non-final-class -Wno-extra-semi-stmt -Wno-misleading-indentation -Wno-quoted-include-in-framework-header -Wno-implicit-fallthrough -Wno-enum-enum-conversion -Wno-enum-float-conversion -Wno-elaborated-enum-base -Wno-reserved-identifier -Wno-gnu-folding-constant -ferror-limit 19 -stack-protector 1 -fstack-check -mdarwin-stkchk-strong-link -fblocks -fencode-extended-block-signature -fregister-global-dtors-with-atexit -fgnuc-version=4.2.1 -fskip-odr-check-in-gmf -fmax-type-align=16 -fcommon -clang-vendor-feature=+disableNonDependentMemberExprInCurrentInstantiation -fno-odr-hash-protocols -clang-vendor-feature=+enableAggressiveVLAFolding -clang-vendor-feature=+revert09abecef7bbf -clang-vendor-feature=+thisNoAlignAttr -clang-vendor-feature=+thisNoNullAttr -clang-vendor-feature=+disableAtImportPrivateFrameworkInImplementationError -D__GCC_HAVE_DWARF2_CFI_ASM=1 -o CMakeFiles/cmTC_f2469.dir/CMakeCCompilerABI.c.o -x c /opt/homebrew/share/cmake/Modules/CMakeCCompilerABI.c]
         ignore line: [clang -cc1 version 17.0.0 (clang-1700.0.13.5) default target arm64-apple-darwin24.3.0]
         ignore line: [ignoring nonexistent directory "/usr/local/include"]
         ignore line: [ignoring nonexistent directory "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/local/include"]
@@ -1537,13 +1533,13 @@ events:
         ignore line: [ /Library/Developer/CommandLineTools/usr/include]
         ignore line: [ /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks (framework directory)]
         ignore line: [End of search list.]
-        ignore line: [Linking C executable cmTC_6d5c8]
-        ignore line: [/opt/homebrew/bin/cmake -E cmake_link_script CMakeFiles/cmTC_6d5c8.dir/link.txt --verbose=1]
+        ignore line: [Linking C executable cmTC_f2469]
+        ignore line: [/opt/homebrew/bin/cmake -E cmake_link_script CMakeFiles/cmTC_f2469.dir/link.txt --verbose=1]
         ignore line: [Apple clang version 17.0.0 (clang-1700.0.13.5)]
         ignore line: [Target: arm64-apple-darwin24.3.0]
         ignore line: [Thread model: posix]
         ignore line: [InstalledDir: /Library/Developer/CommandLineTools/usr/bin]
-        link line: [ "/Library/Developer/CommandLineTools/usr/bin/ld" -demangle -lto_library /Library/Developer/CommandLineTools/usr/lib/libLTO.dylib -dynamic -arch arm64 -platform_version macos 15.0.0 15.5 -syslibroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -mllvm -enable-linkonceodr-outlining -o cmTC_6d5c8 -L/usr/local/lib -search_paths_first -headerpad_max_install_names -v CMakeFiles/cmTC_6d5c8.dir/CMakeCCompilerABI.c.o -lSystem /Library/Developer/CommandLineTools/usr/lib/clang/17/lib/darwin/libclang_rt.osx.a]
+        link line: [ "/Library/Developer/CommandLineTools/usr/bin/ld" -demangle -lto_library /Library/Developer/CommandLineTools/usr/lib/libLTO.dylib -dynamic -arch arm64 -platform_version macos 15.0.0 15.5 -syslibroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -mllvm -enable-linkonceodr-outlining -o cmTC_f2469 -L/usr/local/lib -search_paths_first -headerpad_max_install_names -v CMakeFiles/cmTC_f2469.dir/CMakeCCompilerABI.c.o -lSystem /Library/Developer/CommandLineTools/usr/lib/clang/17/lib/darwin/libclang_rt.osx.a]
           arg [/Library/Developer/CommandLineTools/usr/bin/ld] ==> ignore
           arg [-demangle] ==> ignore
           arg [-lto_library] ==> ignore, skip following value
@@ -1560,12 +1556,12 @@ events:
           arg [-mllvm] ==> ignore
           arg [-enable-linkonceodr-outlining] ==> ignore
           arg [-o] ==> ignore
-          arg [cmTC_6d5c8] ==> ignore
+          arg [cmTC_f2469] ==> ignore
           arg [-L/usr/local/lib] ==> dir [/usr/local/lib]
           arg [-search_paths_first] ==> ignore
           arg [-headerpad_max_install_names] ==> ignore
           arg [-v] ==> ignore
-          arg [CMakeFiles/cmTC_6d5c8.dir/CMakeCCompilerABI.c.o] ==> ignore
+          arg [CMakeFiles/cmTC_f2469.dir/CMakeCCompilerABI.c.o] ==> ignore
           arg [-lSystem] ==> lib [System]
           arg [/Library/Developer/CommandLineTools/usr/lib/clang/17/lib/darwin/libclang_rt.osx.a] ==> lib [/Library/Developer/CommandLineTools/usr/lib/clang/17/lib/darwin/libclang_rt.osx.a]
         linker tool for 'C': /Library/Developer/CommandLineTools/usr/bin/ld
@@ -1589,7 +1585,7 @@ events:
       - "/opt/homebrew/share/cmake/Modules/Internal/CMakeDetermineLinkerId.cmake:38 (message)"
       - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerABI.cmake:299 (cmake_determine_linker_id)"
       - "/opt/homebrew/share/cmake/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
-      - "CMakeLists.txt:2 (project)"
+      - "CMakeLists.txt:3 (project)"
     message: |
       Running the C compiler's linker: "/Library/Developer/CommandLineTools/usr/bin/ld" "-v"
       @(#)PROGRAM:ld PROJECT:ld-1167.5
@@ -1599,14 +1595,52 @@ events:
       LTO support using: LLVM version 17.0.0 (static support for 29, runtime is 29)
       TAPI support using: Apple TAPI version 17.0.0 (tapi-1700.0.3.5)
   -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/opt/homebrew/share/cmake/Modules/Internal/CheckSourceCompiles.cmake:104 (try_compile)"
+      - "/opt/homebrew/share/cmake/Modules/CheckCSourceCompiles.cmake:103 (cmake_check_source_compiles)"
+      - "/opt/homebrew/share/cmake/Modules/FindThreads.cmake:160 (check_c_source_compiles)"
+      - "/opt/homebrew/share/cmake/Modules/FindThreads.cmake:226 (_threads_check_libc)"
+      - "CMakeLists.txt:56 (find_package)"
+    checks:
+      - "Performing Test CMAKE_HAVE_LIBC_PTHREAD"
+    directories:
+      source: "/Users/meetai/source/echo-lang/runtime/build/CMakeFiles/CMakeScratch/TryCompile-yf00bl"
+      binary: "/Users/meetai/source/echo-lang/runtime/build/CMakeFiles/CMakeScratch/TryCompile-yf00bl"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_OSX_ARCHITECTURES: ""
+      CMAKE_OSX_DEPLOYMENT_TARGET: ""
+      CMAKE_OSX_SYSROOT: ""
+    buildResult:
+      variable: "CMAKE_HAVE_LIBC_PTHREAD"
+      cached: true
+      stdout: |
+        Change Dir: '/Users/meetai/source/echo-lang/runtime/build/CMakeFiles/CMakeScratch/TryCompile-yf00bl'
+        
+        Run Build Command(s): /opt/homebrew/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_4fe52/fast
+        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_4fe52.dir/build.make CMakeFiles/cmTC_4fe52.dir/build
+        Building C object CMakeFiles/cmTC_4fe52.dir/src.c.o
+        /usr/bin/cc -DCMAKE_HAVE_LIBC_PTHREAD  -std=gnu11 -arch arm64 -MD -MT CMakeFiles/cmTC_4fe52.dir/src.c.o -MF CMakeFiles/cmTC_4fe52.dir/src.c.o.d -o CMakeFiles/cmTC_4fe52.dir/src.c.o -c /Users/meetai/source/echo-lang/runtime/build/CMakeFiles/CMakeScratch/TryCompile-yf00bl/src.c
+        Linking C executable cmTC_4fe52
+        /opt/homebrew/bin/cmake -E cmake_link_script CMakeFiles/cmTC_4fe52.dir/link.txt --verbose=1
+        /usr/bin/cc  -arch arm64 -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/cmTC_4fe52.dir/src.c.o -o cmTC_4fe52
+        
+      exitCode: 0
+...
+
+---
+events:
+  -
     kind: "find-v1"
     backtrace:
-      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCompiler.cmake:54 (find_program)"
-      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineASMCompiler.cmake:61 (_cmake_find_compiler)"
-      - "CMakeLists.txt:19 (enable_language)"
+      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineSystem.cmake:12 (find_program)"
+      - "CMakeLists.txt:3 (project)"
     mode: "program"
-    variable: "CMAKE_ASM_COMPILER"
-    description: "ASM compiler"
+    variable: "CMAKE_UNAME"
+    description: "Path to a program."
     settings:
       SearchFramework: "FIRST"
       SearchAppBundle: "FIRST"
@@ -1616,13 +1650,46 @@ events:
       CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
       CMAKE_FIND_USE_INSTALL_PREFIX: true
     names:
-      - "/usr/bin/cc"
+      - "uname"
     candidate_directories:
+      - "/Users/meetai/.local/bin/"
+      - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin/"
+      - "/Users/meetai/.x-cmd.root/bin/"
+      - "/opt/homebrew/opt/mysql@8.4/bin/"
+      - "/Users/meetai/.nimble/bin/"
+      - "/Users/meetai/.nvm/versions/node/v18.20.8/bin/"
+      - "/opt/homebrew/bin/"
+      - "/opt/homebrew/sbin/"
+      - "/usr/local/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
       - "/usr/bin/"
-    found: "/usr/bin/cc"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/usr/local/go/bin/"
+      - "/Users/meetai/.opam/default/bin/"
+      - "/Users/meetai/.sdkman/candidates/quarkus/current/bin/"
+      - "/Users/meetai/.sdkman/candidates/java/current/bin/"
+      - "/Users/meetai/.cargo/bin/"
+      - "/Users/meetai/.fzf/bin/"
+      - "/Users/meetai/.x-cmd.root/local/data/triarii/bin/"
+    searched_directories:
+      - "/Users/meetai/.local/bin/uname"
+      - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin/uname"
+      - "/Users/meetai/.x-cmd.root/bin/uname"
+      - "/opt/homebrew/opt/mysql@8.4/bin/uname"
+      - "/Users/meetai/.nimble/bin/uname"
+      - "/Users/meetai/.nvm/versions/node/v18.20.8/bin/uname"
+      - "/opt/homebrew/bin/uname"
+      - "/opt/homebrew/sbin/uname"
+      - "/usr/local/bin/uname"
+      - "/System/Cryptexes/App/usr/bin/uname"
+    found: "/usr/bin/uname"
     search_context:
       ENV{PATH}:
-        - "/Users/meetai/.opam/default/bin"
         - "/Users/meetai/.local/bin"
         - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin"
         - "/Users/meetai/.x-cmd.root/bin"
@@ -1641,6 +1708,1326 @@ events:
         - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
         - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
         - "/usr/local/go/bin"
+        - "/Users/meetai/.opam/default/bin"
+        - "/Users/meetai/.local/bin"
+        - "/Users/meetai/.sdkman/candidates/quarkus/current/bin"
+        - "/Users/meetai/.sdkman/candidates/java/current/bin"
+        - "/Users/meetai/.cargo/bin"
+        - "/Users/meetai/.fzf/bin"
+        - "/Users/meetai/.x-cmd.root/local/data/triarii/bin"
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineSystem.cmake:212 (message)"
+      - "CMakeLists.txt:3 (project)"
+    message: |
+      The system is: Darwin - 24.3.0 - arm64
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/opt/homebrew/share/cmake/Modules/CMakeUnixFindMake.cmake:5 (find_program)"
+      - "CMakeLists.txt:3 (project)"
+    mode: "program"
+    variable: "CMAKE_MAKE_PROGRAM"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "gmake"
+      - "make"
+      - "smake"
+    candidate_directories:
+      - "/Users/meetai/.local/bin/"
+      - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin/"
+      - "/Users/meetai/.x-cmd.root/bin/"
+      - "/opt/homebrew/opt/mysql@8.4/bin/"
+      - "/Users/meetai/.nimble/bin/"
+      - "/Users/meetai/.nvm/versions/node/v18.20.8/bin/"
+      - "/opt/homebrew/bin/"
+      - "/opt/homebrew/sbin/"
+      - "/usr/local/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/usr/local/go/bin/"
+      - "/Users/meetai/.opam/default/bin/"
+      - "/Users/meetai/.sdkman/candidates/quarkus/current/bin/"
+      - "/Users/meetai/.sdkman/candidates/java/current/bin/"
+      - "/Users/meetai/.cargo/bin/"
+      - "/Users/meetai/.fzf/bin/"
+      - "/Users/meetai/.x-cmd.root/local/data/triarii/bin/"
+    searched_directories:
+      - "/Users/meetai/.local/bin/gmake"
+      - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin/gmake"
+      - "/Users/meetai/.x-cmd.root/bin/gmake"
+      - "/opt/homebrew/opt/mysql@8.4/bin/gmake"
+      - "/Users/meetai/.nimble/bin/gmake"
+      - "/Users/meetai/.nvm/versions/node/v18.20.8/bin/gmake"
+      - "/opt/homebrew/bin/gmake"
+      - "/opt/homebrew/sbin/gmake"
+      - "/usr/local/bin/gmake"
+      - "/System/Cryptexes/App/usr/bin/gmake"
+      - "/usr/bin/gmake"
+      - "/bin/gmake"
+      - "/usr/sbin/gmake"
+      - "/sbin/gmake"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/gmake"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/gmake"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/gmake"
+      - "/usr/local/go/bin/gmake"
+      - "/Users/meetai/.opam/default/bin/gmake"
+      - "/Users/meetai/.sdkman/candidates/quarkus/current/bin/gmake"
+      - "/Users/meetai/.sdkman/candidates/java/current/bin/gmake"
+      - "/Users/meetai/.cargo/bin/gmake"
+      - "/Users/meetai/.fzf/bin/gmake"
+      - "/Users/meetai/.x-cmd.root/local/data/triarii/bin/gmake"
+      - "/Users/meetai/.local/bin/make"
+      - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin/make"
+      - "/Users/meetai/.x-cmd.root/bin/make"
+      - "/opt/homebrew/opt/mysql@8.4/bin/make"
+      - "/Users/meetai/.nimble/bin/make"
+      - "/Users/meetai/.nvm/versions/node/v18.20.8/bin/make"
+      - "/opt/homebrew/bin/make"
+      - "/opt/homebrew/sbin/make"
+      - "/usr/local/bin/make"
+      - "/System/Cryptexes/App/usr/bin/make"
+    found: "/usr/bin/make"
+    search_context:
+      ENV{PATH}:
+        - "/Users/meetai/.local/bin"
+        - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin"
+        - "/Users/meetai/.x-cmd.root/bin"
+        - "/opt/homebrew/opt/mysql@8.4/bin"
+        - "/Users/meetai/.nimble/bin"
+        - "/Users/meetai/.nvm/versions/node/v18.20.8/bin"
+        - "/opt/homebrew/bin"
+        - "/opt/homebrew/sbin"
+        - "/usr/local/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/usr/local/go/bin"
+        - "/Users/meetai/.opam/default/bin"
+        - "/Users/meetai/.local/bin"
+        - "/Users/meetai/.sdkman/candidates/quarkus/current/bin"
+        - "/Users/meetai/.sdkman/candidates/java/current/bin"
+        - "/Users/meetai/.cargo/bin"
+        - "/Users/meetai/.fzf/bin"
+        - "/Users/meetai/.x-cmd.root/local/data/triarii/bin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCompiler.cmake:73 (find_program)"
+      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCCompiler.cmake:64 (_cmake_find_compiler)"
+      - "CMakeLists.txt:3 (project)"
+    mode: "program"
+    variable: "CMAKE_C_COMPILER"
+    description: "C compiler"
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "cc"
+      - "gcc"
+      - "cl"
+      - "bcc"
+      - "xlc"
+      - "icx"
+      - "clang"
+    candidate_directories:
+      - "/Users/meetai/.local/bin/"
+      - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin/"
+      - "/Users/meetai/.x-cmd.root/bin/"
+      - "/opt/homebrew/opt/mysql@8.4/bin/"
+      - "/Users/meetai/.nimble/bin/"
+      - "/Users/meetai/.nvm/versions/node/v18.20.8/bin/"
+      - "/opt/homebrew/bin/"
+      - "/opt/homebrew/sbin/"
+      - "/usr/local/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/usr/local/go/bin/"
+      - "/Users/meetai/.opam/default/bin/"
+      - "/Users/meetai/.sdkman/candidates/quarkus/current/bin/"
+      - "/Users/meetai/.sdkman/candidates/java/current/bin/"
+      - "/Users/meetai/.cargo/bin/"
+      - "/Users/meetai/.fzf/bin/"
+      - "/Users/meetai/.x-cmd.root/local/data/triarii/bin/"
+    searched_directories:
+      - "/Users/meetai/.local/bin/cc"
+      - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin/cc"
+      - "/Users/meetai/.x-cmd.root/bin/cc"
+      - "/opt/homebrew/opt/mysql@8.4/bin/cc"
+      - "/Users/meetai/.nimble/bin/cc"
+      - "/Users/meetai/.nvm/versions/node/v18.20.8/bin/cc"
+      - "/opt/homebrew/bin/cc"
+      - "/opt/homebrew/sbin/cc"
+      - "/usr/local/bin/cc"
+      - "/System/Cryptexes/App/usr/bin/cc"
+    found: "/usr/bin/cc"
+    search_context:
+      ENV{PATH}:
+        - "/Users/meetai/.local/bin"
+        - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin"
+        - "/Users/meetai/.x-cmd.root/bin"
+        - "/opt/homebrew/opt/mysql@8.4/bin"
+        - "/Users/meetai/.nimble/bin"
+        - "/Users/meetai/.nvm/versions/node/v18.20.8/bin"
+        - "/opt/homebrew/bin"
+        - "/opt/homebrew/sbin"
+        - "/usr/local/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/usr/local/go/bin"
+        - "/Users/meetai/.opam/default/bin"
+        - "/Users/meetai/.local/bin"
+        - "/Users/meetai/.sdkman/candidates/quarkus/current/bin"
+        - "/Users/meetai/.sdkman/candidates/java/current/bin"
+        - "/Users/meetai/.cargo/bin"
+        - "/Users/meetai/.fzf/bin"
+        - "/Users/meetai/.x-cmd.root/local/data/triarii/bin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerId.cmake:462 (find_file)"
+      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerId.cmake:500 (CMAKE_DETERMINE_COMPILER_ID_WRITE)"
+      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerId.cmake:8 (CMAKE_DETERMINE_COMPILER_ID_BUILD)"
+      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCCompiler.cmake:122 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:3 (project)"
+    mode: "file"
+    variable: "src_in"
+    description: "Path to a file."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "CMakeCCompilerId.c.in"
+    candidate_directories:
+      - "/opt/homebrew/share/cmake/Modules/"
+    found: "/opt/homebrew/share/cmake/Modules/CMakeCCompilerId.c.in"
+    search_context:
+      ENV{PATH}:
+        - "/Users/meetai/.local/bin"
+        - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin"
+        - "/Users/meetai/.x-cmd.root/bin"
+        - "/opt/homebrew/opt/mysql@8.4/bin"
+        - "/Users/meetai/.nimble/bin"
+        - "/Users/meetai/.nvm/versions/node/v18.20.8/bin"
+        - "/opt/homebrew/bin"
+        - "/opt/homebrew/sbin"
+        - "/usr/local/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/usr/local/go/bin"
+        - "/Users/meetai/.opam/default/bin"
+        - "/Users/meetai/.local/bin"
+        - "/Users/meetai/.sdkman/candidates/quarkus/current/bin"
+        - "/Users/meetai/.sdkman/candidates/java/current/bin"
+        - "/Users/meetai/.cargo/bin"
+        - "/Users/meetai/.fzf/bin"
+        - "/Users/meetai/.x-cmd.root/local/data/triarii/bin"
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCCompiler.cmake:122 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:3 (project)"
+    message: |
+      Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
+      Compiler: /usr/bin/cc 
+      Build flags: 
+      Id flags:  
+      
+      The output was:
+      0
+      
+      
+      Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "a.out"
+      
+      The C compiler identification is AppleClang, found in:
+        /Users/meetai/source/echo-lang/runtime/build/CMakeFiles/4.2.1/CompilerIdC/a.out
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerId.cmake:290 (message)"
+      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCCompiler.cmake:122 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:3 (project)"
+    message: |
+      Detecting C compiler apple sysroot: "/usr/bin/cc" "-E" "apple-sdk.c"
+        # 1 "apple-sdk.c"
+        # 1 "<built-in>" 1
+        # 1 "<built-in>" 3
+        # 465 "<built-in>" 3
+        # 1 "<command line>" 1
+        # 1 "<built-in>" 2
+        # 1 "apple-sdk.c" 2
+        # 1 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityMacros.h" 1 3 4
+        # 89 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityMacros.h" 3 4
+        # 1 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityVersions.h" 1 3 4
+        # 90 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityMacros.h" 2 3 4
+        # 1 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/TargetConditionals.h" 1 3 4
+        # 91 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityMacros.h" 2 3 4
+        # 207 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityMacros.h" 3 4
+        # 1 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/Availability.h" 1 3 4
+        # 196 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/Availability.h" 3 4
+        # 1 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityVersions.h" 1 3 4
+        # 197 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/Availability.h" 2 3 4
+        # 1 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityInternal.h" 1 3 4
+        # 33 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityInternal.h" 3 4
+        # 1 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityVersions.h" 1 3 4
+        # 34 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityInternal.h" 2 3 4
+        # 198 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/Availability.h" 2 3 4
+        # 1 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityInternalLegacy.h" 1 3 4
+        # 34 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityInternalLegacy.h" 3 4
+        # 1 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityInternal.h" 1 3 4
+        # 35 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityInternalLegacy.h" 2 3 4
+        # 199 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/Availability.h" 2 3 4
+        # 208 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityMacros.h" 2 3 4
+        # 2 "apple-sdk.c" 2
+        
+        
+      Found apple sysroot: /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/opt/homebrew/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "CMakeLists.txt:3 (project)"
+    mode: "program"
+    variable: "CMAKE_AR"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "ar"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/Users/meetai/.local/bin/"
+      - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin/"
+      - "/Users/meetai/.x-cmd.root/bin/"
+      - "/opt/homebrew/opt/mysql@8.4/bin/"
+      - "/Users/meetai/.nimble/bin/"
+      - "/Users/meetai/.nvm/versions/node/v18.20.8/bin/"
+      - "/opt/homebrew/bin/"
+      - "/opt/homebrew/sbin/"
+      - "/usr/local/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/usr/local/go/bin/"
+      - "/Users/meetai/.opam/default/bin/"
+      - "/Users/meetai/.sdkman/candidates/quarkus/current/bin/"
+      - "/Users/meetai/.sdkman/candidates/java/current/bin/"
+      - "/Users/meetai/.cargo/bin/"
+      - "/Users/meetai/.fzf/bin/"
+      - "/Users/meetai/.x-cmd.root/local/data/triarii/bin/"
+    found: "/usr/bin/ar"
+    search_context:
+      ENV{PATH}:
+        - "/Users/meetai/.local/bin"
+        - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin"
+        - "/Users/meetai/.x-cmd.root/bin"
+        - "/opt/homebrew/opt/mysql@8.4/bin"
+        - "/Users/meetai/.nimble/bin"
+        - "/Users/meetai/.nvm/versions/node/v18.20.8/bin"
+        - "/opt/homebrew/bin"
+        - "/opt/homebrew/sbin"
+        - "/usr/local/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/usr/local/go/bin"
+        - "/Users/meetai/.opam/default/bin"
+        - "/Users/meetai/.local/bin"
+        - "/Users/meetai/.sdkman/candidates/quarkus/current/bin"
+        - "/Users/meetai/.sdkman/candidates/java/current/bin"
+        - "/Users/meetai/.cargo/bin"
+        - "/Users/meetai/.fzf/bin"
+        - "/Users/meetai/.x-cmd.root/local/data/triarii/bin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/opt/homebrew/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "CMakeLists.txt:3 (project)"
+    mode: "program"
+    variable: "CMAKE_RANLIB"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "ranlib"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/Users/meetai/.local/bin/"
+      - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin/"
+      - "/Users/meetai/.x-cmd.root/bin/"
+      - "/opt/homebrew/opt/mysql@8.4/bin/"
+      - "/Users/meetai/.nimble/bin/"
+      - "/Users/meetai/.nvm/versions/node/v18.20.8/bin/"
+      - "/opt/homebrew/bin/"
+      - "/opt/homebrew/sbin/"
+      - "/usr/local/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/usr/local/go/bin/"
+      - "/Users/meetai/.opam/default/bin/"
+      - "/Users/meetai/.sdkman/candidates/quarkus/current/bin/"
+      - "/Users/meetai/.sdkman/candidates/java/current/bin/"
+      - "/Users/meetai/.cargo/bin/"
+      - "/Users/meetai/.fzf/bin/"
+      - "/Users/meetai/.x-cmd.root/local/data/triarii/bin/"
+    found: "/usr/bin/ranlib"
+    search_context:
+      ENV{PATH}:
+        - "/Users/meetai/.local/bin"
+        - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin"
+        - "/Users/meetai/.x-cmd.root/bin"
+        - "/opt/homebrew/opt/mysql@8.4/bin"
+        - "/Users/meetai/.nimble/bin"
+        - "/Users/meetai/.nvm/versions/node/v18.20.8/bin"
+        - "/opt/homebrew/bin"
+        - "/opt/homebrew/sbin"
+        - "/usr/local/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/usr/local/go/bin"
+        - "/Users/meetai/.opam/default/bin"
+        - "/Users/meetai/.local/bin"
+        - "/Users/meetai/.sdkman/candidates/quarkus/current/bin"
+        - "/Users/meetai/.sdkman/candidates/java/current/bin"
+        - "/Users/meetai/.cargo/bin"
+        - "/Users/meetai/.fzf/bin"
+        - "/Users/meetai/.x-cmd.root/local/data/triarii/bin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/opt/homebrew/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "CMakeLists.txt:3 (project)"
+    mode: "program"
+    variable: "CMAKE_STRIP"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "strip"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/Users/meetai/.local/bin/"
+      - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin/"
+      - "/Users/meetai/.x-cmd.root/bin/"
+      - "/opt/homebrew/opt/mysql@8.4/bin/"
+      - "/Users/meetai/.nimble/bin/"
+      - "/Users/meetai/.nvm/versions/node/v18.20.8/bin/"
+      - "/opt/homebrew/bin/"
+      - "/opt/homebrew/sbin/"
+      - "/usr/local/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/usr/local/go/bin/"
+      - "/Users/meetai/.opam/default/bin/"
+      - "/Users/meetai/.sdkman/candidates/quarkus/current/bin/"
+      - "/Users/meetai/.sdkman/candidates/java/current/bin/"
+      - "/Users/meetai/.cargo/bin/"
+      - "/Users/meetai/.fzf/bin/"
+      - "/Users/meetai/.x-cmd.root/local/data/triarii/bin/"
+    found: "/usr/bin/strip"
+    search_context:
+      ENV{PATH}:
+        - "/Users/meetai/.local/bin"
+        - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin"
+        - "/Users/meetai/.x-cmd.root/bin"
+        - "/opt/homebrew/opt/mysql@8.4/bin"
+        - "/Users/meetai/.nimble/bin"
+        - "/Users/meetai/.nvm/versions/node/v18.20.8/bin"
+        - "/opt/homebrew/bin"
+        - "/opt/homebrew/sbin"
+        - "/usr/local/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/usr/local/go/bin"
+        - "/Users/meetai/.opam/default/bin"
+        - "/Users/meetai/.local/bin"
+        - "/Users/meetai/.sdkman/candidates/quarkus/current/bin"
+        - "/Users/meetai/.sdkman/candidates/java/current/bin"
+        - "/Users/meetai/.cargo/bin"
+        - "/Users/meetai/.fzf/bin"
+        - "/Users/meetai/.x-cmd.root/local/data/triarii/bin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/opt/homebrew/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "CMakeLists.txt:3 (project)"
+    mode: "program"
+    variable: "CMAKE_LINKER"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "ld"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/Users/meetai/.local/bin/"
+      - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin/"
+      - "/Users/meetai/.x-cmd.root/bin/"
+      - "/opt/homebrew/opt/mysql@8.4/bin/"
+      - "/Users/meetai/.nimble/bin/"
+      - "/Users/meetai/.nvm/versions/node/v18.20.8/bin/"
+      - "/opt/homebrew/bin/"
+      - "/opt/homebrew/sbin/"
+      - "/usr/local/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/usr/local/go/bin/"
+      - "/Users/meetai/.opam/default/bin/"
+      - "/Users/meetai/.sdkman/candidates/quarkus/current/bin/"
+      - "/Users/meetai/.sdkman/candidates/java/current/bin/"
+      - "/Users/meetai/.cargo/bin/"
+      - "/Users/meetai/.fzf/bin/"
+      - "/Users/meetai/.x-cmd.root/local/data/triarii/bin/"
+    found: "/usr/bin/ld"
+    search_context:
+      ENV{PATH}:
+        - "/Users/meetai/.local/bin"
+        - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin"
+        - "/Users/meetai/.x-cmd.root/bin"
+        - "/opt/homebrew/opt/mysql@8.4/bin"
+        - "/Users/meetai/.nimble/bin"
+        - "/Users/meetai/.nvm/versions/node/v18.20.8/bin"
+        - "/opt/homebrew/bin"
+        - "/opt/homebrew/sbin"
+        - "/usr/local/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/usr/local/go/bin"
+        - "/Users/meetai/.opam/default/bin"
+        - "/Users/meetai/.local/bin"
+        - "/Users/meetai/.sdkman/candidates/quarkus/current/bin"
+        - "/Users/meetai/.sdkman/candidates/java/current/bin"
+        - "/Users/meetai/.cargo/bin"
+        - "/Users/meetai/.fzf/bin"
+        - "/Users/meetai/.x-cmd.root/local/data/triarii/bin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/opt/homebrew/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "CMakeLists.txt:3 (project)"
+    mode: "program"
+    variable: "CMAKE_NM"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "nm"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/Users/meetai/.local/bin/"
+      - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin/"
+      - "/Users/meetai/.x-cmd.root/bin/"
+      - "/opt/homebrew/opt/mysql@8.4/bin/"
+      - "/Users/meetai/.nimble/bin/"
+      - "/Users/meetai/.nvm/versions/node/v18.20.8/bin/"
+      - "/opt/homebrew/bin/"
+      - "/opt/homebrew/sbin/"
+      - "/usr/local/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/usr/local/go/bin/"
+      - "/Users/meetai/.opam/default/bin/"
+      - "/Users/meetai/.sdkman/candidates/quarkus/current/bin/"
+      - "/Users/meetai/.sdkman/candidates/java/current/bin/"
+      - "/Users/meetai/.cargo/bin/"
+      - "/Users/meetai/.fzf/bin/"
+      - "/Users/meetai/.x-cmd.root/local/data/triarii/bin/"
+    found: "/usr/bin/nm"
+    search_context:
+      ENV{PATH}:
+        - "/Users/meetai/.local/bin"
+        - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin"
+        - "/Users/meetai/.x-cmd.root/bin"
+        - "/opt/homebrew/opt/mysql@8.4/bin"
+        - "/Users/meetai/.nimble/bin"
+        - "/Users/meetai/.nvm/versions/node/v18.20.8/bin"
+        - "/opt/homebrew/bin"
+        - "/opt/homebrew/sbin"
+        - "/usr/local/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/usr/local/go/bin"
+        - "/Users/meetai/.opam/default/bin"
+        - "/Users/meetai/.local/bin"
+        - "/Users/meetai/.sdkman/candidates/quarkus/current/bin"
+        - "/Users/meetai/.sdkman/candidates/java/current/bin"
+        - "/Users/meetai/.cargo/bin"
+        - "/Users/meetai/.fzf/bin"
+        - "/Users/meetai/.x-cmd.root/local/data/triarii/bin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/opt/homebrew/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "CMakeLists.txt:3 (project)"
+    mode: "program"
+    variable: "CMAKE_OBJDUMP"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "objdump"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/Users/meetai/.local/bin/"
+      - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin/"
+      - "/Users/meetai/.x-cmd.root/bin/"
+      - "/opt/homebrew/opt/mysql@8.4/bin/"
+      - "/Users/meetai/.nimble/bin/"
+      - "/Users/meetai/.nvm/versions/node/v18.20.8/bin/"
+      - "/opt/homebrew/bin/"
+      - "/opt/homebrew/sbin/"
+      - "/usr/local/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/usr/local/go/bin/"
+      - "/Users/meetai/.opam/default/bin/"
+      - "/Users/meetai/.sdkman/candidates/quarkus/current/bin/"
+      - "/Users/meetai/.sdkman/candidates/java/current/bin/"
+      - "/Users/meetai/.cargo/bin/"
+      - "/Users/meetai/.fzf/bin/"
+      - "/Users/meetai/.x-cmd.root/local/data/triarii/bin/"
+    found: "/usr/bin/objdump"
+    search_context:
+      ENV{PATH}:
+        - "/Users/meetai/.local/bin"
+        - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin"
+        - "/Users/meetai/.x-cmd.root/bin"
+        - "/opt/homebrew/opt/mysql@8.4/bin"
+        - "/Users/meetai/.nimble/bin"
+        - "/Users/meetai/.nvm/versions/node/v18.20.8/bin"
+        - "/opt/homebrew/bin"
+        - "/opt/homebrew/sbin"
+        - "/usr/local/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/usr/local/go/bin"
+        - "/Users/meetai/.opam/default/bin"
+        - "/Users/meetai/.local/bin"
+        - "/Users/meetai/.sdkman/candidates/quarkus/current/bin"
+        - "/Users/meetai/.sdkman/candidates/java/current/bin"
+        - "/Users/meetai/.cargo/bin"
+        - "/Users/meetai/.fzf/bin"
+        - "/Users/meetai/.x-cmd.root/local/data/triarii/bin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/opt/homebrew/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "CMakeLists.txt:3 (project)"
+    mode: "program"
+    variable: "CMAKE_OBJCOPY"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "objcopy"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/Users/meetai/.local/bin/"
+      - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin/"
+      - "/Users/meetai/.x-cmd.root/bin/"
+      - "/opt/homebrew/opt/mysql@8.4/bin/"
+      - "/Users/meetai/.nimble/bin/"
+      - "/Users/meetai/.nvm/versions/node/v18.20.8/bin/"
+      - "/opt/homebrew/bin/"
+      - "/opt/homebrew/sbin/"
+      - "/usr/local/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/usr/local/go/bin/"
+      - "/Users/meetai/.opam/default/bin/"
+      - "/Users/meetai/.sdkman/candidates/quarkus/current/bin/"
+      - "/Users/meetai/.sdkman/candidates/java/current/bin/"
+      - "/Users/meetai/.cargo/bin/"
+      - "/Users/meetai/.fzf/bin/"
+      - "/Users/meetai/.x-cmd.root/local/data/triarii/bin/"
+    searched_directories:
+      - "/usr/bin/objcopy"
+      - "/Users/meetai/.local/bin/objcopy"
+      - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin/objcopy"
+      - "/Users/meetai/.x-cmd.root/bin/objcopy"
+      - "/opt/homebrew/opt/mysql@8.4/bin/objcopy"
+      - "/Users/meetai/.nimble/bin/objcopy"
+      - "/Users/meetai/.nvm/versions/node/v18.20.8/bin/objcopy"
+      - "/opt/homebrew/bin/objcopy"
+      - "/opt/homebrew/sbin/objcopy"
+      - "/usr/local/bin/objcopy"
+      - "/System/Cryptexes/App/usr/bin/objcopy"
+      - "/bin/objcopy"
+      - "/usr/sbin/objcopy"
+      - "/sbin/objcopy"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/objcopy"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/objcopy"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/objcopy"
+      - "/usr/local/go/bin/objcopy"
+      - "/Users/meetai/.opam/default/bin/objcopy"
+      - "/Users/meetai/.sdkman/candidates/quarkus/current/bin/objcopy"
+      - "/Users/meetai/.sdkman/candidates/java/current/bin/objcopy"
+      - "/Users/meetai/.cargo/bin/objcopy"
+      - "/Users/meetai/.fzf/bin/objcopy"
+      - "/Users/meetai/.x-cmd.root/local/data/triarii/bin/objcopy"
+    found: false
+    search_context:
+      ENV{PATH}:
+        - "/Users/meetai/.local/bin"
+        - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin"
+        - "/Users/meetai/.x-cmd.root/bin"
+        - "/opt/homebrew/opt/mysql@8.4/bin"
+        - "/Users/meetai/.nimble/bin"
+        - "/Users/meetai/.nvm/versions/node/v18.20.8/bin"
+        - "/opt/homebrew/bin"
+        - "/opt/homebrew/sbin"
+        - "/usr/local/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/usr/local/go/bin"
+        - "/Users/meetai/.opam/default/bin"
+        - "/Users/meetai/.local/bin"
+        - "/Users/meetai/.sdkman/candidates/quarkus/current/bin"
+        - "/Users/meetai/.sdkman/candidates/java/current/bin"
+        - "/Users/meetai/.cargo/bin"
+        - "/Users/meetai/.fzf/bin"
+        - "/Users/meetai/.x-cmd.root/local/data/triarii/bin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/opt/homebrew/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "CMakeLists.txt:3 (project)"
+    mode: "program"
+    variable: "CMAKE_READELF"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "readelf"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/Users/meetai/.local/bin/"
+      - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin/"
+      - "/Users/meetai/.x-cmd.root/bin/"
+      - "/opt/homebrew/opt/mysql@8.4/bin/"
+      - "/Users/meetai/.nimble/bin/"
+      - "/Users/meetai/.nvm/versions/node/v18.20.8/bin/"
+      - "/opt/homebrew/bin/"
+      - "/opt/homebrew/sbin/"
+      - "/usr/local/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/usr/local/go/bin/"
+      - "/Users/meetai/.opam/default/bin/"
+      - "/Users/meetai/.sdkman/candidates/quarkus/current/bin/"
+      - "/Users/meetai/.sdkman/candidates/java/current/bin/"
+      - "/Users/meetai/.cargo/bin/"
+      - "/Users/meetai/.fzf/bin/"
+      - "/Users/meetai/.x-cmd.root/local/data/triarii/bin/"
+    searched_directories:
+      - "/usr/bin/readelf"
+      - "/Users/meetai/.local/bin/readelf"
+      - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin/readelf"
+      - "/Users/meetai/.x-cmd.root/bin/readelf"
+      - "/opt/homebrew/opt/mysql@8.4/bin/readelf"
+      - "/Users/meetai/.nimble/bin/readelf"
+      - "/Users/meetai/.nvm/versions/node/v18.20.8/bin/readelf"
+      - "/opt/homebrew/bin/readelf"
+      - "/opt/homebrew/sbin/readelf"
+      - "/usr/local/bin/readelf"
+      - "/System/Cryptexes/App/usr/bin/readelf"
+      - "/bin/readelf"
+      - "/usr/sbin/readelf"
+      - "/sbin/readelf"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/readelf"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/readelf"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/readelf"
+      - "/usr/local/go/bin/readelf"
+      - "/Users/meetai/.opam/default/bin/readelf"
+      - "/Users/meetai/.sdkman/candidates/quarkus/current/bin/readelf"
+      - "/Users/meetai/.sdkman/candidates/java/current/bin/readelf"
+      - "/Users/meetai/.cargo/bin/readelf"
+      - "/Users/meetai/.fzf/bin/readelf"
+      - "/Users/meetai/.x-cmd.root/local/data/triarii/bin/readelf"
+    found: false
+    search_context:
+      ENV{PATH}:
+        - "/Users/meetai/.local/bin"
+        - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin"
+        - "/Users/meetai/.x-cmd.root/bin"
+        - "/opt/homebrew/opt/mysql@8.4/bin"
+        - "/Users/meetai/.nimble/bin"
+        - "/Users/meetai/.nvm/versions/node/v18.20.8/bin"
+        - "/opt/homebrew/bin"
+        - "/opt/homebrew/sbin"
+        - "/usr/local/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/usr/local/go/bin"
+        - "/Users/meetai/.opam/default/bin"
+        - "/Users/meetai/.local/bin"
+        - "/Users/meetai/.sdkman/candidates/quarkus/current/bin"
+        - "/Users/meetai/.sdkman/candidates/java/current/bin"
+        - "/Users/meetai/.cargo/bin"
+        - "/Users/meetai/.fzf/bin"
+        - "/Users/meetai/.x-cmd.root/local/data/triarii/bin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/opt/homebrew/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "CMakeLists.txt:3 (project)"
+    mode: "program"
+    variable: "CMAKE_DLLTOOL"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "dlltool"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/Users/meetai/.local/bin/"
+      - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin/"
+      - "/Users/meetai/.x-cmd.root/bin/"
+      - "/opt/homebrew/opt/mysql@8.4/bin/"
+      - "/Users/meetai/.nimble/bin/"
+      - "/Users/meetai/.nvm/versions/node/v18.20.8/bin/"
+      - "/opt/homebrew/bin/"
+      - "/opt/homebrew/sbin/"
+      - "/usr/local/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/usr/local/go/bin/"
+      - "/Users/meetai/.opam/default/bin/"
+      - "/Users/meetai/.sdkman/candidates/quarkus/current/bin/"
+      - "/Users/meetai/.sdkman/candidates/java/current/bin/"
+      - "/Users/meetai/.cargo/bin/"
+      - "/Users/meetai/.fzf/bin/"
+      - "/Users/meetai/.x-cmd.root/local/data/triarii/bin/"
+    searched_directories:
+      - "/usr/bin/dlltool"
+      - "/Users/meetai/.local/bin/dlltool"
+      - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin/dlltool"
+      - "/Users/meetai/.x-cmd.root/bin/dlltool"
+      - "/opt/homebrew/opt/mysql@8.4/bin/dlltool"
+      - "/Users/meetai/.nimble/bin/dlltool"
+      - "/Users/meetai/.nvm/versions/node/v18.20.8/bin/dlltool"
+      - "/opt/homebrew/bin/dlltool"
+      - "/opt/homebrew/sbin/dlltool"
+      - "/usr/local/bin/dlltool"
+      - "/System/Cryptexes/App/usr/bin/dlltool"
+      - "/bin/dlltool"
+      - "/usr/sbin/dlltool"
+      - "/sbin/dlltool"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/dlltool"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/dlltool"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/dlltool"
+      - "/usr/local/go/bin/dlltool"
+      - "/Users/meetai/.opam/default/bin/dlltool"
+      - "/Users/meetai/.sdkman/candidates/quarkus/current/bin/dlltool"
+      - "/Users/meetai/.sdkman/candidates/java/current/bin/dlltool"
+      - "/Users/meetai/.cargo/bin/dlltool"
+      - "/Users/meetai/.fzf/bin/dlltool"
+      - "/Users/meetai/.x-cmd.root/local/data/triarii/bin/dlltool"
+    found: false
+    search_context:
+      ENV{PATH}:
+        - "/Users/meetai/.local/bin"
+        - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin"
+        - "/Users/meetai/.x-cmd.root/bin"
+        - "/opt/homebrew/opt/mysql@8.4/bin"
+        - "/Users/meetai/.nimble/bin"
+        - "/Users/meetai/.nvm/versions/node/v18.20.8/bin"
+        - "/opt/homebrew/bin"
+        - "/opt/homebrew/sbin"
+        - "/usr/local/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/usr/local/go/bin"
+        - "/Users/meetai/.opam/default/bin"
+        - "/Users/meetai/.local/bin"
+        - "/Users/meetai/.sdkman/candidates/quarkus/current/bin"
+        - "/Users/meetai/.sdkman/candidates/java/current/bin"
+        - "/Users/meetai/.cargo/bin"
+        - "/Users/meetai/.fzf/bin"
+        - "/Users/meetai/.x-cmd.root/local/data/triarii/bin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/opt/homebrew/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "CMakeLists.txt:3 (project)"
+    mode: "program"
+    variable: "CMAKE_ADDR2LINE"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "addr2line"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/Users/meetai/.local/bin/"
+      - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin/"
+      - "/Users/meetai/.x-cmd.root/bin/"
+      - "/opt/homebrew/opt/mysql@8.4/bin/"
+      - "/Users/meetai/.nimble/bin/"
+      - "/Users/meetai/.nvm/versions/node/v18.20.8/bin/"
+      - "/opt/homebrew/bin/"
+      - "/opt/homebrew/sbin/"
+      - "/usr/local/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/usr/local/go/bin/"
+      - "/Users/meetai/.opam/default/bin/"
+      - "/Users/meetai/.sdkman/candidates/quarkus/current/bin/"
+      - "/Users/meetai/.sdkman/candidates/java/current/bin/"
+      - "/Users/meetai/.cargo/bin/"
+      - "/Users/meetai/.fzf/bin/"
+      - "/Users/meetai/.x-cmd.root/local/data/triarii/bin/"
+    searched_directories:
+      - "/usr/bin/addr2line"
+      - "/Users/meetai/.local/bin/addr2line"
+      - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin/addr2line"
+      - "/Users/meetai/.x-cmd.root/bin/addr2line"
+      - "/opt/homebrew/opt/mysql@8.4/bin/addr2line"
+      - "/Users/meetai/.nimble/bin/addr2line"
+      - "/Users/meetai/.nvm/versions/node/v18.20.8/bin/addr2line"
+      - "/opt/homebrew/bin/addr2line"
+      - "/opt/homebrew/sbin/addr2line"
+      - "/usr/local/bin/addr2line"
+      - "/System/Cryptexes/App/usr/bin/addr2line"
+      - "/bin/addr2line"
+      - "/usr/sbin/addr2line"
+      - "/sbin/addr2line"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/addr2line"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/addr2line"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/addr2line"
+      - "/usr/local/go/bin/addr2line"
+      - "/Users/meetai/.opam/default/bin/addr2line"
+      - "/Users/meetai/.sdkman/candidates/quarkus/current/bin/addr2line"
+      - "/Users/meetai/.sdkman/candidates/java/current/bin/addr2line"
+      - "/Users/meetai/.cargo/bin/addr2line"
+      - "/Users/meetai/.fzf/bin/addr2line"
+      - "/Users/meetai/.x-cmd.root/local/data/triarii/bin/addr2line"
+    found: false
+    search_context:
+      ENV{PATH}:
+        - "/Users/meetai/.local/bin"
+        - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin"
+        - "/Users/meetai/.x-cmd.root/bin"
+        - "/opt/homebrew/opt/mysql@8.4/bin"
+        - "/Users/meetai/.nimble/bin"
+        - "/Users/meetai/.nvm/versions/node/v18.20.8/bin"
+        - "/opt/homebrew/bin"
+        - "/opt/homebrew/sbin"
+        - "/usr/local/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/usr/local/go/bin"
+        - "/Users/meetai/.opam/default/bin"
+        - "/Users/meetai/.local/bin"
+        - "/Users/meetai/.sdkman/candidates/quarkus/current/bin"
+        - "/Users/meetai/.sdkman/candidates/java/current/bin"
+        - "/Users/meetai/.cargo/bin"
+        - "/Users/meetai/.fzf/bin"
+        - "/Users/meetai/.x-cmd.root/local/data/triarii/bin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/opt/homebrew/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "CMakeLists.txt:3 (project)"
+    mode: "program"
+    variable: "CMAKE_TAPI"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "tapi"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/Users/meetai/.local/bin/"
+      - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin/"
+      - "/Users/meetai/.x-cmd.root/bin/"
+      - "/opt/homebrew/opt/mysql@8.4/bin/"
+      - "/Users/meetai/.nimble/bin/"
+      - "/Users/meetai/.nvm/versions/node/v18.20.8/bin/"
+      - "/opt/homebrew/bin/"
+      - "/opt/homebrew/sbin/"
+      - "/usr/local/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/usr/local/go/bin/"
+      - "/Users/meetai/.opam/default/bin/"
+      - "/Users/meetai/.sdkman/candidates/quarkus/current/bin/"
+      - "/Users/meetai/.sdkman/candidates/java/current/bin/"
+      - "/Users/meetai/.cargo/bin/"
+      - "/Users/meetai/.fzf/bin/"
+      - "/Users/meetai/.x-cmd.root/local/data/triarii/bin/"
+    searched_directories:
+      - "/usr/bin/tapi"
+      - "/Users/meetai/.local/bin/tapi"
+      - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin/tapi"
+      - "/Users/meetai/.x-cmd.root/bin/tapi"
+      - "/opt/homebrew/opt/mysql@8.4/bin/tapi"
+      - "/Users/meetai/.nimble/bin/tapi"
+      - "/Users/meetai/.nvm/versions/node/v18.20.8/bin/tapi"
+      - "/opt/homebrew/bin/tapi"
+      - "/opt/homebrew/sbin/tapi"
+      - "/usr/local/bin/tapi"
+      - "/System/Cryptexes/App/usr/bin/tapi"
+      - "/bin/tapi"
+      - "/usr/sbin/tapi"
+      - "/sbin/tapi"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/tapi"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/tapi"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/tapi"
+      - "/usr/local/go/bin/tapi"
+      - "/Users/meetai/.opam/default/bin/tapi"
+      - "/Users/meetai/.sdkman/candidates/quarkus/current/bin/tapi"
+      - "/Users/meetai/.sdkman/candidates/java/current/bin/tapi"
+      - "/Users/meetai/.cargo/bin/tapi"
+      - "/Users/meetai/.fzf/bin/tapi"
+      - "/Users/meetai/.x-cmd.root/local/data/triarii/bin/tapi"
+    found: false
+    search_context:
+      ENV{PATH}:
+        - "/Users/meetai/.local/bin"
+        - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin"
+        - "/Users/meetai/.x-cmd.root/bin"
+        - "/opt/homebrew/opt/mysql@8.4/bin"
+        - "/Users/meetai/.nimble/bin"
+        - "/Users/meetai/.nvm/versions/node/v18.20.8/bin"
+        - "/opt/homebrew/bin"
+        - "/opt/homebrew/sbin"
+        - "/usr/local/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/usr/local/go/bin"
+        - "/Users/meetai/.opam/default/bin"
+        - "/Users/meetai/.local/bin"
+        - "/Users/meetai/.sdkman/candidates/quarkus/current/bin"
+        - "/Users/meetai/.sdkman/candidates/java/current/bin"
+        - "/Users/meetai/.cargo/bin"
+        - "/Users/meetai/.fzf/bin"
+        - "/Users/meetai/.x-cmd.root/local/data/triarii/bin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/opt/homebrew/share/cmake/Modules/Platform/Darwin.cmake:76 (find_program)"
+      - "/opt/homebrew/share/cmake/Modules/CMakeSystemSpecificInformation.cmake:32 (include)"
+      - "CMakeLists.txt:3 (project)"
+    mode: "program"
+    variable: "CMAKE_INSTALL_NAME_TOOL"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "install_name_tool"
+    candidate_directories:
+      - "/Users/meetai/.local/bin/"
+      - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin/"
+      - "/Users/meetai/.x-cmd.root/bin/"
+      - "/opt/homebrew/opt/mysql@8.4/bin/"
+      - "/Users/meetai/.nimble/bin/"
+      - "/Users/meetai/.nvm/versions/node/v18.20.8/bin/"
+      - "/opt/homebrew/bin/"
+      - "/opt/homebrew/sbin/"
+      - "/usr/local/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/usr/local/go/bin/"
+      - "/Users/meetai/.opam/default/bin/"
+      - "/Users/meetai/.sdkman/candidates/quarkus/current/bin/"
+      - "/Users/meetai/.sdkman/candidates/java/current/bin/"
+      - "/Users/meetai/.cargo/bin/"
+      - "/Users/meetai/.fzf/bin/"
+      - "/Users/meetai/.x-cmd.root/local/data/triarii/bin/"
+    searched_directories:
+      - "/Users/meetai/.local/bin/install_name_tool"
+      - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin/install_name_tool"
+      - "/Users/meetai/.x-cmd.root/bin/install_name_tool"
+      - "/opt/homebrew/opt/mysql@8.4/bin/install_name_tool"
+      - "/Users/meetai/.nimble/bin/install_name_tool"
+      - "/Users/meetai/.nvm/versions/node/v18.20.8/bin/install_name_tool"
+      - "/opt/homebrew/bin/install_name_tool"
+      - "/opt/homebrew/sbin/install_name_tool"
+      - "/usr/local/bin/install_name_tool"
+      - "/System/Cryptexes/App/usr/bin/install_name_tool"
+    found: "/usr/bin/install_name_tool"
+    search_context:
+      ENV{PATH}:
+        - "/Users/meetai/.local/bin"
+        - "/Users/meetai/.x-cmd.root/local/data/pkg/sphere/X/l/j/h/bin"
+        - "/Users/meetai/.x-cmd.root/bin"
+        - "/opt/homebrew/opt/mysql@8.4/bin"
+        - "/Users/meetai/.nimble/bin"
+        - "/Users/meetai/.nvm/versions/node/v18.20.8/bin"
+        - "/opt/homebrew/bin"
+        - "/opt/homebrew/sbin"
+        - "/usr/local/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/usr/local/go/bin"
+        - "/Users/meetai/.opam/default/bin"
         - "/Users/meetai/.local/bin"
         - "/Users/meetai/.sdkman/candidates/quarkus/current/bin"
         - "/Users/meetai/.sdkman/candidates/java/current/bin"
@@ -1648,50 +3035,197 @@ events:
         - "/Users/meetai/.fzf/bin"
         - "/Users/meetai/.x-cmd.root/local/data/triarii/bin"
       CMAKE_INSTALL_PREFIX: "/usr/local"
-      CMAKE_SYSTEM_PREFIX_PATH:
-        - "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr"
-        - "/opt/homebrew"
-        - "/usr/local"
-        - "/usr"
-        - "/"
-        - "/opt/homebrew"
-        - "/usr/local"
-        - "/usr/X11R6"
-        - "/usr/pkg"
-        - "/opt"
-        - "/sw"
-        - "/opt/local"
-      CMAKE_SYSTEM_APPBUNDLE_PATH:
-        - "/Users/meetai/Applications"
-        - "/Applications"
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerABI.cmake:83 (try_compile)"
+      - "/opt/homebrew/share/cmake/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:3 (project)"
+    checks:
+      - "Detecting C compiler ABI info"
+    directories:
+      source: "/Users/meetai/source/echo-lang/runtime/build/CMakeFiles/CMakeScratch/TryCompile-40ntPG"
+      binary: "/Users/meetai/source/echo-lang/runtime/build/CMakeFiles/CMakeScratch/TryCompile-40ntPG"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_OSX_ARCHITECTURES: ""
+      CMAKE_OSX_DEPLOYMENT_TARGET: ""
+      CMAKE_OSX_SYSROOT: ""
+    buildResult:
+      variable: "CMAKE_C_ABI_COMPILED"
+      cached: true
+      stdout: |
+        Change Dir: '/Users/meetai/source/echo-lang/runtime/build/CMakeFiles/CMakeScratch/TryCompile-40ntPG'
+        
+        Run Build Command(s): /opt/homebrew/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_0196e/fast
+        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_0196e.dir/build.make CMakeFiles/cmTC_0196e.dir/build
+        Building C object CMakeFiles/cmTC_0196e.dir/CMakeCCompilerABI.c.o
+        /usr/bin/cc   -arch arm64   -v -Wl,-v -MD -MT CMakeFiles/cmTC_0196e.dir/CMakeCCompilerABI.c.o -MF CMakeFiles/cmTC_0196e.dir/CMakeCCompilerABI.c.o.d -o CMakeFiles/cmTC_0196e.dir/CMakeCCompilerABI.c.o -c /opt/homebrew/share/cmake/Modules/CMakeCCompilerABI.c
+        Apple clang version 17.0.0 (clang-1700.0.13.5)
+        Target: arm64-apple-darwin24.3.0
+        Thread model: posix
+        InstalledDir: /Library/Developer/CommandLineTools/usr/bin
+        clang: warning: -Wl,-v: 'linker' input unused [-Wunused-command-line-argument]
+         "/Library/Developer/CommandLineTools/usr/bin/clang" -cc1 -triple arm64-apple-macosx15.0.0 -Wundef-prefix=TARGET_OS_ -Wdeprecated-objc-isa-usage -Werror=deprecated-objc-isa-usage -Werror=implicit-function-declaration -emit-obj -disable-free -clear-ast-before-backend -disable-llvm-verifier -discard-value-names -main-file-name CMakeCCompilerABI.c -mrelocation-model pic -pic-level 2 -mframe-pointer=non-leaf -fno-strict-return -ffp-contract=on -fno-rounding-math -funwind-tables=1 -fobjc-msgsend-selector-stubs -target-sdk-version=15.5 -fvisibility-inlines-hidden-static-local-var -fdefine-target-os-macros -fno-assume-unique-vtables -fno-modulemap-allow-subdirectory-search -target-cpu apple-m1 -target-feature +zcm -target-feature +zcz -target-feature +v8.5a -target-feature +aes -target-feature +altnzcv -target-feature +ccdp -target-feature +complxnum -target-feature +crc -target-feature +dotprod -target-feature +fp-armv8 -target-feature +fp16fml -target-feature +fptoint -target-feature +fullfp16 -target-feature +jsconv -target-feature +lse -target-feature +neon -target-feature +pauth -target-feature +perfmon -target-feature +predres -target-feature +ras -target-feature +rcpc -target-feature +rdm -target-feature +sb -target-feature +sha2 -target-feature +sha3 -target-feature +specrestrict -target-feature +ssbs -target-abi darwinpcs -debugger-tuning=lldb -fdebug-compilation-dir=/Users/meetai/source/echo-lang/runtime/build/CMakeFiles/CMakeScratch/TryCompile-40ntPG -target-linker-version 1167.5 -v -fcoverage-compilation-dir=/Users/meetai/source/echo-lang/runtime/build/CMakeFiles/CMakeScratch/TryCompile-40ntPG -resource-dir /Library/Developer/CommandLineTools/usr/lib/clang/17 -dependency-file CMakeFiles/cmTC_0196e.dir/CMakeCCompilerABI.c.o.d -skip-unused-modulemap-deps -MT CMakeFiles/cmTC_0196e.dir/CMakeCCompilerABI.c.o -sys-header-deps -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -I/usr/local/include -internal-isystem /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/local/include -internal-isystem /Library/Developer/CommandLineTools/usr/lib/clang/17/include -internal-externc-isystem /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include -internal-externc-isystem /Library/Developer/CommandLineTools/usr/include -Wno-reorder-init-list -Wno-implicit-int-float-conversion -Wno-c99-designator -Wno-final-dtor-non-final-class -Wno-extra-semi-stmt -Wno-misleading-indentation -Wno-quoted-include-in-framework-header -Wno-implicit-fallthrough -Wno-enum-enum-conversion -Wno-enum-float-conversion -Wno-elaborated-enum-base -Wno-reserved-identifier -Wno-gnu-folding-constant -ferror-limit 19 -stack-protector 1 -fstack-check -mdarwin-stkchk-strong-link -fblocks -fencode-extended-block-signature -fregister-global-dtors-with-atexit -fgnuc-version=4.2.1 -fskip-odr-check-in-gmf -fmax-type-align=16 -fcommon -clang-vendor-feature=+disableNonDependentMemberExprInCurrentInstantiation -fno-odr-hash-protocols -clang-vendor-feature=+enableAggressiveVLAFolding -clang-vendor-feature=+revert09abecef7bbf -clang-vendor-feature=+thisNoAlignAttr -clang-vendor-feature=+thisNoNullAttr -clang-vendor-feature=+disableAtImportPrivateFrameworkInImplementationError -D__GCC_HAVE_DWARF2_CFI_ASM=1 -o CMakeFiles/cmTC_0196e.dir/CMakeCCompilerABI.c.o -x c /opt/homebrew/share/cmake/Modules/CMakeCCompilerABI.c
+        clang -cc1 version 17.0.0 (clang-1700.0.13.5) default target arm64-apple-darwin24.3.0
+        ignoring nonexistent directory "/usr/local/include"
+        ignoring nonexistent directory "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/local/include"
+        ignoring nonexistent directory "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/SubFrameworks"
+        ignoring nonexistent directory "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/Library/Frameworks"
+        #include "..." search starts here:
+        #include <...> search starts here:
+         /Library/Developer/CommandLineTools/usr/lib/clang/17/include
+         /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include
+         /Library/Developer/CommandLineTools/usr/include
+         /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks (framework directory)
+        End of search list.
+        Linking C executable cmTC_0196e
+        /opt/homebrew/bin/cmake -E cmake_link_script CMakeFiles/cmTC_0196e.dir/link.txt --verbose=1
+        Apple clang version 17.0.0 (clang-1700.0.13.5)
+        Target: arm64-apple-darwin24.3.0
+        Thread model: posix
+        InstalledDir: /Library/Developer/CommandLineTools/usr/bin
+         "/Library/Developer/CommandLineTools/usr/bin/ld" -demangle -lto_library /Library/Developer/CommandLineTools/usr/lib/libLTO.dylib -dynamic -arch arm64 -platform_version macos 15.0.0 15.5 -syslibroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -mllvm -enable-linkonceodr-outlining -o cmTC_0196e -L/usr/local/lib -search_paths_first -headerpad_max_install_names -v CMakeFiles/cmTC_0196e.dir/CMakeCCompilerABI.c.o -lSystem /Library/Developer/CommandLineTools/usr/lib/clang/17/lib/darwin/libclang_rt.osx.a
+        @(#)PROGRAM:ld PROJECT:ld-1167.5
+        BUILD 01:45:05 Apr 30 2025
+        configured to support archs: armv6 armv7 armv7s arm64 arm64e arm64_32 i386 x86_64 x86_64h armv6m armv7k armv7m armv7em
+        will use ld-classic for: armv6 armv7 armv7s i386 armv6m armv7k armv7m armv7em
+        LTO support using: LLVM version 17.0.0 (static support for 29, runtime is 29)
+        TAPI support using: Apple TAPI version 17.0.0 (tapi-1700.0.3.5)
+        Library search paths:
+        	/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib
+        	/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib/swift
+        Framework search paths:
+        	/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks
+        /usr/bin/cc  -arch arm64 -Wl,-search_paths_first -Wl,-headerpad_max_install_names  -v -Wl,-v CMakeFiles/cmTC_0196e.dir/CMakeCCompilerABI.c.o -o cmTC_0196e
+        
+      exitCode: 0
   -
     kind: "message-v1"
     backtrace:
-      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerId.cmake:1303 (message)"
-      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineASMCompiler.cmake:170 (CMAKE_DETERMINE_COMPILER_ID_VENDOR)"
-      - "CMakeLists.txt:19 (enable_language)"
+      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerABI.cmake:122 (message)"
+      - "/opt/homebrew/share/cmake/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:3 (project)"
     message: |
-      Checking whether the ASM compiler is GNU using "--version" did not match "(GNU assembler)|(GCC)|(Free Software Foundation)":
-      Apple clang version 17.0.0 (clang-1700.0.13.5)
-      Target: arm64-apple-darwin24.3.0
-      Thread model: posix
-      InstalledDir: /Library/Developer/CommandLineTools/usr/bin
+      Effective list of requested architectures (possibly empty)  : ""
+      Effective list of architectures found in the ABI info binary: "arm64"
   -
     kind: "message-v1"
     backtrace:
-      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerId.cmake:1290 (message)"
-      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineASMCompiler.cmake:170 (CMAKE_DETERMINE_COMPILER_ID_VENDOR)"
-      - "CMakeLists.txt:19 (enable_language)"
+      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerABI.cmake:217 (message)"
+      - "/opt/homebrew/share/cmake/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:3 (project)"
     message: |
-      Checking whether the ASM compiler is AppleClang using "--version" matched "(Apple (clang|LLVM) version)":
-      Apple clang version 17.0.0 (clang-1700.0.13.5)
-      Target: arm64-apple-darwin24.3.0
-      Thread model: posix
-      InstalledDir: /Library/Developer/CommandLineTools/usr/bin
-...
-
----
-events:
+      Parsed C implicit include dir info: rv=done
+        found start of include info
+        found start of implicit include info
+          add: [/Library/Developer/CommandLineTools/usr/lib/clang/17/include]
+          add: [/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include]
+          add: [/Library/Developer/CommandLineTools/usr/include]
+        end of search list found
+        collapse include dir [/Library/Developer/CommandLineTools/usr/lib/clang/17/include] ==> [/Library/Developer/CommandLineTools/usr/lib/clang/17/include]
+        collapse include dir [/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include] ==> [/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include]
+        collapse include dir [/Library/Developer/CommandLineTools/usr/include] ==> [/Library/Developer/CommandLineTools/usr/include]
+        implicit include dirs: [/Library/Developer/CommandLineTools/usr/lib/clang/17/include;/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include;/Library/Developer/CommandLineTools/usr/include]
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerABI.cmake:253 (message)"
+      - "/opt/homebrew/share/cmake/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:3 (project)"
+    message: |
+      Parsed C implicit link information:
+        link line regex: [^( *|.*[/\\])(ld[0-9]*(|\\.[a-rt-z][a-z]*|\\.s[a-np-z][a-z]*|\\.so[a-z]+)|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\\]+-)?ld|collect2)[^/\\]*( |$)]
+        linker tool regex: [^[ 	]*(->|"|[0-9]+>[ 	-]*Build:[ 	0-9]+ ms[ 	]*)?[ 	]*(([^"]*[/\\])?(ld[0-9]*(|\\.[a-rt-z][a-z]*|\\.s[a-np-z][a-z]*|\\.so[a-z]+)))("|,| |$)]
+        ignore line: [Change Dir: '/Users/meetai/source/echo-lang/runtime/build/CMakeFiles/CMakeScratch/TryCompile-40ntPG']
+        ignore line: []
+        ignore line: [Run Build Command(s): /opt/homebrew/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_0196e/fast]
+        ignore line: [/Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_0196e.dir/build.make CMakeFiles/cmTC_0196e.dir/build]
+        ignore line: [Building C object CMakeFiles/cmTC_0196e.dir/CMakeCCompilerABI.c.o]
+        ignore line: [/usr/bin/cc   -arch arm64   -v -Wl -v -MD -MT CMakeFiles/cmTC_0196e.dir/CMakeCCompilerABI.c.o -MF CMakeFiles/cmTC_0196e.dir/CMakeCCompilerABI.c.o.d -o CMakeFiles/cmTC_0196e.dir/CMakeCCompilerABI.c.o -c /opt/homebrew/share/cmake/Modules/CMakeCCompilerABI.c]
+        ignore line: [Apple clang version 17.0.0 (clang-1700.0.13.5)]
+        ignore line: [Target: arm64-apple-darwin24.3.0]
+        ignore line: [Thread model: posix]
+        ignore line: [InstalledDir: /Library/Developer/CommandLineTools/usr/bin]
+        ignore line: [clang: warning: -Wl -v: 'linker' input unused [-Wunused-command-line-argument]]
+        ignore line: [ "/Library/Developer/CommandLineTools/usr/bin/clang" -cc1 -triple arm64-apple-macosx15.0.0 -Wundef-prefix=TARGET_OS_ -Wdeprecated-objc-isa-usage -Werror=deprecated-objc-isa-usage -Werror=implicit-function-declaration -emit-obj -disable-free -clear-ast-before-backend -disable-llvm-verifier -discard-value-names -main-file-name CMakeCCompilerABI.c -mrelocation-model pic -pic-level 2 -mframe-pointer=non-leaf -fno-strict-return -ffp-contract=on -fno-rounding-math -funwind-tables=1 -fobjc-msgsend-selector-stubs -target-sdk-version=15.5 -fvisibility-inlines-hidden-static-local-var -fdefine-target-os-macros -fno-assume-unique-vtables -fno-modulemap-allow-subdirectory-search -target-cpu apple-m1 -target-feature +zcm -target-feature +zcz -target-feature +v8.5a -target-feature +aes -target-feature +altnzcv -target-feature +ccdp -target-feature +complxnum -target-feature +crc -target-feature +dotprod -target-feature +fp-armv8 -target-feature +fp16fml -target-feature +fptoint -target-feature +fullfp16 -target-feature +jsconv -target-feature +lse -target-feature +neon -target-feature +pauth -target-feature +perfmon -target-feature +predres -target-feature +ras -target-feature +rcpc -target-feature +rdm -target-feature +sb -target-feature +sha2 -target-feature +sha3 -target-feature +specrestrict -target-feature +ssbs -target-abi darwinpcs -debugger-tuning=lldb -fdebug-compilation-dir=/Users/meetai/source/echo-lang/runtime/build/CMakeFiles/CMakeScratch/TryCompile-40ntPG -target-linker-version 1167.5 -v -fcoverage-compilation-dir=/Users/meetai/source/echo-lang/runtime/build/CMakeFiles/CMakeScratch/TryCompile-40ntPG -resource-dir /Library/Developer/CommandLineTools/usr/lib/clang/17 -dependency-file CMakeFiles/cmTC_0196e.dir/CMakeCCompilerABI.c.o.d -skip-unused-modulemap-deps -MT CMakeFiles/cmTC_0196e.dir/CMakeCCompilerABI.c.o -sys-header-deps -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -I/usr/local/include -internal-isystem /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/local/include -internal-isystem /Library/Developer/CommandLineTools/usr/lib/clang/17/include -internal-externc-isystem /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include -internal-externc-isystem /Library/Developer/CommandLineTools/usr/include -Wno-reorder-init-list -Wno-implicit-int-float-conversion -Wno-c99-designator -Wno-final-dtor-non-final-class -Wno-extra-semi-stmt -Wno-misleading-indentation -Wno-quoted-include-in-framework-header -Wno-implicit-fallthrough -Wno-enum-enum-conversion -Wno-enum-float-conversion -Wno-elaborated-enum-base -Wno-reserved-identifier -Wno-gnu-folding-constant -ferror-limit 19 -stack-protector 1 -fstack-check -mdarwin-stkchk-strong-link -fblocks -fencode-extended-block-signature -fregister-global-dtors-with-atexit -fgnuc-version=4.2.1 -fskip-odr-check-in-gmf -fmax-type-align=16 -fcommon -clang-vendor-feature=+disableNonDependentMemberExprInCurrentInstantiation -fno-odr-hash-protocols -clang-vendor-feature=+enableAggressiveVLAFolding -clang-vendor-feature=+revert09abecef7bbf -clang-vendor-feature=+thisNoAlignAttr -clang-vendor-feature=+thisNoNullAttr -clang-vendor-feature=+disableAtImportPrivateFrameworkInImplementationError -D__GCC_HAVE_DWARF2_CFI_ASM=1 -o CMakeFiles/cmTC_0196e.dir/CMakeCCompilerABI.c.o -x c /opt/homebrew/share/cmake/Modules/CMakeCCompilerABI.c]
+        ignore line: [clang -cc1 version 17.0.0 (clang-1700.0.13.5) default target arm64-apple-darwin24.3.0]
+        ignore line: [ignoring nonexistent directory "/usr/local/include"]
+        ignore line: [ignoring nonexistent directory "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/local/include"]
+        ignore line: [ignoring nonexistent directory "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/SubFrameworks"]
+        ignore line: [ignoring nonexistent directory "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/Library/Frameworks"]
+        ignore line: [#include "..." search starts here:]
+        ignore line: [#include <...> search starts here:]
+        ignore line: [ /Library/Developer/CommandLineTools/usr/lib/clang/17/include]
+        ignore line: [ /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include]
+        ignore line: [ /Library/Developer/CommandLineTools/usr/include]
+        ignore line: [ /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks (framework directory)]
+        ignore line: [End of search list.]
+        ignore line: [Linking C executable cmTC_0196e]
+        ignore line: [/opt/homebrew/bin/cmake -E cmake_link_script CMakeFiles/cmTC_0196e.dir/link.txt --verbose=1]
+        ignore line: [Apple clang version 17.0.0 (clang-1700.0.13.5)]
+        ignore line: [Target: arm64-apple-darwin24.3.0]
+        ignore line: [Thread model: posix]
+        ignore line: [InstalledDir: /Library/Developer/CommandLineTools/usr/bin]
+        link line: [ "/Library/Developer/CommandLineTools/usr/bin/ld" -demangle -lto_library /Library/Developer/CommandLineTools/usr/lib/libLTO.dylib -dynamic -arch arm64 -platform_version macos 15.0.0 15.5 -syslibroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -mllvm -enable-linkonceodr-outlining -o cmTC_0196e -L/usr/local/lib -search_paths_first -headerpad_max_install_names -v CMakeFiles/cmTC_0196e.dir/CMakeCCompilerABI.c.o -lSystem /Library/Developer/CommandLineTools/usr/lib/clang/17/lib/darwin/libclang_rt.osx.a]
+          arg [/Library/Developer/CommandLineTools/usr/bin/ld] ==> ignore
+          arg [-demangle] ==> ignore
+          arg [-lto_library] ==> ignore, skip following value
+          arg [/Library/Developer/CommandLineTools/usr/lib/libLTO.dylib] ==> skip value of -lto_library
+          arg [-dynamic] ==> ignore
+          arg [-arch] ==> ignore
+          arg [arm64] ==> ignore
+          arg [-platform_version] ==> ignore
+          arg [macos] ==> ignore
+          arg [15.0.0] ==> ignore
+          arg [15.5] ==> ignore
+          arg [-syslibroot] ==> ignore
+          arg [/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk] ==> ignore
+          arg [-mllvm] ==> ignore
+          arg [-enable-linkonceodr-outlining] ==> ignore
+          arg [-o] ==> ignore
+          arg [cmTC_0196e] ==> ignore
+          arg [-L/usr/local/lib] ==> dir [/usr/local/lib]
+          arg [-search_paths_first] ==> ignore
+          arg [-headerpad_max_install_names] ==> ignore
+          arg [-v] ==> ignore
+          arg [CMakeFiles/cmTC_0196e.dir/CMakeCCompilerABI.c.o] ==> ignore
+          arg [-lSystem] ==> lib [System]
+          arg [/Library/Developer/CommandLineTools/usr/lib/clang/17/lib/darwin/libclang_rt.osx.a] ==> lib [/Library/Developer/CommandLineTools/usr/lib/clang/17/lib/darwin/libclang_rt.osx.a]
+        linker tool for 'C': /Library/Developer/CommandLineTools/usr/bin/ld
+        Library search paths: [;/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib;/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib/swift]
+        Framework search paths: [;/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks]
+        remove lib [System]
+        remove lib [/Library/Developer/CommandLineTools/usr/lib/clang/17/lib/darwin/libclang_rt.osx.a]
+        collapse library dir [/usr/local/lib] ==> [/usr/local/lib]
+        collapse library dir [/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib] ==> [/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib]
+        collapse library dir [/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib/swift] ==> [/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib/swift]
+        collapse framework dir [/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks] ==> [/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks]
+        implicit libs: []
+        implicit objs: []
+        implicit dirs: [/usr/local/lib;/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib;/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib/swift]
+        implicit fwks: [/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks]
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/opt/homebrew/share/cmake/Modules/Internal/CMakeDetermineLinkerId.cmake:38 (message)"
+      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerABI.cmake:299 (cmake_determine_linker_id)"
+      - "/opt/homebrew/share/cmake/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:3 (project)"
+    message: |
+      Running the C compiler's linker: "/Library/Developer/CommandLineTools/usr/bin/ld" "-v"
+      @(#)PROGRAM:ld PROJECT:ld-1167.5
+      BUILD 01:45:05 Apr 30 2025
+      configured to support archs: armv6 armv7 armv7s arm64 arm64e arm64_32 i386 x86_64 x86_64h armv6m armv7k armv7m armv7em
+      will use ld-classic for: armv6 armv7 armv7s i386 armv6m armv7k armv7m armv7em
+      LTO support using: LLVM version 17.0.0 (static support for 29, runtime is 29)
+      TAPI support using: Apple TAPI version 17.0.0 (tapi-1700.0.3.5)
   -
     kind: "try_compile-v1"
     backtrace:
@@ -1699,12 +3233,12 @@ events:
       - "/opt/homebrew/share/cmake/Modules/CheckCSourceCompiles.cmake:103 (cmake_check_source_compiles)"
       - "/opt/homebrew/share/cmake/Modules/FindThreads.cmake:160 (check_c_source_compiles)"
       - "/opt/homebrew/share/cmake/Modules/FindThreads.cmake:226 (_threads_check_libc)"
-      - "CMakeLists.txt:55 (find_package)"
+      - "CMakeLists.txt:56 (find_package)"
     checks:
       - "Performing Test CMAKE_HAVE_LIBC_PTHREAD"
     directories:
-      source: "/Users/meetai/source/echo-lang/runtime/build/CMakeFiles/CMakeScratch/TryCompile-kAQLSs"
-      binary: "/Users/meetai/source/echo-lang/runtime/build/CMakeFiles/CMakeScratch/TryCompile-kAQLSs"
+      source: "/Users/meetai/source/echo-lang/runtime/build/CMakeFiles/CMakeScratch/TryCompile-vwoHdk"
+      binary: "/Users/meetai/source/echo-lang/runtime/build/CMakeFiles/CMakeScratch/TryCompile-vwoHdk"
     cmakeVariables:
       CMAKE_C_FLAGS: ""
       CMAKE_C_FLAGS_DEBUG: "-g"
@@ -1716,15 +3250,15 @@ events:
       variable: "CMAKE_HAVE_LIBC_PTHREAD"
       cached: true
       stdout: |
-        Change Dir: '/Users/meetai/source/echo-lang/runtime/build/CMakeFiles/CMakeScratch/TryCompile-kAQLSs'
+        Change Dir: '/Users/meetai/source/echo-lang/runtime/build/CMakeFiles/CMakeScratch/TryCompile-vwoHdk'
         
-        Run Build Command(s): /opt/homebrew/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_8f337/fast
-        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_8f337.dir/build.make CMakeFiles/cmTC_8f337.dir/build
-        Building C object CMakeFiles/cmTC_8f337.dir/src.c.o
-        /usr/bin/cc -DCMAKE_HAVE_LIBC_PTHREAD  -std=gnu11 -arch arm64 -MD -MT CMakeFiles/cmTC_8f337.dir/src.c.o -MF CMakeFiles/cmTC_8f337.dir/src.c.o.d -o CMakeFiles/cmTC_8f337.dir/src.c.o -c /Users/meetai/source/echo-lang/runtime/build/CMakeFiles/CMakeScratch/TryCompile-kAQLSs/src.c
-        Linking C executable cmTC_8f337
-        /opt/homebrew/bin/cmake -E cmake_link_script CMakeFiles/cmTC_8f337.dir/link.txt --verbose=1
-        /usr/bin/cc  -arch arm64 -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/cmTC_8f337.dir/src.c.o -o cmTC_8f337
+        Run Build Command(s): /opt/homebrew/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_adf11/fast
+        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_adf11.dir/build.make CMakeFiles/cmTC_adf11.dir/build
+        Building C object CMakeFiles/cmTC_adf11.dir/src.c.o
+        /usr/bin/cc -DCMAKE_HAVE_LIBC_PTHREAD  -std=gnu11 -arch arm64 -MD -MT CMakeFiles/cmTC_adf11.dir/src.c.o -MF CMakeFiles/cmTC_adf11.dir/src.c.o.d -o CMakeFiles/cmTC_adf11.dir/src.c.o -c /Users/meetai/source/echo-lang/runtime/build/CMakeFiles/CMakeScratch/TryCompile-vwoHdk/src.c
+        Linking C executable cmTC_adf11
+        /opt/homebrew/bin/cmake -E cmake_link_script CMakeFiles/cmTC_adf11.dir/link.txt --verbose=1
+        /usr/bin/cc  -arch arm64 -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/cmTC_adf11.dir/src.c.o -o cmTC_adf11
         
       exitCode: 0
 ...

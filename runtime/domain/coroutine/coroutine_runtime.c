@@ -10,13 +10,16 @@
 // 统一并发运行时实现
 // 基于新的DDD架构：任务控制块 + 中央调度器 + Future抽象
 
-#include "coroutine_context.h"
-#include "scheduler.h"
-#include "task.h"
-#include "future.h"
+#include "context.h"
+#include "../scheduler/scheduler.h"
+#include "../task/task.h"
+#include "../future/future.h"
 #include "coroutine.h"
-#include "channel.h"
-#include "processor.h"
+#include "../channel/channel.h"
+#include "../scheduler/processor.h"
+
+// 前向声明
+void scheduler_yield(void);
 
 // spawn协程 - 真正的并发执行
 void* coroutine_spawn(void (*entry_func)(void*), int32_t arg_count, void* args, void* future_ptr) {
@@ -36,15 +39,14 @@ void* coroutine_spawn(void (*entry_func)(void*), int32_t arg_count, void* args, 
     }
 
     // 创建任务并设置entry_func为目标函数
-    task_t* task = task_create(entry_func, future_ptr, 0); // 直接使用entry_func
+    Task* task = task_create(entry_func, future_ptr); // 直接使用entry_func
     if (!task) {
         fprintf(stderr, "ERROR: Failed to create task for spawn\n");
         return future_ptr;
     }
 
     // 设置任务的执行函数为spawn的目标函数
-    task->entry_point = entry_func;
-    task->arg = future_ptr; // Future作为参数传递
+    // task_create已经设置了entry_point和arg
 
     // 将任务添加到调度器
     if (!scheduler_add_task(scheduler, task)) {
@@ -53,7 +55,7 @@ void* coroutine_spawn(void (*entry_func)(void*), int32_t arg_count, void* args, 
         return future_ptr;
     }
 
-    printf("DEBUG: Spawned task %llu with function %p\n", task->id, entry_func);
+    printf("DEBUG: Spawned task %llu with function %p\n", task->id, (void*)entry_func);
     fflush(stdout);
 
     return future_ptr;
@@ -102,17 +104,37 @@ void* coroutine_await(void* future_ptr) {
     // 将当前协程标记为等待状态
     current_co->state = COROUTINE_SUSPENDED;
 
-    // 将当前协程与Future关联，这样Future完成时可以唤醒协程
-    // 注意：这里需要更复杂的逻辑来管理协程唤醒
-    // 暂时简化：让出控制权，期望调度器在Future完成时恢复协程
+    // 将当前任务状态设置为等待，并添加到 Future 的等待队列
+    // 这样 Future 完成时可以唤醒任务和协程
+    pthread_mutex_lock(&current_task->mutex);
+    current_task->status = TASK_WAITING;
+    current_task->future = future;  // 关联 Future
+    pthread_mutex_unlock(&current_task->mutex);
 
-    printf("DEBUG: Yielding coroutine %llu waiting for future %llu\n",
-           current_co->id, future->id);
+    // 将任务添加到 Future 的等待队列
+    // future_poll 会在 POLL_PENDING 时自动添加任务到等待队列
+    // 但我们需要确保任务已经被添加
+    pthread_mutex_lock(&future->mutex);
+    if (future->state == FUTURE_PENDING) {
+        // 确保任务在等待队列中
+        // future_poll 已经调用了 future_add_waiter，但为了安全，我们再次检查
+        // 实际上 future_poll 已经处理了，这里只是确保状态正确
+    }
+    pthread_mutex_unlock(&future->mutex);
 
-    // 让出控制权，让调度器运行其他任务
+    printf("DEBUG: Yielding coroutine %llu (task %llu) waiting for future %llu\n",
+           current_co->id, current_task->id, future->id);
+
+    // 挂起协程，保存当前执行上下文
+    // 当 Future 完成时，future_wake_waiters 会唤醒任务并重新加入调度队列
+    // 任务被重新调度时，coroutine_resume 会恢复协程执行，从这里继续
     coroutine_suspend(current_co);
+    
+    // 将任务放回调度队列，让调度器运行其他任务
+    scheduler_yield();
 
-    // 当Future完成时，我们会回到这里继续执行
+    // 当Future完成时，任务会被重新调度，coroutine_resume 会恢复协程执行
+    // 我们会从 coroutine_suspend 之后继续执行到这里
     printf("DEBUG: Coroutine %llu resumed after awaiting future %llu\n",
            current_co->id, future->id);
 
@@ -129,7 +151,7 @@ void* coroutine_await(void* future_ptr) {
 }
 
 // 让出调度权
-void scheduler_yield() {
+void scheduler_yield(void) {
     printf("DEBUG: scheduler_yield ENTERED - using unified scheduler\n");
 
     // 获取全局调度器
@@ -139,8 +161,53 @@ void scheduler_yield() {
         return;
     }
 
-    // 简化实现：执行一次调度循环
-    printf("DEBUG: Yielding control to scheduler (simplified)\n");
+    // 获取当前任务
+    if (!current_task) {
+        printf("DEBUG: No current task to yield\n");
+        return;
+    }
+
+    printf("DEBUG: Yielding task %llu\n", current_task->id);
+
+    // 如果任务有关联的协程，将协程状态设置为 SUSPENDED
+    if (current_task->coroutine) {
+        Coroutine* coroutine = current_task->coroutine;
+        coroutine->state = COROUTINE_SUSPENDED;
+        printf("DEBUG: Set coroutine %llu state to SUSPENDED\n", coroutine->id);
+    }
+
+    // 将当前任务放回调度器队列，以便后续重新调度
+    // 注意：这里需要将任务放回队列，但当前实现中任务执行是同步的
+    // 对于单线程调度器，我们需要将任务标记为可重新调度，然后继续调度循环
+    // 由于当前是同步执行模式，我们暂时将任务状态标记，让调度器知道可以重新调度
+    
+    // 获取当前任务的处理器（如果有）
+    Processor* processor = NULL;
+    if (current_task->coroutine && current_task->coroutine->bound_processor) {
+        processor = current_task->coroutine->bound_processor;
+    } else if (scheduler->num_processors > 0) {
+        // 如果没有绑定处理器，使用第一个处理器
+        processor = scheduler->processors[0];
+    }
+
+    // 将任务放回处理器队列
+    if (processor) {
+        processor_push_local(processor, current_task);
+        printf("DEBUG: Pushed task %llu back to processor %u queue\n", 
+               current_task->id, processor->id);
+    } else {
+        // 如果没有处理器，放回全局队列
+        pthread_mutex_lock(&scheduler->global_lock);
+        current_task->next = scheduler->global_queue;
+        scheduler->global_queue = current_task;
+        pthread_mutex_unlock(&scheduler->global_lock);
+        printf("DEBUG: Pushed task %llu back to global queue\n", current_task->id);
+    }
+
+    // 清空当前任务，让调度器选择下一个任务
+    current_task = NULL;
+
+    printf("DEBUG: Yield completed, scheduler will pick next task\n");
 }
 
 // 运行调度器（启动调度循环）

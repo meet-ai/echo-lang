@@ -1,0 +1,290 @@
+#include "future.h"
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+#include <errno.h>
+
+// 静态ID生成器
+static uint64_t next_future_id = 1;
+
+// 创建Future
+Future* future_create(void) {
+    Future* future = (Future*)malloc(sizeof(Future));
+    if (!future) return NULL;
+
+    future->id = next_future_id++;
+    future->status = FUTURE_STATUS_PENDING;
+    future->result = NULL;
+    future->error_message = NULL;
+    future->created_at = time(NULL);
+    future->resolved_at = 0;
+    future->has_result = false;
+
+    // 初始化同步原语
+    if (pthread_mutex_init(&future->mutex, NULL) != 0) {
+        free(future);
+        return NULL;
+    }
+
+    if (pthread_cond_init(&future->cond, NULL) != 0) {
+        pthread_mutex_destroy(&future->mutex);
+        free(future);
+        return NULL;
+    }
+
+    // 初始化回调
+    future->on_resolved = NULL;
+    future->on_rejected = NULL;
+    future->callback_context = NULL;
+
+    return future;
+}
+
+// 销毁Future
+void future_destroy(Future* future) {
+    if (!future) return;
+
+    pthread_mutex_lock(&future->mutex);
+
+    // 清理资源
+    if (future->result) {
+        free(future->result);
+        future->result = NULL;
+    }
+
+    if (future->error_message) {
+        free(future->error_message);
+        future->error_message = NULL;
+    }
+
+    future->has_result = false;
+    future->status = FUTURE_STATUS_CANCELLED;
+
+    // 唤醒所有等待线程
+    pthread_cond_broadcast(&future->cond);
+
+    pthread_mutex_unlock(&future->mutex);
+
+    // 销毁同步原语
+    pthread_mutex_destroy(&future->mutex);
+    pthread_cond_destroy(&future->cond);
+
+    free(future);
+}
+
+// 获取结果（阻塞等待）
+void* future_get(Future* future) {
+    if (!future) return NULL;
+
+    pthread_mutex_lock(&future->mutex);
+
+    // 等待结果
+    while (future->status == FUTURE_STATUS_PENDING) {
+        pthread_cond_wait(&future->cond, &future->mutex);
+    }
+
+    void* result = NULL;
+    if (future->status == FUTURE_STATUS_RESOLVED) {
+        result = future->result;
+    }
+
+    pthread_mutex_unlock(&future->mutex);
+
+    return result;
+}
+
+// 获取结果（带超时）
+bool future_get_with_timeout(Future* future, void** result, uint32_t timeout_ms) {
+    if (!future || !result) return false;
+
+    *result = NULL;
+
+    struct timespec timeout;
+    clock_gettime(CLOCK_REALTIME, &timeout);
+    timeout.tv_sec += timeout_ms / 1000;
+    timeout.tv_nsec += (timeout_ms % 1000) * 1000000;
+
+    if (timeout.tv_nsec >= 1000000000) {
+        timeout.tv_sec += 1;
+        timeout.tv_nsec -= 1000000000;
+    }
+
+    pthread_mutex_lock(&future->mutex);
+
+    int wait_result = 0;
+    while (future->status == FUTURE_STATUS_PENDING && wait_result == 0) {
+        wait_result = pthread_cond_timedwait(&future->cond, &future->mutex, &timeout);
+    }
+
+    bool success = false;
+    if (future->status == FUTURE_STATUS_RESOLVED) {
+        *result = future->result;
+        success = true;
+    }
+
+    pthread_mutex_unlock(&future->mutex);
+
+    return success && (wait_result == 0 || wait_result == ETIMEDOUT);
+}
+
+// 获取状态
+FutureStatus future_get_status(const Future* future) {
+    return future ? future->status : FUTURE_STATUS_CANCELLED;
+}
+
+// 状态检查方法
+bool future_is_pending(const Future* future) {
+    return future && future->status == FUTURE_STATUS_PENDING;
+}
+
+bool future_is_resolved(const Future* future) {
+    return future && future->status == FUTURE_STATUS_RESOLVED;
+}
+
+bool future_is_rejected(const Future* future) {
+    return future && future->status == FUTURE_STATUS_REJECTED;
+}
+
+bool future_is_cancelled(const Future* future) {
+    return future && future->status == FUTURE_STATUS_CANCELLED;
+}
+
+// 设置回调
+void future_on_resolved(Future* future, void (*callback)(Future*, void*, void*), void* context) {
+    if (!future) return;
+
+    pthread_mutex_lock(&future->mutex);
+    future->on_resolved = callback;
+    future->callback_context = context;
+    pthread_mutex_unlock(&future->mutex);
+}
+
+void future_on_rejected(Future* future, void (*callback)(Future*, const char*, void*), void* context) {
+    if (!future) return;
+
+    pthread_mutex_lock(&future->mutex);
+    future->on_rejected = callback;
+    future->callback_context = context;
+    pthread_mutex_unlock(&future->mutex);
+}
+
+// 创建Promise
+Promise* promise_create(void) {
+    Promise* promise = (Promise*)malloc(sizeof(Promise));
+    if (!promise) return NULL;
+
+    promise->future = future_create();
+    if (!promise->future) {
+        free(promise);
+        return NULL;
+    }
+
+    return promise;
+}
+
+// 销毁Promise
+void promise_destroy(Promise* promise) {
+    if (!promise) return;
+
+    if (promise->future) {
+        future_destroy(promise->future);
+        promise->future = NULL;
+    }
+
+    free(promise);
+}
+
+// 解决Promise
+bool promise_resolve(Promise* promise, void* result) {
+    if (!promise || !promise->future) return false;
+
+    Future* future = promise->future;
+
+    pthread_mutex_lock(&future->mutex);
+
+    // 只能解决一次
+    if (future->status != FUTURE_STATUS_PENDING) {
+        pthread_mutex_unlock(&future->mutex);
+        return false;
+    }
+
+    // 设置结果
+    future->status = FUTURE_STATUS_RESOLVED;
+    future->result = result;
+    future->has_result = true;
+    future->resolved_at = time(NULL);
+
+    // 触发回调
+    if (future->on_resolved) {
+        future->on_resolved(future, result, future->callback_context);
+    }
+
+    // 唤醒等待线程
+    pthread_cond_broadcast(&future->cond);
+
+    pthread_mutex_unlock(&future->mutex);
+
+    return true;
+}
+
+// 拒绝Promise
+bool promise_reject(Promise* promise, const char* error_message) {
+    if (!promise || !promise->future || !error_message) return false;
+
+    Future* future = promise->future;
+
+    pthread_mutex_lock(&future->mutex);
+
+    // 只能拒绝一次
+    if (future->status != FUTURE_STATUS_PENDING) {
+        pthread_mutex_unlock(&future->mutex);
+        return false;
+    }
+
+    // 设置错误
+    future->status = FUTURE_STATUS_REJECTED;
+    future->error_message = strdup(error_message);
+    future->resolved_at = time(NULL);
+
+    // 触发回调
+    if (future->on_rejected) {
+        future->on_rejected(future, error_message, future->callback_context);
+    }
+
+    // 唤醒等待线程
+    pthread_cond_broadcast(&future->cond);
+
+    pthread_mutex_unlock(&future->mutex);
+
+    return true;
+}
+
+// 取消Promise
+bool promise_cancel(Promise* promise) {
+    if (!promise || !promise->future) return false;
+
+    Future* future = promise->future;
+
+    pthread_mutex_lock(&future->mutex);
+
+    // 只能取消一次
+    if (future->status != FUTURE_STATUS_PENDING) {
+        pthread_mutex_unlock(&future->mutex);
+        return false;
+    }
+
+    future->status = FUTURE_STATUS_CANCELLED;
+    future->resolved_at = time(NULL);
+
+    // 唤醒等待线程
+    pthread_cond_broadcast(&future->cond);
+
+    pthread_mutex_unlock(&future->mutex);
+
+    return true;
+}
+
+// 获取关联的Future
+Future* promise_get_future(const Promise* promise) {
+    return promise ? promise->future : NULL;
+}

@@ -86,3 +86,4 @@ bool metric_set_gauge(metric_t* metric, double value);
 bool metric_record_value(metric_t* metric, double value);
 
 #endif // METRIC_H
+

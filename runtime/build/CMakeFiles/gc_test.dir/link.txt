@@ -1,1 +1,0 @@
-/usr/bin/cc  -arch arm64 -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/gc_test.dir/tests/gc_test.c.o -o gc_test  libecho_runtime.a -lpthread

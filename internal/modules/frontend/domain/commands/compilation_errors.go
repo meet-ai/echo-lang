@@ -16,3 +16,4 @@ type ErrorHandlingResult struct {
 	Success        bool          `json:"success"`
 	Duration       time.Duration `json:"duration"`
 }
+

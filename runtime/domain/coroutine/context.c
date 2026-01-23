@@ -6,8 +6,8 @@
  */
 
 #include "context.h"
-#include "coroutine.h"  // 包含coroutine_t定义
-#include "../../platform/context/context_platform.h"  // 平台上下文接口
+#include "coroutine.h"  // 包含Coroutine定义
+#include "../scheduler/scheduler.h"  // 包含Scheduler定义
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -16,7 +16,7 @@
 // 全局变量：调度器上下文（用于协程完成时切换回）
 context_t* g_scheduler_context = NULL;
 // 全局变量：当前正在执行的协程
-coroutine_t* g_current_coroutine = NULL;
+Coroutine* g_current_coroutine = NULL;
 
 // ============================================================================
 // 内部数据结构
@@ -24,13 +24,14 @@ coroutine_t* g_current_coroutine = NULL;
 
 /**
  * @brief 上下文内部结构体
+ * 使用 setjmp/longjmp 实现上下文切换（简化版，用于测试）
  */
 typedef struct ContextInternal {
     context_t base;      // 基础上下文
-    jmp_buf env;         // setjmp/longjmp 环境 (后备方案)
-    coro_context_t* platform_context;  // 平台特定的上下文
+    jmp_buf env;         // setjmp/longjmp 环境
     void (*entry_point)(void*);  // 入口函数
     void* arg;           // 函数参数
+    bool initialized;    // 是否已初始化
 } context_internal_t;
 
 // 全局变量用于上下文切换
@@ -47,7 +48,7 @@ static context_internal_t* target_context = NULL;
  */
 static void coroutine_entry_wrapper(void) {
     // 使用全局协程变量，不依赖current_context
-    extern coroutine_t* g_current_coroutine;
+    extern Coroutine* g_current_coroutine;
     if (!g_current_coroutine) {
         fprintf(stderr, "ERROR: No current coroutine in entry wrapper\n");
         return;
@@ -64,8 +65,16 @@ static void coroutine_entry_wrapper(void) {
     printf("DEBUG: Coroutine %llu completed, switching back to scheduler\n", g_current_coroutine->id);
 
     // 设置协程状态为完成
-    g_current_coroutine->state = COROUTINE_STATE_COMPLETED;
+    g_current_coroutine->state = COROUTINE_COMPLETED;
     printf("DEBUG: Set coroutine %llu state to COMPLETED\n", g_current_coroutine->id);
+
+    // 通知调度器协程已完成
+    extern Scheduler* get_global_scheduler(void);
+    extern void scheduler_notify_coroutine_completed(Scheduler* scheduler, Coroutine* coroutine);
+    Scheduler* scheduler = get_global_scheduler();
+    if (scheduler) {
+        scheduler_notify_coroutine_completed(scheduler, g_current_coroutine);
+    }
 
     // 使用全局调度器上下文切换回
     extern context_t* g_scheduler_context;
@@ -101,17 +110,11 @@ context_t* context_create(size_t stack_size) {
     ctx->base.id = next_id++;
     ctx->base.stack_size = stack_size;
     ctx->base.is_main_context = false;
+    ctx->initialized = false;
+    ctx->entry_point = NULL;
+    ctx->arg = NULL;
 
-    // 分配平台上下文
-    ctx->platform_context = (coro_context_t*)malloc(sizeof(coro_context_t));
-    if (!ctx->platform_context) {
-        fprintf(stderr, "Failed to allocate platform context\n");
-        free(ctx);
-        return NULL;
-    }
-    memset(ctx->platform_context, 0, sizeof(coro_context_t));
-
-    // 分配栈空间（简化实现，实际可能不需要手动管理）
+    // 分配栈空间（简化实现，使用 setjmp/longjmp）
     if (stack_size > 0) {
         ctx->base.stack = (char*)malloc(stack_size);
         if (!ctx->base.stack) {
@@ -139,11 +142,6 @@ void context_destroy(context_t* context) {
         ctx->base.stack = NULL;
     }
 
-    if (ctx->platform_context) {
-        free(ctx->platform_context);
-        ctx->platform_context = NULL;
-    }
-
     printf("DEBUG: Destroyed context %llu\n", ctx->base.id);
     free(ctx);
 }
@@ -158,31 +156,32 @@ void context_init(context_t* context, void (*entry_point)(void*), void* arg) {
     ctx->entry_point = entry_point;
     ctx->arg = arg;
 
-    // 初始化平台上下文
-    if (ctx->platform_context) {
-        // 分配栈空间（简化实现）
-        void* stack_base = malloc(ctx->base.stack_size);
-        if (!stack_base) {
+    // 使用 setjmp/longjmp 实现上下文切换（简化版）
+    // 注意：这是一个简化的实现，用于测试目的
+    // 实际生产环境应该使用平台特定的汇编实现
+    
+    // 如果栈还没有分配，分配栈空间
+    if (!ctx->base.stack && ctx->base.stack_size > 0) {
+        ctx->base.stack = (char*)malloc(ctx->base.stack_size);
+        if (!ctx->base.stack) {
             fprintf(stderr, "Failed to allocate stack for context %llu\n", ctx->base.id);
             return;
         }
-
-        // 设置栈信息
-        ctx->base.stack = stack_base;
-
-        // 使用平台无关的接口初始化上下文
-        coro_context_init(ctx->platform_context, stack_base, ctx->base.stack_size,
-                         entry_point, arg);
+        memset(ctx->base.stack, 0, ctx->base.stack_size);
     }
 
-    // 设置初始jmp_buf环境（作为后备方案）
-    // 简化实现：实际应该设置正确的栈指针等
+    // 设置初始jmp_buf环境
     if (setjmp(ctx->env) == 0) {
         // 初始设置
+        ctx->initialized = true;
         printf("DEBUG: Initialized context %llu with entry point\n", ctx->base.id);
     } else {
-        // 从longjmp返回，执行协程
-        coroutine_entry_wrapper();
+        // 从longjmp返回，执行协程入口函数
+        if (ctx->entry_point) {
+            ctx->entry_point(ctx->arg);
+        }
+        // 协程执行完毕
+        printf("DEBUG: Context %llu entry function completed\n", ctx->base.id);
     }
 }
 
@@ -217,31 +216,39 @@ void context_restore(const context_t* context) {
 }
 
 /**
- * @brief 平台相关的上下文切换实现
- * 这个函数由各个平台提供具体的汇编实现
- */
-void platform_context_switch(void* from_platform_ctx, void* to_platform_ctx) {
-    // 直接调用平台的上下文切换
-    coro_context_switch((coro_context_t*)from_platform_ctx, (coro_context_t*)to_platform_ctx);
-}
-
-/**
  * @brief 切换上下文
- * 使用平台相关的汇编实现进行高效的上下文切换
+ * 使用 setjmp/longjmp 实现上下文切换（简化版，用于测试）
  */
 void context_switch(context_t* from, context_t* to) {
     if (!to) return;
 
     context_internal_t* to_ctx = (context_internal_t*)to;
+    context_internal_t* from_ctx = from ? (context_internal_t*)from : NULL;
 
     printf("DEBUG: Switching to context %llu (from=%p)\n", to_ctx->base.id, from);
 
-    // 获取平台上下文指针
-    coro_context_t* from_coro = from ? (coro_context_t*)(((context_internal_t*)from)->platform_context) : NULL;
-    coro_context_t* to_coro = (coro_context_t*)(((context_internal_t*)to)->platform_context);
-
-    // 使用平台无关的接口
-    coro_context_switch(from_coro, to_coro);
+    // 如果目标上下文未初始化，先初始化它
+    if (!to_ctx->initialized && to_ctx->entry_point) {
+        // 保存当前上下文
+        if (from_ctx) {
+            if (setjmp(from_ctx->env) == 0) {
+                // 跳转到目标上下文
+                longjmp(to_ctx->env, 1);
+            }
+        } else {
+            // 从调度器上下文跳转到协程上下文
+            longjmp(to_ctx->env, 1);
+        }
+    } else {
+        // 上下文已初始化，直接切换
+        if (from_ctx) {
+            if (setjmp(from_ctx->env) == 0) {
+                longjmp(to_ctx->env, 1);
+            }
+        } else {
+            longjmp(to_ctx->env, 1);
+        }
+    }
 }
 
 /**

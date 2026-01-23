@@ -73,3 +73,4 @@ event_publisher_t* get_event_publisher(const char* name);
 extern event_publisher_t* default_event_publisher;
 
 #endif // EVENT_PUBLISHER_H
+

@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <pthread.h>
-#include "task.h"
+#include "../../task/task.h"
 #include "processor.h"
 #include "machine.h"
 

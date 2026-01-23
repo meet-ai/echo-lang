@@ -12,3 +12,4 @@ var (
 	ErrAnalysisNotComplete    = errors.New("required analysis not completed")
 	ErrInvalidAnalysisType    = errors.New("invalid analysis type")
 )
+

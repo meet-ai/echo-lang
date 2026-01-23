@@ -8,7 +8,7 @@
 #ifndef CONTEXT_H
 #define CONTEXT_H
 
-#include "../../../include/echo/runtime.h"
+#include "../../shared/types/common_types.h"
 
 // ============================================================================
 // Context 实体定义

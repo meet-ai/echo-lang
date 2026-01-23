@@ -27,7 +27,7 @@ typedef enum select_case_type {
  * @brief Select case 定义
  */
 typedef struct select_case {
-    channel_t* channel;           // 操作的通道
+    Channel* channel;             // 操作的通道
     select_case_type_t type;      // 操作类型
     void* value;                  // 发送的值（对发送操作）或接收的值（对接收操作）
     bool ready;                   // 该case是否准备好

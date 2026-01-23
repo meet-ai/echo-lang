@@ -67,3 +67,4 @@ void sync_call_result_destroy(sync_call_result_t* result);
 extern const sync_call_config_t default_sync_call_config;
 
 #endif // SYNC_CALLER_H
+
