@@ -1,0 +1,9 @@
+// 测试 & 操作符支持
+import sync
+
+func main() -> int {
+    let atomic = sync.new_atomic_int(42)
+    let value = atomic.load()
+    print_int(value)
+    return 0
+}

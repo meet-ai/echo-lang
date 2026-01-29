@@ -4,6 +4,7 @@
 #include "../commands/channel_commands.h"
 #include "../dtos/result_dtos.h"
 #include "../dtos/channel_dtos.h"
+#include "../queries/status_queries.h"  // for GetChannelStatusQuery (if exists)
 #include <stdint.h>
 #include <stdbool.h>
 

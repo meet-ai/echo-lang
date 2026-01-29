@@ -1,0 +1,43 @@
+// 类型转换功能测试 - 使用 print 验证运行时行为
+// 测试新实现的类型转换功能
+
+import string
+
+func main() -> int {
+    print "=== 类型转换功能测试 ==="
+    
+    // 测试1：基础类型构造函数语法
+    print "测试1：基础类型构造函数语法"
+    let x: int = 42
+    let y1: float = float(x)      // 类型构造函数语法
+    let y2: float = x as float    // as 关键字语法
+    print "x = " + x
+    print "y1 (float(x)) = " + y1
+    print "y2 (x as float) = " + y2
+    
+    // 测试2：嵌套类型构造函数
+    print ""
+    print "测试2：嵌套类型构造函数"
+    let z: f64 = f64(float(x))  // 嵌套：int → float → f64
+    print "z (f64(float(x))) = " + z
+    
+    // 测试3：string.split() 使用新的类型转换
+    print ""
+    print "测试3：string.split() 使用新的类型转换"
+    let s: string = "hello,world,test"
+    print "原始字符串: " + s
+    let parts: []string = s.split(",")
+    print "分割结果数量: " + len(parts)
+    
+    // 验证分割结果（遍历切片）
+    print "分割结果:"
+    // 注意：Echo 的 for 循环语法可能不同，这里先简化测试
+    // for i = 0; i < len(parts); i = i + 1 {
+    //     print "  [" + i + "] = " + parts[i]
+    // }
+    print "分割完成（切片长度: " + len(parts) + "）"
+    
+    print ""
+    print "=== 测试完成 ==="
+    return 0
+}

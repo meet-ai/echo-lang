@@ -1,0 +1,182 @@
+// net/http/client.eo - HTTP 客户端
+// 提供 HTTP 请求功能
+
+package http
+
+import core
+import net
+
+// HttpMethod HTTP 方法
+enum HttpMethod {
+    Get,
+    Post,
+    Put,
+    Delete,
+    Patch,
+    Head,
+    Options
+}
+
+// HttpHeaders HTTP 头部
+// 使用 map 存储键值对
+type HttpHeaders = map[string]string
+
+// HttpRequest HTTP 请求
+struct HttpRequest {
+    method: HttpMethod,
+    url: string,
+    headers: HttpHeaders,
+    body: []u8
+}
+
+// HttpResponse HTTP 响应
+struct HttpResponse {
+    status_code: int,
+    status_text: string,
+    headers: HttpHeaders,
+    body: []u8
+}
+
+// HttpClient HTTP 客户端
+struct HttpClient {
+    timeout: int,  // 超时时间（秒）
+    user_agent: string
+}
+
+// 构造函数：创建 HTTP 客户端
+func new_client() -> HttpClient {
+    return HttpClient {
+        timeout: 30,
+        user_agent: "Echo-HTTP-Client/1.0"
+    }
+}
+
+// 构造函数：创建带超时的 HTTP 客户端
+func with_timeout(timeout: int) -> HttpClient {
+    return HttpClient {
+        timeout: timeout,
+        user_agent: "Echo-HTTP-Client/1.0"
+    }
+}
+
+// 方法实现
+// 发送 GET 请求
+func (c HttpClient) get(url: string) -> Result[HttpResponse] {
+    let req = HttpRequest {
+        method: HttpMethod::Get,
+        url: url,
+        headers: {},
+        body: []
+    }
+    return c.send(req)
+}
+
+// 发送 POST 请求
+func (c HttpClient) post(url: string, body: []u8) -> Result[HttpResponse] {
+    let req = HttpRequest {
+        method: HttpMethod::Post,
+        url: url,
+        headers: {},
+        body: body
+    }
+    return c.send(req)
+}
+
+// 发送请求
+func (c HttpClient) send(req: HttpRequest) -> Result[HttpResponse] {
+    // TODO: 实现 HTTP 请求发送
+    // 1. 解析 URL
+    // 2. 建立 TCP 连接
+    // 3. 构建 HTTP 请求报文
+    // 4. 发送请求
+    // 5. 接收响应
+    // 6. 解析响应
+    return Err("not implemented")
+}
+
+// 发送请求（带自定义头部）
+func (c HttpClient) send_with_headers(req: HttpRequest, headers: HttpHeaders) -> Result[HttpResponse] {
+    // 合并头部
+    for (key, value) in headers {
+        req.headers[key] = value
+    }
+    return c.send(req)
+}
+
+// 辅助方法：将 HTTP 方法转换为字符串
+func method_to_string(method: HttpMethod) -> string {
+    match method {
+        HttpMethod::Get => return "GET"
+        HttpMethod::Post => return "POST"
+        HttpMethod::Put => return "PUT"
+        HttpMethod::Delete => return "DELETE"
+        HttpMethod::Patch => return "PATCH"
+        HttpMethod::Head => return "HEAD"
+        HttpMethod::Options => return "OPTIONS"
+    }
+}
+
+// 辅助方法：将字符串转换为 HTTP 方法
+func string_to_method(method_str: string) -> Result[HttpMethod] {
+    // 使用运行时函数进行字符串比较
+    if runtime_string_equals(method_str, "GET") {
+        return Ok(HttpMethod::Get)
+    }
+    if runtime_string_equals(method_str, "POST") {
+        return Ok(HttpMethod::Post)
+    }
+    if runtime_string_equals(method_str, "PUT") {
+        return Ok(HttpMethod::Put)
+    }
+    if runtime_string_equals(method_str, "DELETE") {
+        return Ok(HttpMethod::Delete)
+    }
+    if runtime_string_equals(method_str, "PATCH") {
+        return Ok(HttpMethod::Patch)
+    }
+    if runtime_string_equals(method_str, "HEAD") {
+        return Ok(HttpMethod::Head)
+    }
+    if runtime_string_equals(method_str, "OPTIONS") {
+        return Ok(HttpMethod::Options)
+    }
+    return Err("unknown HTTP method: " + method_str)
+}
+
+// 辅助方法：解析 URL
+func parse_url(url: string) -> Result[map[string]string] {
+    // 调用运行时函数解析URL
+    // runtime_url_parse(url: string) -> *UrlParseResult
+    // 返回结构体指针，包含：
+    //   - success: bool (解析是否成功)
+    //   - scheme: string (协议，如 "http", "https")
+    //   - host: string (主机名)
+    //   - port: i32 (端口号，-1表示使用默认端口)
+    //   - path: string (路径)
+    //   - query: string (查询字符串，可选，可能为NULL)
+    //   - fragment: string (片段，可选，可能为NULL)
+    let result = runtime_url_parse(url)
+    if !result.success {
+        return Err("failed to parse URL")
+    }
+    
+    let mut url_map: map[string]string = {}
+    url_map["scheme"] = result.scheme
+    url_map["host"] = result.host
+    if result.port >= 0 {
+        url_map["port"] = int_to_string(result.port)
+    }
+    url_map["path"] = result.path
+    
+    // 注意：query 和 fragment 可能为 NULL（C字符串指针）
+    // 当前实现假设它们不为NULL，后续需要添加NULL检查
+    // TODO: 添加NULL指针检查：if result.query != nil { ... }
+    // if result.query != nil {
+    //     url_map["query"] = result.query
+    // }
+    // if result.fragment != nil {
+    //     url_map["fragment"] = result.fragment
+    // }
+    
+    return Ok(url_map)
+}

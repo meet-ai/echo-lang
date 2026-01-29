@@ -86,24 +86,66 @@ CMakeFiles/echo_runtime.dir/api/runtime_api.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/echo_runtime.dir/api/runtime_api.c.s"
 	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/meetai/source/echo-lang/runtime/api/runtime_api.c -o CMakeFiles/echo_runtime.dir/api/runtime_api.c.s
 
-CMakeFiles/echo_runtime.dir/domain/async/entity/future.c.o: CMakeFiles/echo_runtime.dir/flags.make
-CMakeFiles/echo_runtime.dir/domain/async/entity/future.c.o: /Users/meetai/source/echo-lang/runtime/domain/async/entity/future.c
-CMakeFiles/echo_runtime.dir/domain/async/entity/future.c.o: CMakeFiles/echo_runtime.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/meetai/source/echo-lang/runtime/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object CMakeFiles/echo_runtime.dir/domain/async/entity/future.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/echo_runtime.dir/domain/async/entity/future.c.o -MF CMakeFiles/echo_runtime.dir/domain/async/entity/future.c.o.d -o CMakeFiles/echo_runtime.dir/domain/async/entity/future.c.o -c /Users/meetai/source/echo-lang/runtime/domain/async/entity/future.c
+CMakeFiles/echo_runtime.dir/api/runtime_map_iter.c.o: CMakeFiles/echo_runtime.dir/flags.make
+CMakeFiles/echo_runtime.dir/api/runtime_map_iter.c.o: /Users/meetai/source/echo-lang/runtime/api/runtime_map_iter.c
+CMakeFiles/echo_runtime.dir/api/runtime_map_iter.c.o: CMakeFiles/echo_runtime.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/meetai/source/echo-lang/runtime/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object CMakeFiles/echo_runtime.dir/api/runtime_map_iter.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/echo_runtime.dir/api/runtime_map_iter.c.o -MF CMakeFiles/echo_runtime.dir/api/runtime_map_iter.c.o.d -o CMakeFiles/echo_runtime.dir/api/runtime_map_iter.c.o -c /Users/meetai/source/echo-lang/runtime/api/runtime_map_iter.c
 
-CMakeFiles/echo_runtime.dir/domain/async/entity/future.c.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/echo_runtime.dir/domain/async/entity/future.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/meetai/source/echo-lang/runtime/domain/async/entity/future.c > CMakeFiles/echo_runtime.dir/domain/async/entity/future.c.i
+CMakeFiles/echo_runtime.dir/api/runtime_map_iter.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/echo_runtime.dir/api/runtime_map_iter.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/meetai/source/echo-lang/runtime/api/runtime_map_iter.c > CMakeFiles/echo_runtime.dir/api/runtime_map_iter.c.i
 
-CMakeFiles/echo_runtime.dir/domain/async/entity/future.c.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/echo_runtime.dir/domain/async/entity/future.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/meetai/source/echo-lang/runtime/domain/async/entity/future.c -o CMakeFiles/echo_runtime.dir/domain/async/entity/future.c.s
+CMakeFiles/echo_runtime.dir/api/runtime_map_iter.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/echo_runtime.dir/api/runtime_map_iter.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/meetai/source/echo-lang/runtime/api/runtime_map_iter.c -o CMakeFiles/echo_runtime.dir/api/runtime_map_iter.c.s
+
+CMakeFiles/echo_runtime.dir/domain/async_computation/aggregate/future.c.o: CMakeFiles/echo_runtime.dir/flags.make
+CMakeFiles/echo_runtime.dir/domain/async_computation/aggregate/future.c.o: /Users/meetai/source/echo-lang/runtime/domain/async_computation/aggregate/future.c
+CMakeFiles/echo_runtime.dir/domain/async_computation/aggregate/future.c.o: CMakeFiles/echo_runtime.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/meetai/source/echo-lang/runtime/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building C object CMakeFiles/echo_runtime.dir/domain/async_computation/aggregate/future.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/echo_runtime.dir/domain/async_computation/aggregate/future.c.o -MF CMakeFiles/echo_runtime.dir/domain/async_computation/aggregate/future.c.o.d -o CMakeFiles/echo_runtime.dir/domain/async_computation/aggregate/future.c.o -c /Users/meetai/source/echo-lang/runtime/domain/async_computation/aggregate/future.c
+
+CMakeFiles/echo_runtime.dir/domain/async_computation/aggregate/future.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/echo_runtime.dir/domain/async_computation/aggregate/future.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/meetai/source/echo-lang/runtime/domain/async_computation/aggregate/future.c > CMakeFiles/echo_runtime.dir/domain/async_computation/aggregate/future.c.i
+
+CMakeFiles/echo_runtime.dir/domain/async_computation/aggregate/future.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/echo_runtime.dir/domain/async_computation/aggregate/future.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/meetai/source/echo-lang/runtime/domain/async_computation/aggregate/future.c -o CMakeFiles/echo_runtime.dir/domain/async_computation/aggregate/future.c.s
+
+CMakeFiles/echo_runtime.dir/domain/async_computation/events/future_events.c.o: CMakeFiles/echo_runtime.dir/flags.make
+CMakeFiles/echo_runtime.dir/domain/async_computation/events/future_events.c.o: /Users/meetai/source/echo-lang/runtime/domain/async_computation/events/future_events.c
+CMakeFiles/echo_runtime.dir/domain/async_computation/events/future_events.c.o: CMakeFiles/echo_runtime.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/meetai/source/echo-lang/runtime/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building C object CMakeFiles/echo_runtime.dir/domain/async_computation/events/future_events.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/echo_runtime.dir/domain/async_computation/events/future_events.c.o -MF CMakeFiles/echo_runtime.dir/domain/async_computation/events/future_events.c.o.d -o CMakeFiles/echo_runtime.dir/domain/async_computation/events/future_events.c.o -c /Users/meetai/source/echo-lang/runtime/domain/async_computation/events/future_events.c
+
+CMakeFiles/echo_runtime.dir/domain/async_computation/events/future_events.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/echo_runtime.dir/domain/async_computation/events/future_events.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/meetai/source/echo-lang/runtime/domain/async_computation/events/future_events.c > CMakeFiles/echo_runtime.dir/domain/async_computation/events/future_events.c.i
+
+CMakeFiles/echo_runtime.dir/domain/async_computation/events/future_events.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/echo_runtime.dir/domain/async_computation/events/future_events.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/meetai/source/echo-lang/runtime/domain/async_computation/events/future_events.c -o CMakeFiles/echo_runtime.dir/domain/async_computation/events/future_events.c.s
+
+CMakeFiles/echo_runtime.dir/domain/async_computation/repository/future_repository_memory.c.o: CMakeFiles/echo_runtime.dir/flags.make
+CMakeFiles/echo_runtime.dir/domain/async_computation/repository/future_repository_memory.c.o: /Users/meetai/source/echo-lang/runtime/domain/async_computation/repository/future_repository_memory.c
+CMakeFiles/echo_runtime.dir/domain/async_computation/repository/future_repository_memory.c.o: CMakeFiles/echo_runtime.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/meetai/source/echo-lang/runtime/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building C object CMakeFiles/echo_runtime.dir/domain/async_computation/repository/future_repository_memory.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/echo_runtime.dir/domain/async_computation/repository/future_repository_memory.c.o -MF CMakeFiles/echo_runtime.dir/domain/async_computation/repository/future_repository_memory.c.o.d -o CMakeFiles/echo_runtime.dir/domain/async_computation/repository/future_repository_memory.c.o -c /Users/meetai/source/echo-lang/runtime/domain/async_computation/repository/future_repository_memory.c
+
+CMakeFiles/echo_runtime.dir/domain/async_computation/repository/future_repository_memory.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/echo_runtime.dir/domain/async_computation/repository/future_repository_memory.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/meetai/source/echo-lang/runtime/domain/async_computation/repository/future_repository_memory.c > CMakeFiles/echo_runtime.dir/domain/async_computation/repository/future_repository_memory.c.i
+
+CMakeFiles/echo_runtime.dir/domain/async_computation/repository/future_repository_memory.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/echo_runtime.dir/domain/async_computation/repository/future_repository_memory.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/meetai/source/echo-lang/runtime/domain/async_computation/repository/future_repository_memory.c -o CMakeFiles/echo_runtime.dir/domain/async_computation/repository/future_repository_memory.c.s
 
 CMakeFiles/echo_runtime.dir/domain/channel/channel.c.o: CMakeFiles/echo_runtime.dir/flags.make
 CMakeFiles/echo_runtime.dir/domain/channel/channel.c.o: /Users/meetai/source/echo-lang/runtime/domain/channel/channel.c
 CMakeFiles/echo_runtime.dir/domain/channel/channel.c.o: CMakeFiles/echo_runtime.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/meetai/source/echo-lang/runtime/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building C object CMakeFiles/echo_runtime.dir/domain/channel/channel.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/meetai/source/echo-lang/runtime/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building C object CMakeFiles/echo_runtime.dir/domain/channel/channel.c.o"
 	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/echo_runtime.dir/domain/channel/channel.c.o -MF CMakeFiles/echo_runtime.dir/domain/channel/channel.c.o.d -o CMakeFiles/echo_runtime.dir/domain/channel/channel.c.o -c /Users/meetai/source/echo-lang/runtime/domain/channel/channel.c
 
 CMakeFiles/echo_runtime.dir/domain/channel/channel.c.i: cmake_force
@@ -114,24 +156,10 @@ CMakeFiles/echo_runtime.dir/domain/channel/channel.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/echo_runtime.dir/domain/channel/channel.c.s"
 	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/meetai/source/echo-lang/runtime/domain/channel/channel.c -o CMakeFiles/echo_runtime.dir/domain/channel/channel.c.s
 
-CMakeFiles/echo_runtime.dir/domain/channel/entity/channel.c.o: CMakeFiles/echo_runtime.dir/flags.make
-CMakeFiles/echo_runtime.dir/domain/channel/entity/channel.c.o: /Users/meetai/source/echo-lang/runtime/domain/channel/entity/channel.c
-CMakeFiles/echo_runtime.dir/domain/channel/entity/channel.c.o: CMakeFiles/echo_runtime.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/meetai/source/echo-lang/runtime/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building C object CMakeFiles/echo_runtime.dir/domain/channel/entity/channel.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/echo_runtime.dir/domain/channel/entity/channel.c.o -MF CMakeFiles/echo_runtime.dir/domain/channel/entity/channel.c.o.d -o CMakeFiles/echo_runtime.dir/domain/channel/entity/channel.c.o -c /Users/meetai/source/echo-lang/runtime/domain/channel/entity/channel.c
-
-CMakeFiles/echo_runtime.dir/domain/channel/entity/channel.c.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/echo_runtime.dir/domain/channel/entity/channel.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/meetai/source/echo-lang/runtime/domain/channel/entity/channel.c > CMakeFiles/echo_runtime.dir/domain/channel/entity/channel.c.i
-
-CMakeFiles/echo_runtime.dir/domain/channel/entity/channel.c.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/echo_runtime.dir/domain/channel/entity/channel.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/meetai/source/echo-lang/runtime/domain/channel/entity/channel.c -o CMakeFiles/echo_runtime.dir/domain/channel/entity/channel.c.s
-
 CMakeFiles/echo_runtime.dir/domain/channel/select.c.o: CMakeFiles/echo_runtime.dir/flags.make
 CMakeFiles/echo_runtime.dir/domain/channel/select.c.o: /Users/meetai/source/echo-lang/runtime/domain/channel/select.c
 CMakeFiles/echo_runtime.dir/domain/channel/select.c.o: CMakeFiles/echo_runtime.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/meetai/source/echo-lang/runtime/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building C object CMakeFiles/echo_runtime.dir/domain/channel/select.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/meetai/source/echo-lang/runtime/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building C object CMakeFiles/echo_runtime.dir/domain/channel/select.c.o"
 	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/echo_runtime.dir/domain/channel/select.c.o -MF CMakeFiles/echo_runtime.dir/domain/channel/select.c.o.d -o CMakeFiles/echo_runtime.dir/domain/channel/select.c.o -c /Users/meetai/source/echo-lang/runtime/domain/channel/select.c
 
 CMakeFiles/echo_runtime.dir/domain/channel/select.c.i: cmake_force
@@ -142,10 +170,52 @@ CMakeFiles/echo_runtime.dir/domain/channel/select.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/echo_runtime.dir/domain/channel/select.c.s"
 	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/meetai/source/echo-lang/runtime/domain/channel/select.c -o CMakeFiles/echo_runtime.dir/domain/channel/select.c.s
 
+CMakeFiles/echo_runtime.dir/domain/channel_communication/adapter/channel_adapter.c.o: CMakeFiles/echo_runtime.dir/flags.make
+CMakeFiles/echo_runtime.dir/domain/channel_communication/adapter/channel_adapter.c.o: /Users/meetai/source/echo-lang/runtime/domain/channel_communication/adapter/channel_adapter.c
+CMakeFiles/echo_runtime.dir/domain/channel_communication/adapter/channel_adapter.c.o: CMakeFiles/echo_runtime.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/meetai/source/echo-lang/runtime/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building C object CMakeFiles/echo_runtime.dir/domain/channel_communication/adapter/channel_adapter.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/echo_runtime.dir/domain/channel_communication/adapter/channel_adapter.c.o -MF CMakeFiles/echo_runtime.dir/domain/channel_communication/adapter/channel_adapter.c.o.d -o CMakeFiles/echo_runtime.dir/domain/channel_communication/adapter/channel_adapter.c.o -c /Users/meetai/source/echo-lang/runtime/domain/channel_communication/adapter/channel_adapter.c
+
+CMakeFiles/echo_runtime.dir/domain/channel_communication/adapter/channel_adapter.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/echo_runtime.dir/domain/channel_communication/adapter/channel_adapter.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/meetai/source/echo-lang/runtime/domain/channel_communication/adapter/channel_adapter.c > CMakeFiles/echo_runtime.dir/domain/channel_communication/adapter/channel_adapter.c.i
+
+CMakeFiles/echo_runtime.dir/domain/channel_communication/adapter/channel_adapter.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/echo_runtime.dir/domain/channel_communication/adapter/channel_adapter.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/meetai/source/echo-lang/runtime/domain/channel_communication/adapter/channel_adapter.c -o CMakeFiles/echo_runtime.dir/domain/channel_communication/adapter/channel_adapter.c.s
+
+CMakeFiles/echo_runtime.dir/domain/channel_communication/aggregate/channel.c.o: CMakeFiles/echo_runtime.dir/flags.make
+CMakeFiles/echo_runtime.dir/domain/channel_communication/aggregate/channel.c.o: /Users/meetai/source/echo-lang/runtime/domain/channel_communication/aggregate/channel.c
+CMakeFiles/echo_runtime.dir/domain/channel_communication/aggregate/channel.c.o: CMakeFiles/echo_runtime.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/meetai/source/echo-lang/runtime/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building C object CMakeFiles/echo_runtime.dir/domain/channel_communication/aggregate/channel.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/echo_runtime.dir/domain/channel_communication/aggregate/channel.c.o -MF CMakeFiles/echo_runtime.dir/domain/channel_communication/aggregate/channel.c.o.d -o CMakeFiles/echo_runtime.dir/domain/channel_communication/aggregate/channel.c.o -c /Users/meetai/source/echo-lang/runtime/domain/channel_communication/aggregate/channel.c
+
+CMakeFiles/echo_runtime.dir/domain/channel_communication/aggregate/channel.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/echo_runtime.dir/domain/channel_communication/aggregate/channel.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/meetai/source/echo-lang/runtime/domain/channel_communication/aggregate/channel.c > CMakeFiles/echo_runtime.dir/domain/channel_communication/aggregate/channel.c.i
+
+CMakeFiles/echo_runtime.dir/domain/channel_communication/aggregate/channel.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/echo_runtime.dir/domain/channel_communication/aggregate/channel.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/meetai/source/echo-lang/runtime/domain/channel_communication/aggregate/channel.c -o CMakeFiles/echo_runtime.dir/domain/channel_communication/aggregate/channel.c.s
+
+CMakeFiles/echo_runtime.dir/domain/channel_communication/events/channel_events.c.o: CMakeFiles/echo_runtime.dir/flags.make
+CMakeFiles/echo_runtime.dir/domain/channel_communication/events/channel_events.c.o: /Users/meetai/source/echo-lang/runtime/domain/channel_communication/events/channel_events.c
+CMakeFiles/echo_runtime.dir/domain/channel_communication/events/channel_events.c.o: CMakeFiles/echo_runtime.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/meetai/source/echo-lang/runtime/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building C object CMakeFiles/echo_runtime.dir/domain/channel_communication/events/channel_events.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/echo_runtime.dir/domain/channel_communication/events/channel_events.c.o -MF CMakeFiles/echo_runtime.dir/domain/channel_communication/events/channel_events.c.o.d -o CMakeFiles/echo_runtime.dir/domain/channel_communication/events/channel_events.c.o -c /Users/meetai/source/echo-lang/runtime/domain/channel_communication/events/channel_events.c
+
+CMakeFiles/echo_runtime.dir/domain/channel_communication/events/channel_events.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/echo_runtime.dir/domain/channel_communication/events/channel_events.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/meetai/source/echo-lang/runtime/domain/channel_communication/events/channel_events.c > CMakeFiles/echo_runtime.dir/domain/channel_communication/events/channel_events.c.i
+
+CMakeFiles/echo_runtime.dir/domain/channel_communication/events/channel_events.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/echo_runtime.dir/domain/channel_communication/events/channel_events.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/meetai/source/echo-lang/runtime/domain/channel_communication/events/channel_events.c -o CMakeFiles/echo_runtime.dir/domain/channel_communication/events/channel_events.c.s
+
 CMakeFiles/echo_runtime.dir/domain/coroutine/coroutine.c.o: CMakeFiles/echo_runtime.dir/flags.make
 CMakeFiles/echo_runtime.dir/domain/coroutine/coroutine.c.o: /Users/meetai/source/echo-lang/runtime/domain/coroutine/coroutine.c
 CMakeFiles/echo_runtime.dir/domain/coroutine/coroutine.c.o: CMakeFiles/echo_runtime.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/meetai/source/echo-lang/runtime/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building C object CMakeFiles/echo_runtime.dir/domain/coroutine/coroutine.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/meetai/source/echo-lang/runtime/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building C object CMakeFiles/echo_runtime.dir/domain/coroutine/coroutine.c.o"
 	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/echo_runtime.dir/domain/coroutine/coroutine.c.o -MF CMakeFiles/echo_runtime.dir/domain/coroutine/coroutine.c.o.d -o CMakeFiles/echo_runtime.dir/domain/coroutine/coroutine.c.o -c /Users/meetai/source/echo-lang/runtime/domain/coroutine/coroutine.c
 
 CMakeFiles/echo_runtime.dir/domain/coroutine/coroutine.c.i: cmake_force
@@ -159,7 +229,7 @@ CMakeFiles/echo_runtime.dir/domain/coroutine/coroutine.c.s: cmake_force
 CMakeFiles/echo_runtime.dir/domain/coroutine/coroutine_runtime.c.o: CMakeFiles/echo_runtime.dir/flags.make
 CMakeFiles/echo_runtime.dir/domain/coroutine/coroutine_runtime.c.o: /Users/meetai/source/echo-lang/runtime/domain/coroutine/coroutine_runtime.c
 CMakeFiles/echo_runtime.dir/domain/coroutine/coroutine_runtime.c.o: CMakeFiles/echo_runtime.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/meetai/source/echo-lang/runtime/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building C object CMakeFiles/echo_runtime.dir/domain/coroutine/coroutine_runtime.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/meetai/source/echo-lang/runtime/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building C object CMakeFiles/echo_runtime.dir/domain/coroutine/coroutine_runtime.c.o"
 	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/echo_runtime.dir/domain/coroutine/coroutine_runtime.c.o -MF CMakeFiles/echo_runtime.dir/domain/coroutine/coroutine_runtime.c.o.d -o CMakeFiles/echo_runtime.dir/domain/coroutine/coroutine_runtime.c.o -c /Users/meetai/source/echo-lang/runtime/domain/coroutine/coroutine_runtime.c
 
 CMakeFiles/echo_runtime.dir/domain/coroutine/coroutine_runtime.c.i: cmake_force
@@ -173,7 +243,7 @@ CMakeFiles/echo_runtime.dir/domain/coroutine/coroutine_runtime.c.s: cmake_force
 CMakeFiles/echo_runtime.dir/domain/coroutine/coroutine_runtime_asm.c.o: CMakeFiles/echo_runtime.dir/flags.make
 CMakeFiles/echo_runtime.dir/domain/coroutine/coroutine_runtime_asm.c.o: /Users/meetai/source/echo-lang/runtime/domain/coroutine/coroutine_runtime_asm.c
 CMakeFiles/echo_runtime.dir/domain/coroutine/coroutine_runtime_asm.c.o: CMakeFiles/echo_runtime.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/meetai/source/echo-lang/runtime/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building C object CMakeFiles/echo_runtime.dir/domain/coroutine/coroutine_runtime_asm.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/meetai/source/echo-lang/runtime/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building C object CMakeFiles/echo_runtime.dir/domain/coroutine/coroutine_runtime_asm.c.o"
 	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/echo_runtime.dir/domain/coroutine/coroutine_runtime_asm.c.o -MF CMakeFiles/echo_runtime.dir/domain/coroutine/coroutine_runtime_asm.c.o.d -o CMakeFiles/echo_runtime.dir/domain/coroutine/coroutine_runtime_asm.c.o -c /Users/meetai/source/echo-lang/runtime/domain/coroutine/coroutine_runtime_asm.c
 
 CMakeFiles/echo_runtime.dir/domain/coroutine/coroutine_runtime_asm.c.i: cmake_force
@@ -187,7 +257,7 @@ CMakeFiles/echo_runtime.dir/domain/coroutine/coroutine_runtime_asm.c.s: cmake_fo
 CMakeFiles/echo_runtime.dir/domain/coroutine/switcher.c.o: CMakeFiles/echo_runtime.dir/flags.make
 CMakeFiles/echo_runtime.dir/domain/coroutine/switcher.c.o: /Users/meetai/source/echo-lang/runtime/domain/coroutine/switcher.c
 CMakeFiles/echo_runtime.dir/domain/coroutine/switcher.c.o: CMakeFiles/echo_runtime.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/meetai/source/echo-lang/runtime/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building C object CMakeFiles/echo_runtime.dir/domain/coroutine/switcher.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/meetai/source/echo-lang/runtime/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building C object CMakeFiles/echo_runtime.dir/domain/coroutine/switcher.c.o"
 	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/echo_runtime.dir/domain/coroutine/switcher.c.o -MF CMakeFiles/echo_runtime.dir/domain/coroutine/switcher.c.o.d -o CMakeFiles/echo_runtime.dir/domain/coroutine/switcher.c.o -c /Users/meetai/source/echo-lang/runtime/domain/coroutine/switcher.c
 
 CMakeFiles/echo_runtime.dir/domain/coroutine/switcher.c.i: cmake_force
@@ -201,7 +271,7 @@ CMakeFiles/echo_runtime.dir/domain/coroutine/switcher.c.s: cmake_force
 CMakeFiles/echo_runtime.dir/domain/coroutine/yield.c.o: CMakeFiles/echo_runtime.dir/flags.make
 CMakeFiles/echo_runtime.dir/domain/coroutine/yield.c.o: /Users/meetai/source/echo-lang/runtime/domain/coroutine/yield.c
 CMakeFiles/echo_runtime.dir/domain/coroutine/yield.c.o: CMakeFiles/echo_runtime.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/meetai/source/echo-lang/runtime/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building C object CMakeFiles/echo_runtime.dir/domain/coroutine/yield.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/meetai/source/echo-lang/runtime/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building C object CMakeFiles/echo_runtime.dir/domain/coroutine/yield.c.o"
 	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/echo_runtime.dir/domain/coroutine/yield.c.o -MF CMakeFiles/echo_runtime.dir/domain/coroutine/yield.c.o.d -o CMakeFiles/echo_runtime.dir/domain/coroutine/yield.c.o -c /Users/meetai/source/echo-lang/runtime/domain/coroutine/yield.c
 
 CMakeFiles/echo_runtime.dir/domain/coroutine/yield.c.i: cmake_force
@@ -215,7 +285,7 @@ CMakeFiles/echo_runtime.dir/domain/coroutine/yield.c.s: cmake_force
 CMakeFiles/echo_runtime.dir/domain/runtime/echo_runtime.c.o: CMakeFiles/echo_runtime.dir/flags.make
 CMakeFiles/echo_runtime.dir/domain/runtime/echo_runtime.c.o: /Users/meetai/source/echo-lang/runtime/domain/runtime/echo_runtime.c
 CMakeFiles/echo_runtime.dir/domain/runtime/echo_runtime.c.o: CMakeFiles/echo_runtime.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/meetai/source/echo-lang/runtime/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building C object CMakeFiles/echo_runtime.dir/domain/runtime/echo_runtime.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/meetai/source/echo-lang/runtime/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building C object CMakeFiles/echo_runtime.dir/domain/runtime/echo_runtime.c.o"
 	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/echo_runtime.dir/domain/runtime/echo_runtime.c.o -MF CMakeFiles/echo_runtime.dir/domain/runtime/echo_runtime.c.o.d -o CMakeFiles/echo_runtime.dir/domain/runtime/echo_runtime.c.o -c /Users/meetai/source/echo-lang/runtime/domain/runtime/echo_runtime.c
 
 CMakeFiles/echo_runtime.dir/domain/runtime/echo_runtime.c.i: cmake_force
@@ -229,7 +299,7 @@ CMakeFiles/echo_runtime.dir/domain/runtime/echo_runtime.c.s: cmake_force
 CMakeFiles/echo_runtime.dir/domain/task/entity/task.c.o: CMakeFiles/echo_runtime.dir/flags.make
 CMakeFiles/echo_runtime.dir/domain/task/entity/task.c.o: /Users/meetai/source/echo-lang/runtime/domain/task/entity/task.c
 CMakeFiles/echo_runtime.dir/domain/task/entity/task.c.o: CMakeFiles/echo_runtime.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/meetai/source/echo-lang/runtime/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building C object CMakeFiles/echo_runtime.dir/domain/task/entity/task.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/meetai/source/echo-lang/runtime/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building C object CMakeFiles/echo_runtime.dir/domain/task/entity/task.c.o"
 	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/echo_runtime.dir/domain/task/entity/task.c.o -MF CMakeFiles/echo_runtime.dir/domain/task/entity/task.c.o.d -o CMakeFiles/echo_runtime.dir/domain/task/entity/task.c.o -c /Users/meetai/source/echo-lang/runtime/domain/task/entity/task.c
 
 CMakeFiles/echo_runtime.dir/domain/task/entity/task.c.i: cmake_force
@@ -243,7 +313,7 @@ CMakeFiles/echo_runtime.dir/domain/task/entity/task.c.s: cmake_force
 CMakeFiles/echo_runtime.dir/domain/task/service/task_scheduler.c.o: CMakeFiles/echo_runtime.dir/flags.make
 CMakeFiles/echo_runtime.dir/domain/task/service/task_scheduler.c.o: /Users/meetai/source/echo-lang/runtime/domain/task/service/task_scheduler.c
 CMakeFiles/echo_runtime.dir/domain/task/service/task_scheduler.c.o: CMakeFiles/echo_runtime.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/meetai/source/echo-lang/runtime/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building C object CMakeFiles/echo_runtime.dir/domain/task/service/task_scheduler.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/meetai/source/echo-lang/runtime/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building C object CMakeFiles/echo_runtime.dir/domain/task/service/task_scheduler.c.o"
 	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/echo_runtime.dir/domain/task/service/task_scheduler.c.o -MF CMakeFiles/echo_runtime.dir/domain/task/service/task_scheduler.c.o.d -o CMakeFiles/echo_runtime.dir/domain/task/service/task_scheduler.c.o -c /Users/meetai/source/echo-lang/runtime/domain/task/service/task_scheduler.c
 
 CMakeFiles/echo_runtime.dir/domain/task/service/task_scheduler.c.i: cmake_force
@@ -257,7 +327,7 @@ CMakeFiles/echo_runtime.dir/domain/task/service/task_scheduler.c.s: cmake_force
 CMakeFiles/echo_runtime.dir/domain/task/task.c.o: CMakeFiles/echo_runtime.dir/flags.make
 CMakeFiles/echo_runtime.dir/domain/task/task.c.o: /Users/meetai/source/echo-lang/runtime/domain/task/task.c
 CMakeFiles/echo_runtime.dir/domain/task/task.c.o: CMakeFiles/echo_runtime.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/meetai/source/echo-lang/runtime/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building C object CMakeFiles/echo_runtime.dir/domain/task/task.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/meetai/source/echo-lang/runtime/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Building C object CMakeFiles/echo_runtime.dir/domain/task/task.c.o"
 	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/echo_runtime.dir/domain/task/task.c.o -MF CMakeFiles/echo_runtime.dir/domain/task/task.c.o.d -o CMakeFiles/echo_runtime.dir/domain/task/task.c.o -c /Users/meetai/source/echo-lang/runtime/domain/task/task.c
 
 CMakeFiles/echo_runtime.dir/domain/task/task.c.i: cmake_force
@@ -268,13 +338,172 @@ CMakeFiles/echo_runtime.dir/domain/task/task.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/echo_runtime.dir/domain/task/task.c.s"
 	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/meetai/source/echo-lang/runtime/domain/task/task.c -o CMakeFiles/echo_runtime.dir/domain/task/task.c.s
 
+CMakeFiles/echo_runtime.dir/domain/task_execution/aggregate/task.c.o: CMakeFiles/echo_runtime.dir/flags.make
+CMakeFiles/echo_runtime.dir/domain/task_execution/aggregate/task.c.o: /Users/meetai/source/echo-lang/runtime/domain/task_execution/aggregate/task.c
+CMakeFiles/echo_runtime.dir/domain/task_execution/aggregate/task.c.o: CMakeFiles/echo_runtime.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/meetai/source/echo-lang/runtime/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Building C object CMakeFiles/echo_runtime.dir/domain/task_execution/aggregate/task.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/echo_runtime.dir/domain/task_execution/aggregate/task.c.o -MF CMakeFiles/echo_runtime.dir/domain/task_execution/aggregate/task.c.o.d -o CMakeFiles/echo_runtime.dir/domain/task_execution/aggregate/task.c.o -c /Users/meetai/source/echo-lang/runtime/domain/task_execution/aggregate/task.c
+
+CMakeFiles/echo_runtime.dir/domain/task_execution/aggregate/task.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/echo_runtime.dir/domain/task_execution/aggregate/task.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/meetai/source/echo-lang/runtime/domain/task_execution/aggregate/task.c > CMakeFiles/echo_runtime.dir/domain/task_execution/aggregate/task.c.i
+
+CMakeFiles/echo_runtime.dir/domain/task_execution/aggregate/task.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/echo_runtime.dir/domain/task_execution/aggregate/task.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/meetai/source/echo-lang/runtime/domain/task_execution/aggregate/task.c -o CMakeFiles/echo_runtime.dir/domain/task_execution/aggregate/task.c.s
+
+CMakeFiles/echo_runtime.dir/domain/task_execution/events/task_events.c.o: CMakeFiles/echo_runtime.dir/flags.make
+CMakeFiles/echo_runtime.dir/domain/task_execution/events/task_events.c.o: /Users/meetai/source/echo-lang/runtime/domain/task_execution/events/task_events.c
+CMakeFiles/echo_runtime.dir/domain/task_execution/events/task_events.c.o: CMakeFiles/echo_runtime.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/meetai/source/echo-lang/runtime/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_21) "Building C object CMakeFiles/echo_runtime.dir/domain/task_execution/events/task_events.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/echo_runtime.dir/domain/task_execution/events/task_events.c.o -MF CMakeFiles/echo_runtime.dir/domain/task_execution/events/task_events.c.o.d -o CMakeFiles/echo_runtime.dir/domain/task_execution/events/task_events.c.o -c /Users/meetai/source/echo-lang/runtime/domain/task_execution/events/task_events.c
+
+CMakeFiles/echo_runtime.dir/domain/task_execution/events/task_events.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/echo_runtime.dir/domain/task_execution/events/task_events.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/meetai/source/echo-lang/runtime/domain/task_execution/events/task_events.c > CMakeFiles/echo_runtime.dir/domain/task_execution/events/task_events.c.i
+
+CMakeFiles/echo_runtime.dir/domain/task_execution/events/task_events.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/echo_runtime.dir/domain/task_execution/events/task_events.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/meetai/source/echo-lang/runtime/domain/task_execution/events/task_events.c -o CMakeFiles/echo_runtime.dir/domain/task_execution/events/task_events.c.s
+
+CMakeFiles/echo_runtime.dir/domain/task_execution/repository/task_repository_memory.c.o: CMakeFiles/echo_runtime.dir/flags.make
+CMakeFiles/echo_runtime.dir/domain/task_execution/repository/task_repository_memory.c.o: /Users/meetai/source/echo-lang/runtime/domain/task_execution/repository/task_repository_memory.c
+CMakeFiles/echo_runtime.dir/domain/task_execution/repository/task_repository_memory.c.o: CMakeFiles/echo_runtime.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/meetai/source/echo-lang/runtime/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_22) "Building C object CMakeFiles/echo_runtime.dir/domain/task_execution/repository/task_repository_memory.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/echo_runtime.dir/domain/task_execution/repository/task_repository_memory.c.o -MF CMakeFiles/echo_runtime.dir/domain/task_execution/repository/task_repository_memory.c.o.d -o CMakeFiles/echo_runtime.dir/domain/task_execution/repository/task_repository_memory.c.o -c /Users/meetai/source/echo-lang/runtime/domain/task_execution/repository/task_repository_memory.c
+
+CMakeFiles/echo_runtime.dir/domain/task_execution/repository/task_repository_memory.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/echo_runtime.dir/domain/task_execution/repository/task_repository_memory.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/meetai/source/echo-lang/runtime/domain/task_execution/repository/task_repository_memory.c > CMakeFiles/echo_runtime.dir/domain/task_execution/repository/task_repository_memory.c.i
+
+CMakeFiles/echo_runtime.dir/domain/task_execution/repository/task_repository_memory.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/echo_runtime.dir/domain/task_execution/repository/task_repository_memory.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/meetai/source/echo-lang/runtime/domain/task_execution/repository/task_repository_memory.c -o CMakeFiles/echo_runtime.dir/domain/task_execution/repository/task_repository_memory.c.s
+
+CMakeFiles/echo_runtime.dir/domain/task_scheduling/adapter/scheduler_adapter.c.o: CMakeFiles/echo_runtime.dir/flags.make
+CMakeFiles/echo_runtime.dir/domain/task_scheduling/adapter/scheduler_adapter.c.o: /Users/meetai/source/echo-lang/runtime/domain/task_scheduling/adapter/scheduler_adapter.c
+CMakeFiles/echo_runtime.dir/domain/task_scheduling/adapter/scheduler_adapter.c.o: CMakeFiles/echo_runtime.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/meetai/source/echo-lang/runtime/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_23) "Building C object CMakeFiles/echo_runtime.dir/domain/task_scheduling/adapter/scheduler_adapter.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/echo_runtime.dir/domain/task_scheduling/adapter/scheduler_adapter.c.o -MF CMakeFiles/echo_runtime.dir/domain/task_scheduling/adapter/scheduler_adapter.c.o.d -o CMakeFiles/echo_runtime.dir/domain/task_scheduling/adapter/scheduler_adapter.c.o -c /Users/meetai/source/echo-lang/runtime/domain/task_scheduling/adapter/scheduler_adapter.c
+
+CMakeFiles/echo_runtime.dir/domain/task_scheduling/adapter/scheduler_adapter.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/echo_runtime.dir/domain/task_scheduling/adapter/scheduler_adapter.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/meetai/source/echo-lang/runtime/domain/task_scheduling/adapter/scheduler_adapter.c > CMakeFiles/echo_runtime.dir/domain/task_scheduling/adapter/scheduler_adapter.c.i
+
+CMakeFiles/echo_runtime.dir/domain/task_scheduling/adapter/scheduler_adapter.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/echo_runtime.dir/domain/task_scheduling/adapter/scheduler_adapter.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/meetai/source/echo-lang/runtime/domain/task_scheduling/adapter/scheduler_adapter.c -o CMakeFiles/echo_runtime.dir/domain/task_scheduling/adapter/scheduler_adapter.c.s
+
+CMakeFiles/echo_runtime.dir/domain/task_scheduling/aggregate/scheduler.c.o: CMakeFiles/echo_runtime.dir/flags.make
+CMakeFiles/echo_runtime.dir/domain/task_scheduling/aggregate/scheduler.c.o: /Users/meetai/source/echo-lang/runtime/domain/task_scheduling/aggregate/scheduler.c
+CMakeFiles/echo_runtime.dir/domain/task_scheduling/aggregate/scheduler.c.o: CMakeFiles/echo_runtime.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/meetai/source/echo-lang/runtime/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_24) "Building C object CMakeFiles/echo_runtime.dir/domain/task_scheduling/aggregate/scheduler.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/echo_runtime.dir/domain/task_scheduling/aggregate/scheduler.c.o -MF CMakeFiles/echo_runtime.dir/domain/task_scheduling/aggregate/scheduler.c.o.d -o CMakeFiles/echo_runtime.dir/domain/task_scheduling/aggregate/scheduler.c.o -c /Users/meetai/source/echo-lang/runtime/domain/task_scheduling/aggregate/scheduler.c
+
+CMakeFiles/echo_runtime.dir/domain/task_scheduling/aggregate/scheduler.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/echo_runtime.dir/domain/task_scheduling/aggregate/scheduler.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/meetai/source/echo-lang/runtime/domain/task_scheduling/aggregate/scheduler.c > CMakeFiles/echo_runtime.dir/domain/task_scheduling/aggregate/scheduler.c.i
+
+CMakeFiles/echo_runtime.dir/domain/task_scheduling/aggregate/scheduler.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/echo_runtime.dir/domain/task_scheduling/aggregate/scheduler.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/meetai/source/echo-lang/runtime/domain/task_scheduling/aggregate/scheduler.c -o CMakeFiles/echo_runtime.dir/domain/task_scheduling/aggregate/scheduler.c.s
+
+CMakeFiles/echo_runtime.dir/domain/task_scheduling/events/scheduler_events.c.o: CMakeFiles/echo_runtime.dir/flags.make
+CMakeFiles/echo_runtime.dir/domain/task_scheduling/events/scheduler_events.c.o: /Users/meetai/source/echo-lang/runtime/domain/task_scheduling/events/scheduler_events.c
+CMakeFiles/echo_runtime.dir/domain/task_scheduling/events/scheduler_events.c.o: CMakeFiles/echo_runtime.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/meetai/source/echo-lang/runtime/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_25) "Building C object CMakeFiles/echo_runtime.dir/domain/task_scheduling/events/scheduler_events.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/echo_runtime.dir/domain/task_scheduling/events/scheduler_events.c.o -MF CMakeFiles/echo_runtime.dir/domain/task_scheduling/events/scheduler_events.c.o.d -o CMakeFiles/echo_runtime.dir/domain/task_scheduling/events/scheduler_events.c.o -c /Users/meetai/source/echo-lang/runtime/domain/task_scheduling/events/scheduler_events.c
+
+CMakeFiles/echo_runtime.dir/domain/task_scheduling/events/scheduler_events.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/echo_runtime.dir/domain/task_scheduling/events/scheduler_events.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/meetai/source/echo-lang/runtime/domain/task_scheduling/events/scheduler_events.c > CMakeFiles/echo_runtime.dir/domain/task_scheduling/events/scheduler_events.c.i
+
+CMakeFiles/echo_runtime.dir/domain/task_scheduling/events/scheduler_events.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/echo_runtime.dir/domain/task_scheduling/events/scheduler_events.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/meetai/source/echo-lang/runtime/domain/task_scheduling/events/scheduler_events.c -o CMakeFiles/echo_runtime.dir/domain/task_scheduling/events/scheduler_events.c.s
+
+CMakeFiles/echo_runtime.dir/shared/handles/file_handle_manager.c.o: CMakeFiles/echo_runtime.dir/flags.make
+CMakeFiles/echo_runtime.dir/shared/handles/file_handle_manager.c.o: /Users/meetai/source/echo-lang/runtime/shared/handles/file_handle_manager.c
+CMakeFiles/echo_runtime.dir/shared/handles/file_handle_manager.c.o: CMakeFiles/echo_runtime.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/meetai/source/echo-lang/runtime/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_26) "Building C object CMakeFiles/echo_runtime.dir/shared/handles/file_handle_manager.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/echo_runtime.dir/shared/handles/file_handle_manager.c.o -MF CMakeFiles/echo_runtime.dir/shared/handles/file_handle_manager.c.o.d -o CMakeFiles/echo_runtime.dir/shared/handles/file_handle_manager.c.o -c /Users/meetai/source/echo-lang/runtime/shared/handles/file_handle_manager.c
+
+CMakeFiles/echo_runtime.dir/shared/handles/file_handle_manager.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/echo_runtime.dir/shared/handles/file_handle_manager.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/meetai/source/echo-lang/runtime/shared/handles/file_handle_manager.c > CMakeFiles/echo_runtime.dir/shared/handles/file_handle_manager.c.i
+
+CMakeFiles/echo_runtime.dir/shared/handles/file_handle_manager.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/echo_runtime.dir/shared/handles/file_handle_manager.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/meetai/source/echo-lang/runtime/shared/handles/file_handle_manager.c -o CMakeFiles/echo_runtime.dir/shared/handles/file_handle_manager.c.s
+
+CMakeFiles/echo_runtime.dir/shared/handles/socket_handle_manager.c.o: CMakeFiles/echo_runtime.dir/flags.make
+CMakeFiles/echo_runtime.dir/shared/handles/socket_handle_manager.c.o: /Users/meetai/source/echo-lang/runtime/shared/handles/socket_handle_manager.c
+CMakeFiles/echo_runtime.dir/shared/handles/socket_handle_manager.c.o: CMakeFiles/echo_runtime.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/meetai/source/echo-lang/runtime/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_27) "Building C object CMakeFiles/echo_runtime.dir/shared/handles/socket_handle_manager.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/echo_runtime.dir/shared/handles/socket_handle_manager.c.o -MF CMakeFiles/echo_runtime.dir/shared/handles/socket_handle_manager.c.o.d -o CMakeFiles/echo_runtime.dir/shared/handles/socket_handle_manager.c.o -c /Users/meetai/source/echo-lang/runtime/shared/handles/socket_handle_manager.c
+
+CMakeFiles/echo_runtime.dir/shared/handles/socket_handle_manager.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/echo_runtime.dir/shared/handles/socket_handle_manager.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/meetai/source/echo-lang/runtime/shared/handles/socket_handle_manager.c > CMakeFiles/echo_runtime.dir/shared/handles/socket_handle_manager.c.i
+
+CMakeFiles/echo_runtime.dir/shared/handles/socket_handle_manager.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/echo_runtime.dir/shared/handles/socket_handle_manager.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/meetai/source/echo-lang/runtime/shared/handles/socket_handle_manager.c -o CMakeFiles/echo_runtime.dir/shared/handles/socket_handle_manager.c.s
+
+CMakeFiles/echo_runtime.dir/shared/result/result.c.o: CMakeFiles/echo_runtime.dir/flags.make
+CMakeFiles/echo_runtime.dir/shared/result/result.c.o: /Users/meetai/source/echo-lang/runtime/shared/result/result.c
+CMakeFiles/echo_runtime.dir/shared/result/result.c.o: CMakeFiles/echo_runtime.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/meetai/source/echo-lang/runtime/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_28) "Building C object CMakeFiles/echo_runtime.dir/shared/result/result.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/echo_runtime.dir/shared/result/result.c.o -MF CMakeFiles/echo_runtime.dir/shared/result/result.c.o.d -o CMakeFiles/echo_runtime.dir/shared/result/result.c.o -c /Users/meetai/source/echo-lang/runtime/shared/result/result.c
+
+CMakeFiles/echo_runtime.dir/shared/result/result.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/echo_runtime.dir/shared/result/result.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/meetai/source/echo-lang/runtime/shared/result/result.c > CMakeFiles/echo_runtime.dir/shared/result/result.c.i
+
+CMakeFiles/echo_runtime.dir/shared/result/result.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/echo_runtime.dir/shared/result/result.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/meetai/source/echo-lang/runtime/shared/result/result.c -o CMakeFiles/echo_runtime.dir/shared/result/result.c.s
+
+CMakeFiles/echo_runtime.dir/infrastructure/event/bus_impl.c.o: CMakeFiles/echo_runtime.dir/flags.make
+CMakeFiles/echo_runtime.dir/infrastructure/event/bus_impl.c.o: /Users/meetai/source/echo-lang/runtime/infrastructure/event/bus_impl.c
+CMakeFiles/echo_runtime.dir/infrastructure/event/bus_impl.c.o: CMakeFiles/echo_runtime.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/meetai/source/echo-lang/runtime/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_29) "Building C object CMakeFiles/echo_runtime.dir/infrastructure/event/bus_impl.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/echo_runtime.dir/infrastructure/event/bus_impl.c.o -MF CMakeFiles/echo_runtime.dir/infrastructure/event/bus_impl.c.o.d -o CMakeFiles/echo_runtime.dir/infrastructure/event/bus_impl.c.o -c /Users/meetai/source/echo-lang/runtime/infrastructure/event/bus_impl.c
+
+CMakeFiles/echo_runtime.dir/infrastructure/event/bus_impl.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/echo_runtime.dir/infrastructure/event/bus_impl.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/meetai/source/echo-lang/runtime/infrastructure/event/bus_impl.c > CMakeFiles/echo_runtime.dir/infrastructure/event/bus_impl.c.i
+
+CMakeFiles/echo_runtime.dir/infrastructure/event/bus_impl.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/echo_runtime.dir/infrastructure/event/bus_impl.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/meetai/source/echo-lang/runtime/infrastructure/event/bus_impl.c -o CMakeFiles/echo_runtime.dir/infrastructure/event/bus_impl.c.s
+
+CMakeFiles/echo_runtime.dir/infrastructure/event/event_bus_initializer.c.o: CMakeFiles/echo_runtime.dir/flags.make
+CMakeFiles/echo_runtime.dir/infrastructure/event/event_bus_initializer.c.o: /Users/meetai/source/echo-lang/runtime/infrastructure/event/event_bus_initializer.c
+CMakeFiles/echo_runtime.dir/infrastructure/event/event_bus_initializer.c.o: CMakeFiles/echo_runtime.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/meetai/source/echo-lang/runtime/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_30) "Building C object CMakeFiles/echo_runtime.dir/infrastructure/event/event_bus_initializer.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/echo_runtime.dir/infrastructure/event/event_bus_initializer.c.o -MF CMakeFiles/echo_runtime.dir/infrastructure/event/event_bus_initializer.c.o.d -o CMakeFiles/echo_runtime.dir/infrastructure/event/event_bus_initializer.c.o -c /Users/meetai/source/echo-lang/runtime/infrastructure/event/event_bus_initializer.c
+
+CMakeFiles/echo_runtime.dir/infrastructure/event/event_bus_initializer.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/echo_runtime.dir/infrastructure/event/event_bus_initializer.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/meetai/source/echo-lang/runtime/infrastructure/event/event_bus_initializer.c > CMakeFiles/echo_runtime.dir/infrastructure/event/event_bus_initializer.c.i
+
+CMakeFiles/echo_runtime.dir/infrastructure/event/event_bus_initializer.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/echo_runtime.dir/infrastructure/event/event_bus_initializer.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/meetai/source/echo-lang/runtime/infrastructure/event/event_bus_initializer.c -o CMakeFiles/echo_runtime.dir/infrastructure/event/event_bus_initializer.c.s
+
 # Object files for target echo_runtime
 echo_runtime_OBJECTS = \
 "CMakeFiles/echo_runtime.dir/api/runtime_api.c.o" \
-"CMakeFiles/echo_runtime.dir/domain/async/entity/future.c.o" \
+"CMakeFiles/echo_runtime.dir/api/runtime_map_iter.c.o" \
+"CMakeFiles/echo_runtime.dir/domain/async_computation/aggregate/future.c.o" \
+"CMakeFiles/echo_runtime.dir/domain/async_computation/events/future_events.c.o" \
+"CMakeFiles/echo_runtime.dir/domain/async_computation/repository/future_repository_memory.c.o" \
 "CMakeFiles/echo_runtime.dir/domain/channel/channel.c.o" \
-"CMakeFiles/echo_runtime.dir/domain/channel/entity/channel.c.o" \
 "CMakeFiles/echo_runtime.dir/domain/channel/select.c.o" \
+"CMakeFiles/echo_runtime.dir/domain/channel_communication/adapter/channel_adapter.c.o" \
+"CMakeFiles/echo_runtime.dir/domain/channel_communication/aggregate/channel.c.o" \
+"CMakeFiles/echo_runtime.dir/domain/channel_communication/events/channel_events.c.o" \
 "CMakeFiles/echo_runtime.dir/domain/coroutine/coroutine.c.o" \
 "CMakeFiles/echo_runtime.dir/domain/coroutine/coroutine_runtime.c.o" \
 "CMakeFiles/echo_runtime.dir/domain/coroutine/coroutine_runtime_asm.c.o" \
@@ -283,16 +512,32 @@ echo_runtime_OBJECTS = \
 "CMakeFiles/echo_runtime.dir/domain/runtime/echo_runtime.c.o" \
 "CMakeFiles/echo_runtime.dir/domain/task/entity/task.c.o" \
 "CMakeFiles/echo_runtime.dir/domain/task/service/task_scheduler.c.o" \
-"CMakeFiles/echo_runtime.dir/domain/task/task.c.o"
+"CMakeFiles/echo_runtime.dir/domain/task/task.c.o" \
+"CMakeFiles/echo_runtime.dir/domain/task_execution/aggregate/task.c.o" \
+"CMakeFiles/echo_runtime.dir/domain/task_execution/events/task_events.c.o" \
+"CMakeFiles/echo_runtime.dir/domain/task_execution/repository/task_repository_memory.c.o" \
+"CMakeFiles/echo_runtime.dir/domain/task_scheduling/adapter/scheduler_adapter.c.o" \
+"CMakeFiles/echo_runtime.dir/domain/task_scheduling/aggregate/scheduler.c.o" \
+"CMakeFiles/echo_runtime.dir/domain/task_scheduling/events/scheduler_events.c.o" \
+"CMakeFiles/echo_runtime.dir/shared/handles/file_handle_manager.c.o" \
+"CMakeFiles/echo_runtime.dir/shared/handles/socket_handle_manager.c.o" \
+"CMakeFiles/echo_runtime.dir/shared/result/result.c.o" \
+"CMakeFiles/echo_runtime.dir/infrastructure/event/bus_impl.c.o" \
+"CMakeFiles/echo_runtime.dir/infrastructure/event/event_bus_initializer.c.o"
 
 # External object files for target echo_runtime
 echo_runtime_EXTERNAL_OBJECTS =
 
 libecho_runtime.a: CMakeFiles/echo_runtime.dir/api/runtime_api.c.o
-libecho_runtime.a: CMakeFiles/echo_runtime.dir/domain/async/entity/future.c.o
+libecho_runtime.a: CMakeFiles/echo_runtime.dir/api/runtime_map_iter.c.o
+libecho_runtime.a: CMakeFiles/echo_runtime.dir/domain/async_computation/aggregate/future.c.o
+libecho_runtime.a: CMakeFiles/echo_runtime.dir/domain/async_computation/events/future_events.c.o
+libecho_runtime.a: CMakeFiles/echo_runtime.dir/domain/async_computation/repository/future_repository_memory.c.o
 libecho_runtime.a: CMakeFiles/echo_runtime.dir/domain/channel/channel.c.o
-libecho_runtime.a: CMakeFiles/echo_runtime.dir/domain/channel/entity/channel.c.o
 libecho_runtime.a: CMakeFiles/echo_runtime.dir/domain/channel/select.c.o
+libecho_runtime.a: CMakeFiles/echo_runtime.dir/domain/channel_communication/adapter/channel_adapter.c.o
+libecho_runtime.a: CMakeFiles/echo_runtime.dir/domain/channel_communication/aggregate/channel.c.o
+libecho_runtime.a: CMakeFiles/echo_runtime.dir/domain/channel_communication/events/channel_events.c.o
 libecho_runtime.a: CMakeFiles/echo_runtime.dir/domain/coroutine/coroutine.c.o
 libecho_runtime.a: CMakeFiles/echo_runtime.dir/domain/coroutine/coroutine_runtime.c.o
 libecho_runtime.a: CMakeFiles/echo_runtime.dir/domain/coroutine/coroutine_runtime_asm.c.o
@@ -302,9 +547,20 @@ libecho_runtime.a: CMakeFiles/echo_runtime.dir/domain/runtime/echo_runtime.c.o
 libecho_runtime.a: CMakeFiles/echo_runtime.dir/domain/task/entity/task.c.o
 libecho_runtime.a: CMakeFiles/echo_runtime.dir/domain/task/service/task_scheduler.c.o
 libecho_runtime.a: CMakeFiles/echo_runtime.dir/domain/task/task.c.o
+libecho_runtime.a: CMakeFiles/echo_runtime.dir/domain/task_execution/aggregate/task.c.o
+libecho_runtime.a: CMakeFiles/echo_runtime.dir/domain/task_execution/events/task_events.c.o
+libecho_runtime.a: CMakeFiles/echo_runtime.dir/domain/task_execution/repository/task_repository_memory.c.o
+libecho_runtime.a: CMakeFiles/echo_runtime.dir/domain/task_scheduling/adapter/scheduler_adapter.c.o
+libecho_runtime.a: CMakeFiles/echo_runtime.dir/domain/task_scheduling/aggregate/scheduler.c.o
+libecho_runtime.a: CMakeFiles/echo_runtime.dir/domain/task_scheduling/events/scheduler_events.c.o
+libecho_runtime.a: CMakeFiles/echo_runtime.dir/shared/handles/file_handle_manager.c.o
+libecho_runtime.a: CMakeFiles/echo_runtime.dir/shared/handles/socket_handle_manager.c.o
+libecho_runtime.a: CMakeFiles/echo_runtime.dir/shared/result/result.c.o
+libecho_runtime.a: CMakeFiles/echo_runtime.dir/infrastructure/event/bus_impl.c.o
+libecho_runtime.a: CMakeFiles/echo_runtime.dir/infrastructure/event/event_bus_initializer.c.o
 libecho_runtime.a: CMakeFiles/echo_runtime.dir/build.make
 libecho_runtime.a: CMakeFiles/echo_runtime.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/Users/meetai/source/echo-lang/runtime/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Linking C static library libecho_runtime.a"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/Users/meetai/source/echo-lang/runtime/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_31) "Linking C static library libecho_runtime.a"
 	$(CMAKE_COMMAND) -P CMakeFiles/echo_runtime.dir/cmake_clean_target.cmake
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/echo_runtime.dir/link.txt --verbose=$(VERBOSE)
 

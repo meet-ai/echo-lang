@@ -1,0 +1,17 @@
+// 测试 string.split() 使用新的类型转换语法
+// 验证 []string(result) 类型转换是否正常工作
+
+import string
+
+func main() -> int {
+    // 测试 string.split() 函数
+    // 这个函数现在使用 []string(result) 语法，从 StringSplitResult* 转换
+    let s: string = "hello,world,test"
+    let parts: []string = s.split(",")
+    
+    // 验证分割结果
+    // parts 应该包含 ["hello", "world", "test"]
+    // 注意：这里只是编译测试，不验证运行时行为
+    
+    return 0
+}

@@ -5,8 +5,8 @@
 #include <string.h>
 #include <unistd.h>
 
-// 声明全局变量
-extern struct Task* current_task;
+// 声明全局变量（使用新的Task聚合根类型，已在scheduler.h中声明）
+// extern Task* current_task;  // 已在scheduler.h中声明，这里不需要重复声明
 
 // 创建处理器
 Processor* processor_create(uint32_t id, uint32_t max_queue_size) {
@@ -68,8 +68,9 @@ bool processor_push_local(Processor* processor, Task* task) {
     processor->queue_size++;
     processor->tasks_processed++;
 
+    TaskID task_id = task_get_id(task);  // 使用新的聚合根方法
     printf("DEBUG: Processor %u pushed task %llu, queue size: %u\n",
-           processor->id, task->id, processor->queue_size);
+           processor->id, task_id, processor->queue_size);
 
     pthread_mutex_unlock(&processor->lock);
     return true;
@@ -131,8 +132,9 @@ Task* processor_steal_local(Processor* processor) {
     task->next = NULL; // 清除next指针
     processor->queue_size--;
 
+    TaskID task_id = task_get_id(task);  // 使用新的聚合根方法
     printf("DEBUG: Processor %u stole task %llu, queue size: %u\n",
-           processor->id, task->id, processor->queue_size);
+           processor->id, task_id, processor->queue_size);
 
     pthread_mutex_unlock(&processor->lock);
     return task;

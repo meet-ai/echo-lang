@@ -1,0 +1,34 @@
+// package_from_import_test.eo - from ... import 语法测试
+// 测试：元素级导入、相对路径导入、别名导入
+
+package main
+
+// 测试1：from ... import 单个元素
+from "math" import add;
+
+// 测试2：from ... import 多个元素
+from "utils" import helper, format;
+
+// 测试3：from ... import 带别名
+from "math" import sqrt as squareRoot;
+
+func main() {
+    print "=== Package From Import Test ==="
+    
+    // 测试单个元素导入
+    let sum = add(10, 20)
+    print "Add result: " + sum
+    
+    // 测试多个元素导入
+    let helperValue = helper()
+    print "Helper result: " + helperValue
+    
+    let formatted = format("test message")
+    print "Formatted: " + formatted
+    
+    // 测试别名导入
+    let sqrtResult = squareRoot(16)
+    print "Square root (aliased): " + sqrtResult
+    
+    print "Package from import test completed"
+}

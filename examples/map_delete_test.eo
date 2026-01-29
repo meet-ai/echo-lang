@@ -1,0 +1,38 @@
+// map_delete_test.eo - Map删除操作测试
+// 测试 delete(map, key) 语法
+
+func test_map_delete() -> void {
+    print "=== Testing Map Delete Operation ==="
+    
+    // 创建一个map并添加一些键值对
+    let mut headers: map[string]string = {}
+    headers["Content-Type"] = "application/json"
+    headers["User-Agent"] = "Echo-Client/1.0"
+    headers["Accept"] = "text/html"
+    headers["Authorization"] = "Bearer token123"
+    
+    print "Initial map created with 4 entries"
+    
+    // 测试1：删除存在的key
+    delete(headers, "User-Agent")
+    print "Deleted 'User-Agent' key"
+    
+    // 测试2：删除另一个存在的key
+    delete(headers, "Accept")
+    print "Deleted 'Accept' key"
+    
+    // 测试3：删除不存在的key（应该静默忽略，不报错）
+    delete(headers, "Nonexistent-Key")
+    print "Attempted to delete 'Nonexistent-Key' (should be silently ignored)"
+    
+    // 测试4：再次删除已删除的key（应该静默忽略）
+    delete(headers, "User-Agent")
+    print "Attempted to delete 'User-Agent' again (should be silently ignored)"
+    
+    print "Map delete operations completed"
+    print "Remaining keys should be: Content-Type, Authorization"
+}
+
+func main() -> void {
+    test_map_delete()
+}

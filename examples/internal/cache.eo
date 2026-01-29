@@ -1,0 +1,21 @@
+// internal/cache.eo - 内部缓存包
+// 用于测试 internal/ 路径限制
+// 注意：这个包只能被同一项目内的其他包导入
+
+package cache
+
+// 公开结构体：缓存项
+struct CacheItem {
+    key: string
+    value: string
+}
+
+// 公开函数：创建缓存项
+func newItem(key: string, value: string) CacheItem {
+    return CacheItem { key: key, value: value }
+}
+
+// 公开函数：获取缓存值
+func getValue(item: CacheItem) string {
+    return item.value
+}

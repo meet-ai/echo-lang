@@ -1,0 +1,48 @@
+// Map结构体键测试用例
+// 测试编译器生成的hash/equals函数是否正常工作
+
+struct User {
+    id: int
+    name: string
+}
+
+func main() -> int {
+    // 创建 map[User]string
+    let userMap: map[User]string = {}
+    
+    // 创建User结构体实例
+    let alice: User = {id: 1, name: "alice"}
+    let bob: User = {id: 2, name: "bob"}
+    let alice2: User = {id: 1, name: "alice"}
+    
+    // 将结构体作为键存储到Map
+    userMap[alice] = "admin"
+    userMap[bob] = "user"
+    
+    // 测试1：访问值（应该返回"admin"）
+    let role1: string = userMap[alice]
+    if role1 != "admin" {
+        return 1  // 测试失败
+    }
+    
+    // 测试2：使用相同的结构体值访问（应该返回"admin"）
+    let role2: string = userMap[alice2]
+    if role2 != "admin" {
+        return 2  // 测试失败
+    }
+    
+    // 测试3：访问不同的键（应该返回"user"）
+    let role3: string = userMap[bob]
+    if role3 != "user" {
+        return 3  // 测试失败
+    }
+    
+    // 测试4：更新值
+    userMap[alice] = "super_admin"
+    let role4: string = userMap[alice]
+    if role4 != "super_admin" {
+        return 4  // 测试失败
+    }
+    
+    return 0  // 所有测试通过
+}

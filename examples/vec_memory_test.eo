@@ -1,0 +1,27 @@
+// Vec 内存管理函数测试
+
+func test_vec_grow() {
+    let v = collections.new[int]()
+    // 测试 grow() 函数
+    // 注意：这里只是测试语法，实际的内存管理需要运行时支持
+    v.push(1)
+    v.push(2)
+    // grow() 会在 push() 时自动调用
+}
+
+func test_vec_reserve() {
+    let v = collections.new[int]()
+    // 测试 reserve() 函数
+    v.reserve(10)
+    assert v.capacity() >= 10
+}
+
+func test_vec_shrink_to_fit() {
+    let v = collections.new[int]()
+    v.push(1)
+    v.push(2)
+    v.push(3)
+    // 测试 shrink_to_fit() 函数
+    v.shrink_to_fit()
+    assert v.capacity() == v.len()
+}

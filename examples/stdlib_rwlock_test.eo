@@ -1,0 +1,26 @@
+// 标准库 RwLock 模块集成测试
+// 验证读写锁操作是否正确调用运行时函数
+
+import sync
+
+func main() -> int {
+    print_string("=== RwLock Module Integration Test ===\n")
+    
+    // 测试 new() 函数 - 调用 runtime_create_rwlock()
+    let mut rwlock = sync.new_rwlock(100)
+    print_string("RwLock new() called successfully\n")
+    
+    // 测试 read_lock() 函数 - 调用 runtime_rwlock_read_lock()
+    print_string("RwLock read_lock() test skipped (requires guard handling)\n")
+    
+    // 测试 write_lock() 函数 - 调用 runtime_rwlock_write_lock()
+    print_string("RwLock write_lock() test skipped (requires guard handling)\n")
+    
+    // 测试 unlock() 函数 - 通过 RwLockGuard 自动调用 runtime_rwlock_unlock()
+    print_string("RwLock unlock() test skipped (requires guard handling)\n")
+    
+    print_string("RwLock module test framework created\n")
+    print_string("Note: Full tests require guard pattern implementation\n")
+    
+    return 0
+}

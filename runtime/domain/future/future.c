@@ -1,9 +1,9 @@
 #include "future.h"
 #include "../../shared/types/common_types.h"
-#include "../task/task.h"
+#include "../task_execution/aggregate/task.h"  // 使用新的Task聚合根
 #include "../coroutine/coroutine.h"
-#include "../scheduler/scheduler.h"
-#include "../scheduler/processor.h"
+#include "../scheduler/concurrency/scheduler.h"  // 使用concurrency调度器
+#include "../scheduler/concurrency/processor.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -107,6 +107,18 @@ void future_destroy(Future* future) {
     free(future);
 }
 
+// 获取Future ID
+uint64_t future_get_id(Future* future) {
+    if (!future) return 0;
+    return future->id;
+}
+
+// 获取Future状态
+FutureState future_get_state(Future* future) {
+    if (!future) return FUTURE_PENDING;
+    return future->state;
+}
+
 // 默认的poll实现（真正的异步等待）
 struct PollResult future_default_poll(Future* future, struct Task* task) {
     struct PollResult result = { POLL_PENDING, NULL };
@@ -184,8 +196,12 @@ void future_wake_waiters(Future* future) {
         if (task) {
             printf("DEBUG: Waking task %llu waiting for future %llu\n", task->id, future->id);
             
-            // 唤醒任务（将状态从 TASK_WAITING 改为 TASK_READY）
-            task_wake(task);
+            // 处理Future完成：调用task_handle_future_resolved来处理任务状态转换
+            // 这会将任务状态从 TASK_STATUS_WAITING 改为 TASK_STATUS_RUNNING
+            int result = task_handle_future_resolved(task, future->id, future->result);
+            if (result != 0) {
+                printf("DEBUG: Failed to handle future resolved for task %llu\n", task->id);
+            }
             
             // 如果任务有关联的协程，恢复协程状态
             if (task->coroutine) {

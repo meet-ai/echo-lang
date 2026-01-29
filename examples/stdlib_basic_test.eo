@@ -1,0 +1,83 @@
+// stdlib_basic_test.eo - 标准库基本功能测试
+// 测试标准库的核心功能，验证基本用法
+
+import core
+import collections
+import string
+import time
+
+func main() -> int {
+    print "=== Testing Standard Library ==="
+    
+    // ==================== 1. Option[T] 测试 ====================
+    print "\n--- Option[T] Tests ---"
+    let opt1: Option[int] = Some(42)
+    let opt2: Option[int] = None
+    
+    match opt1 {
+        Some(v) => print "Option value: " + v
+        None => print "Option is None"
+    }
+    
+    // 测试扩展方法
+    let result1 = opt1.ok_or("no value")
+    print "Option to Result: " + result1
+    
+    // ==================== 2. Result[T, E] 测试 ====================
+    print "\n--- Result[T, E] Tests ---"
+    let res1: Result[int, string] = Ok(100)
+    let res2: Result[int, string] = Err("error occurred")
+    
+    match res1 {
+        Ok(v) => print "Result value: " + v
+        Err(e) => print "Result error: " + e
+    }
+    
+    // 测试扩展方法
+    let opt3 = res1.ok()
+    print "Result to Option: " + opt3
+    
+    // ==================== 3. Vec[T] 测试 ====================
+    print "\n--- Vec[T] Tests ---"
+    // 注意：collections.new[int]() 需要泛型函数调用支持，暂时跳过
+    // 当前解析器可能不支持泛型函数调用语法
+    print "Vec tests skipped (requires generic function call support)"
+    
+    // ==================== 4. Duration 测试 ====================
+    print "\n--- Duration Tests ---"
+    let d1 = time.from_secs(60)
+    let d2 = time.from_millis(500)
+    
+    print "Duration 1 (60s) as seconds: " + d1.as_secs()
+    print "Duration 2 (500ms) as millis: " + d2.as_millis()
+    
+    let d3 = d1.add(d2)
+    print "Duration sum: " + d3.as_secs() + " seconds"
+    
+    // ==================== 5. Time 测试 ====================
+    print "\n--- Time Tests ---"
+    let t1 = time.from_unix(1609459200)  // 2021-01-01 00:00:00 UTC
+    print "Time unix: " + t1.unix()
+    
+    let t2 = t1.add(time.from_hours(1))
+    print "Time + 1 hour: " + t2.unix()
+    
+    // ==================== 6. String 扩展方法测试 ====================
+    print "\n--- String Extension Tests ---"
+    let s = "Hello, World!"
+    print "String length: " + s.len()
+    print "String is empty: " + s.is_empty()
+    
+    // ==================== 7. StringBuilder 测试 ====================
+    print "\n--- StringBuilder Tests ---"
+    let mut builder = string.new()
+    builder.append_str("Hello")
+    builder.append_str(", ")
+    builder.append_str("World")
+    
+    let result = builder.to_string()
+    print "StringBuilder result: " + result
+    
+    print "\n=== Standard Library Tests Completed ==="
+    return 0
+}

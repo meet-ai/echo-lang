@@ -1,0 +1,36 @@
+// math.eo - 数学工具包
+// 用于测试包导入功能
+
+package math
+
+// 公开函数：加法
+func add(a: int, b: int) int {
+    return a + b
+}
+
+// 公开函数：减法
+func subtract(a: int, b: int) int {
+    return a - b
+}
+
+// 公开函数：乘法
+func multiply(a: int, b: int) int {
+    return a * b
+}
+
+// 公开函数：平方根（简化版）
+func sqrt(n: int) int {
+    if n <= 0 {
+        return 0
+    }
+    if n == 1 {
+        return 1
+    }
+    // 简化实现
+    return n / 2
+}
+
+// 私有函数：内部辅助函数
+private func internalHelper() int {
+    return 100
+}

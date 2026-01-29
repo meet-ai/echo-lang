@@ -1,0 +1,64 @@
+// core/traits.eo - 核心 Trait 定义
+// 定义标准库中的核心 Trait，用于类型约束和泛型编程
+
+package core
+
+// Ordering 枚举：用于比较操作的结果
+enum Ordering {
+    Less,
+    Equal,
+    Greater
+}
+
+// Clone Trait：可克隆类型
+// 提供 clone() 方法，用于创建类型的深拷贝
+trait Clone[T] {
+    func clone() -> T
+}
+
+// Eq Trait：可比较相等
+// 提供 eq() 和 ne() 方法，用于判断两个值是否相等
+trait Eq[T] {
+    func eq(other: T) -> bool
+    func ne(other: T) -> bool {
+        return !self.eq(other)
+    }
+}
+
+// Ord Trait：可排序
+// 提供 cmp() 方法用于比较，以及 lt(), le(), gt(), ge() 等便利方法
+trait Ord[T] {
+    func cmp(other: T) -> Ordering
+    func lt(other: T) -> bool {
+        return self.cmp(other) == Ordering::Less
+    }
+    func le(other: T) -> bool {
+        let cmp = self.cmp(other)
+        return cmp == Ordering::Less || cmp == Ordering::Equal
+    }
+    func gt(other: T) -> bool {
+        return self.cmp(other) == Ordering::Greater
+    }
+    func ge(other: T) -> bool {
+        let cmp = self.cmp(other)
+        return cmp == Ordering::Greater || cmp == Ordering::Equal
+    }
+}
+
+// Hash Trait：可哈希
+// 提供 hash() 方法，用于计算类型的哈希值
+trait Hash[T] {
+    func hash() -> u64
+}
+
+// Display Trait：可格式化显示
+// 提供 to_string() 方法，用于将类型转换为用户友好的字符串
+trait Display[T] {
+    func to_string() -> string
+}
+
+// Debug Trait：可调试显示
+// 提供 debug_string() 方法，用于调试时显示类型的详细信息
+trait Debug[T] {
+    func debug_string() -> string
+}

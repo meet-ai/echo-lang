@@ -1,0 +1,24 @@
+// utils.eo - 工具函数包
+// 用于测试包导入和访问控制
+
+package utils
+
+// 公开函数：格式化字符串
+func format(msg: string) string {
+    return "[FORMATTED] " + msg
+}
+
+// 公开函数：验证输入
+func validate(input: string) bool {
+    return len(input) > 0
+}
+
+// 公开函数：辅助函数
+func helper() int {
+    return internalHelper()  // 调用私有函数
+}
+
+// 私有函数：内部辅助函数
+private func internalHelper() int {
+    return 42
+}

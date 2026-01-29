@@ -1,0 +1,28 @@
+# Echo 项目配置文件示例
+# 复制此文件为 echo.toml 并修改为你的项目配置
+
+name = "echo-example"
+version = "1.0.0"
+description = "Echo 语言示例项目"
+authors = ["开发者 <dev@example.com>"]
+
+[package]
+entry = "src/main.eo"
+module = "example"
+
+[dependencies]
+# 方式1：简单字符串格式（版本号）
+# 默认路径：vendor/{packageName}
+"mathlib" = "2.1.0"
+"utils" = "1.0.0"
+
+# 方式2：对象格式（详细配置）
+# 指定自定义路径
+"network/http" = { version = "1.0.0", path = "vendor/http" }
+
+# 方式3：对象格式（使用默认路径）
+# 只指定版本号，使用默认路径 vendor/{packageName}
+"logger" = { version = "0.5.0" }
+
+# 多级路径的包名
+"database/postgres" = { version = "1.2.0", path = "vendor/db/postgres" }

@@ -1,0 +1,40 @@
+// map_string_int_test.eo - Map[string]int 类型支持测试
+
+func main() -> int {
+    print "=== Testing map[string]int ==="
+    
+    // 创建一个空map[string]int
+    let scores: map[string]int = {}
+    
+    // 测试设置键值对
+    scores["alice"] = 95
+    scores["bob"] = 87
+    scores["charlie"] = 92
+    
+    print "Map initialized with 3 entries"
+    
+    // 测试获取值
+    let aliceScore: int = scores["alice"]
+    print aliceScore  // 应该输出 95
+    
+    let bobScore: int = scores["bob"]
+    print bobScore  // 应该输出 87
+    
+    let charlieScore: int = scores["charlie"]
+    print charlieScore  // 应该输出 92
+    
+    // 测试更新值
+    scores["alice"] = 98
+    let updatedScore: int = scores["alice"]
+    print updatedScore  // 应该输出 98
+    
+    // 测试删除键值对
+    delete(scores, "bob")
+    print "Deleted bob's score"
+    
+    // 测试删除后获取（应该返回0或NULL，取决于实现）
+    // 注意：当前实现可能返回NULL，需要处理
+    
+    print "=== Map[string]int test completed ==="
+    return 0
+}

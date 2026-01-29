@@ -33,7 +33,7 @@ func BuildContainer() (*Container, error) {
 	providers.ProvideFrontendServices(injector)
 	providers.ProvideBackendServices(injector)
 
-	// TODO: Add middleend and runtime providers when available
+	// 当前架构阶段仅启用 Frontend+Backend；middleend/runtime 为占位，随架构演进再注册并启用。
 	// providers.ProvideMiddleendServices(injector)
 	// providers.ProvideRuntimeServices(injector)
 
@@ -48,8 +48,7 @@ func BuildContainer() (*Container, error) {
 		return nil, err
 	}
 
-	// TODO: Build middleend and runtime modules when available
-	// Temporarily disable middleend and runtime modules to focus on backend
+	// 与上一致：middleend/runtime 模块暂不构建，当前聚焦 backend 代码生成。
 	var middleendModule *middleend.Module
 	var runtimeModule *runtime.Module
 
@@ -62,7 +61,7 @@ func BuildContainer() (*Container, error) {
 }
 
 // Compiler returns the main compiler service
+// 当前为占位：入口通过 cmd 直接组装 Frontend+Backend 调用，未经此接口；后续统一入口时可在此返回 Compiler 实现。
 func (c *Container) Compiler() Compiler {
-	// TODO: Implement compiler service
 	return nil
 }

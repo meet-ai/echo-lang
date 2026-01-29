@@ -19,6 +19,7 @@ func (m *MockIRManager) GetFunction(name string) (interface{}, bool) { return ni
 func (m *MockIRManager) GetCurrentFunction() interface{} { return nil }
 func (m *MockIRManager) SetCurrentFunction(fn interface{}) error { return nil }
 func (m *MockIRManager) CreateBasicBlock(name string) (interface{}, error) { return nil, nil }
+func (m *MockIRManager) GetBlockByName(name string) (interface{}, error) { return nil, nil }
 func (m *MockIRManager) GetCurrentBasicBlock() interface{} { return nil }
 func (m *MockIRManager) SetCurrentBasicBlock(block interface{}) error { return nil }
 func (m *MockIRManager) CreateAlloca(typ interface{}, name string) (interface{}, error) { return nil, nil }

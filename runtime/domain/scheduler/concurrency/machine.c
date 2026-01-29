@@ -53,8 +53,12 @@ Machine* machine_create(uint32_t id, struct Scheduler* scheduler) {
     machine->is_running = false;
     machine->should_stop = false;
 
-    // 初始化上下文（用于可能的上下文切换）
-    coro_context_init(&machine->context, NULL, 0, NULL, NULL);
+    // 分配并初始化上下文（用于可能的上下文切换）
+    // 注意：machine->context 是 context_t* 类型，需要先分配内存
+    machine->context = (context_t*)malloc(sizeof(context_t));
+    if (machine->context) {
+        context_init(machine->context, NULL, NULL);
+    }
 
     printf("DEBUG: Created Machine %u\n", id);
     return machine;
@@ -65,6 +69,12 @@ void machine_destroy(Machine* machine) {
     if (!machine) return;
 
     printf("DEBUG: Destroying Machine %u\n", machine->id);
+
+    // 释放上下文内存
+    if (machine->context) {
+        free(machine->context);
+        machine->context = NULL;
+    }
 
     // 停止线程
     if (machine->is_running) {

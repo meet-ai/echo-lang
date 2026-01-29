@@ -20,6 +20,7 @@ type ASTVisitor interface {
 	VisitAssignStmt(stmt *AssignStmt) interface{}
 	VisitFuncDef(stmt *FuncDef) interface{}
 	VisitReturnStmt(stmt *ReturnStmt) interface{}
+	VisitBlockStmt(stmt *BlockStmt) interface{}
 	VisitIfStmt(stmt *IfStmt) interface{}
 	VisitForStmt(stmt *ForStmt) interface{}
 	VisitWhileStmt(stmt *WhileStmt) interface{}
@@ -28,6 +29,7 @@ type ASTVisitor interface {
 	VisitAgentReceiveStmt(stmt *AgentReceiveStmt) interface{}
 	VisitBreakStmt(stmt *BreakStmt) interface{}
 	VisitContinueStmt(stmt *ContinueStmt) interface{}
+	VisitDeleteStmt(stmt *DeleteStmt) interface{}
 	VisitStructDef(stmt *StructDef) interface{}
 	VisitMethodDef(stmt *MethodDef) interface{}
 	VisitEnumDef(stmt *EnumDef) interface{}
@@ -69,10 +71,16 @@ type ASTVisitor interface {
 	VisitSelectStmt(stmt *SelectStmt) interface{}
 	VisitIndexExpr(expr *IndexExpr) interface{}
 	VisitLenExpr(expr *LenExpr) interface{}
+	VisitSizeOfExpr(expr *SizeOfExpr) interface{}
+	VisitTypeCastExpr(expr *TypeCastExpr) interface{}
+	VisitFunctionPointerExpr(expr *FunctionPointerExpr) interface{}
+	VisitAddressOfExpr(expr *AddressOfExpr) interface{}
+	VisitDereferenceExpr(expr *DereferenceExpr) interface{}
 	VisitSliceExpr(expr *SliceExpr) interface{}
 	VisitArrayMethodCallExpr(expr *ArrayMethodCallExpr) interface{}
 	VisitMethodCallExpr(expr *MethodCallExpr) interface{}
 	VisitStructLiteral(expr *StructLiteral) interface{}
+	VisitNamespaceAccessExpr(expr *NamespaceAccessExpr) interface{}
 	VisitProgram(program *Program) interface{}
 }
 
@@ -124,12 +132,25 @@ func (v *VarDecl) Accept(visitor ASTVisitor) interface{} {
 
 // AssignStmt 赋值语句节点
 type AssignStmt struct {
-	Name  string // 变量名
-	Value Expr   // 赋值表达式
+	Target Expr // 赋值目标（可以是 Identifier、StructAccess、IndexExpr 等）
+	Value  Expr // 赋值表达式
 }
 
 func (a *AssignStmt) String() string {
-	return fmt.Sprintf("AssignStmt{Name: %s, Value: %s}", a.Name, a.Value)
+	// 为了向后兼容，如果 Target 是 Identifier，显示 Name
+	if ident, ok := a.Target.(*Identifier); ok {
+		return fmt.Sprintf("AssignStmt{Name: %s, Value: %s}", ident.Name, a.Value)
+	}
+	return fmt.Sprintf("AssignStmt{Target: %s, Value: %s}", a.Target, a.Value)
+}
+
+// Name 返回赋值目标的名称（如果是 Identifier）
+// 为了向后兼容，保留此方法
+func (a *AssignStmt) Name() string {
+	if ident, ok := a.Target.(*Identifier); ok {
+		return ident.Name
+	}
+	return ""
 }
 
 func (a *AssignStmt) Accept(visitor ASTVisitor) interface{} {
@@ -186,6 +207,23 @@ func (r *ReturnStmt) Accept(visitor ASTVisitor) interface{} {
 	return visitor.VisitReturnStmt(r)
 }
 
+// BlockStmt 块语句节点（将多条语句作为一条语句使用，如独立代码块 { stmt1; stmt2; }）
+type BlockStmt struct {
+	Statements []ASTNode
+}
+
+func (b *BlockStmt) String() string {
+	parts := make([]string, len(b.Statements))
+	for i, s := range b.Statements {
+		parts[i] = s.String()
+	}
+	return fmt.Sprintf("BlockStmt{Statements: [%s]}", strings.Join(parts, ", "))
+}
+
+func (b *BlockStmt) Accept(visitor ASTVisitor) interface{} {
+	return visitor.VisitBlockStmt(b)
+}
+
 // IfStmt if-else 语句节点
 type IfStmt struct {
 	Condition Expr
@@ -203,10 +241,24 @@ func (i *IfStmt) Accept(visitor ASTVisitor) interface{} {
 
 // ForStmt for 循环节点
 type ForStmt struct {
-	Init      ASTNode   // 初始化语句
-	Condition Expr      // 循环条件
-	Increment ASTNode   // 递增语句
+	Init      ASTNode   // 初始化语句（C风格for循环）
+	Condition Expr      // 循环条件（C风格for循环）
+	Increment ASTNode   // 递增语句（C风格for循环）
 	Body      []ASTNode // 循环体
+	
+	// 范围循环支持（for i in start..end）
+	LoopVar   string    // 循环变量名（如 "i"）
+	RangeStart Expr     // 范围起始值（如 0）
+	RangeEnd   Expr     // 范围结束值（如 n）
+	IsRangeLoop bool    // 是否为范围循环
+	
+	// 迭代循环支持（for item in collection）
+	IterVar   string    // 迭代变量名（如 "item", "ch"）
+	IterKeyVar string   // 键变量名（用于map迭代，如 "key"）
+	IterValueVar string // 值变量名（用于map迭代，如 "value"）
+	IterCollection Expr // 被迭代的集合（如数组、字符串、map）
+	IsIterLoop bool    // 是否为迭代循环
+	IsMapIter  bool    // 是否为map迭代（for (key, value) in obj）
 }
 
 func (f *ForStmt) String() string {
@@ -294,6 +346,21 @@ func (c *ContinueStmt) Accept(visitor ASTVisitor) interface{} {
 	return visitor.VisitContinueStmt(c)
 }
 
+// DeleteStmt delete语句（用于删除Map中的键值对）
+// 语法：delete(map, key)
+type DeleteStmt struct {
+	Map Expr // map表达式
+	Key Expr // key表达式
+}
+
+func (d *DeleteStmt) String() string {
+	return fmt.Sprintf("DeleteStmt{Map: %s, Key: %s}", d.Map.String(), d.Key.String())
+}
+
+func (d *DeleteStmt) Accept(visitor ASTVisitor) interface{} {
+	return visitor.VisitDeleteStmt(d)
+}
+
 // StructDef 结构体定义节点
 type StructDef struct {
 	Name                string               // 结构体名
@@ -372,6 +439,25 @@ func (s *StructLiteral) Accept(visitor ASTVisitor) interface{} {
 
 func (s *StructLiteral) AcceptExpr(visitor ExprVisitor) interface{} {
 	return visitor.VisitStructLiteral(s)
+}
+
+// NamespaceAccessExpr 命名空间访问表达式
+// 例如：net::bind
+type NamespaceAccessExpr struct {
+	Namespace string // 命名空间名（如 "net"）
+	Member    string // 成员名（如 "bind"）
+}
+
+func (n *NamespaceAccessExpr) String() string {
+	return fmt.Sprintf("NamespaceAccessExpr{Namespace: %s, Member: %s}", n.Namespace, n.Member)
+}
+
+func (n *NamespaceAccessExpr) Accept(visitor ASTVisitor) interface{} {
+	return visitor.VisitNamespaceAccessExpr(n)
+}
+
+func (n *NamespaceAccessExpr) AcceptExpr(visitor ExprVisitor) interface{} {
+	return visitor.VisitNamespaceAccessExpr(n)
 }
 
 // MatchExpr 模式匹配表达式
@@ -904,6 +990,127 @@ func (l *LenExpr) AcceptExpr(visitor ExprVisitor) interface{} {
 	return visitor.VisitLenExpr(l)
 }
 
+// SizeOfExpr sizeof 表达式节点
+// 表示 sizeof(T) 表达式，用于获取类型大小
+type SizeOfExpr struct {
+	TypeName string // 类型名称（如 "int", "T", "Point"）
+}
+
+func NewSizeOfExpr(typeName string) *SizeOfExpr {
+	return &SizeOfExpr{TypeName: typeName}
+}
+
+func (s *SizeOfExpr) String() string {
+	return fmt.Sprintf("SizeOfExpr{Type: %s}", s.TypeName)
+}
+
+func (s *SizeOfExpr) Accept(visitor ASTVisitor) interface{} {
+	return visitor.VisitSizeOfExpr(s)
+}
+
+func (s *SizeOfExpr) AcceptExpr(visitor ExprVisitor) interface{} {
+	return visitor.VisitSizeOfExpr(s)
+}
+
+// TypeCastExpr 类型转换表达式节点
+// 表示 expr as Type 表达式，用于显式类型转换
+// 例如：new_ptr as []T
+type TypeCastExpr struct {
+	Expr      Expr   // 要转换的表达式
+	TargetType string // 目标类型（如 "[]T", "*i8"）
+}
+
+func NewTypeCastExpr(expr Expr, targetType string) *TypeCastExpr {
+	return &TypeCastExpr{
+		Expr:      expr,
+		TargetType: targetType,
+	}
+}
+
+func (t *TypeCastExpr) String() string {
+	return fmt.Sprintf("TypeCastExpr{Expr: %s, TargetType: %s}", t.Expr.String(), t.TargetType)
+}
+
+func (t *TypeCastExpr) Accept(visitor ASTVisitor) interface{} {
+	return visitor.VisitTypeCastExpr(t)
+}
+
+func (t *TypeCastExpr) AcceptExpr(visitor ExprVisitor) interface{} {
+	return visitor.VisitTypeCastExpr(t)
+}
+
+// FunctionPointerExpr 函数指针表达式节点
+// 表示 &func_name 表达式，用于获取函数指针
+type FunctionPointerExpr struct {
+	FunctionName string // 函数名称
+}
+
+func NewFunctionPointerExpr(functionName string) *FunctionPointerExpr {
+	return &FunctionPointerExpr{FunctionName: functionName}
+}
+
+func (f *FunctionPointerExpr) String() string {
+	return fmt.Sprintf("FunctionPointerExpr{Function: %s}", f.FunctionName)
+}
+
+func (f *FunctionPointerExpr) Accept(visitor ASTVisitor) interface{} {
+	return visitor.VisitFunctionPointerExpr(f)
+}
+
+func (f *FunctionPointerExpr) AcceptExpr(visitor ExprVisitor) interface{} {
+	return visitor.VisitFunctionPointerExpr(f)
+}
+
+// AddressOfExpr 取地址表达式节点
+// 表示 &expression 表达式，用于获取变量、数组元素、结构体字段等的地址
+type AddressOfExpr struct {
+	Operand Expr // 操作数表达式（可以是标识符、索引访问、字段访问等）
+}
+
+func NewAddressOfExpr(operand Expr) *AddressOfExpr {
+	return &AddressOfExpr{Operand: operand}
+}
+
+func (a *AddressOfExpr) String() string {
+	return fmt.Sprintf("AddressOfExpr{Operand: %s}", a.Operand)
+}
+
+func (a *AddressOfExpr) Accept(visitor ASTVisitor) interface{} {
+	return visitor.VisitAddressOfExpr(a)
+}
+
+func (a *AddressOfExpr) AcceptExpr(visitor ExprVisitor) interface{} {
+	return visitor.VisitAddressOfExpr(a)
+}
+
+// 确保 AddressOfExpr 实现 Expr 接口
+var _ Expr = (*AddressOfExpr)(nil)
+
+// DereferenceExpr 解引用表达式节点
+// 表示 *expression 表达式，用于解引用指针，获取指针指向的值
+type DereferenceExpr struct {
+	Operand Expr // 操作数表达式（必须是指针类型）
+}
+
+func NewDereferenceExpr(operand Expr) *DereferenceExpr {
+	return &DereferenceExpr{Operand: operand}
+}
+
+func (d *DereferenceExpr) String() string {
+	return fmt.Sprintf("DereferenceExpr{Operand: %s}", d.Operand)
+}
+
+func (d *DereferenceExpr) Accept(visitor ASTVisitor) interface{} {
+	return visitor.VisitDereferenceExpr(d)
+}
+
+func (d *DereferenceExpr) AcceptExpr(visitor ExprVisitor) interface{} {
+	return visitor.VisitDereferenceExpr(d)
+}
+
+// 确保 DereferenceExpr 实现 Expr 接口
+var _ Expr = (*DereferenceExpr)(nil)
+
 // SliceExpr 数组切片表达式
 type SliceExpr struct {
 	Array Expr // 被切片的数组表达式
@@ -1405,6 +1612,11 @@ type ExprVisitor interface {
 	VisitSpawnExpr(expr *SpawnExpr) interface{}
 	VisitIndexExpr(expr *IndexExpr) interface{}
 	VisitLenExpr(expr *LenExpr) interface{}
+	VisitSizeOfExpr(expr *SizeOfExpr) interface{}
+	VisitTypeCastExpr(expr *TypeCastExpr) interface{}
+	VisitFunctionPointerExpr(expr *FunctionPointerExpr) interface{}
+	VisitAddressOfExpr(expr *AddressOfExpr) interface{}
+	VisitDereferenceExpr(expr *DereferenceExpr) interface{}
 	VisitSliceExpr(expr *SliceExpr) interface{}
 	VisitArrayMethodCallExpr(expr *ArrayMethodCallExpr) interface{}
 	VisitMethodCallExpr(expr *MethodCallExpr) interface{}
@@ -1413,6 +1625,7 @@ type ExprVisitor interface {
 	VisitArrayLiteral(expr *ArrayLiteral) interface{}
 	VisitStructAccess(expr *StructAccess) interface{}
 	VisitStructLiteral(expr *StructLiteral) interface{}
+	VisitNamespaceAccessExpr(expr *NamespaceAccessExpr) interface{}
 }
 
 // Identifier 标识符表达式
@@ -1482,6 +1695,24 @@ func (b *BinaryExpr) AcceptExpr(visitor ExprVisitor) interface{} {
 	return visitor.VisitBinaryExpr(b)
 }
 
+// TernaryExpr 三元表达式（条件表达式）
+// 格式：if condition { value1 } else { value2 }
+type TernaryExpr struct {
+	Condition Expr // 条件表达式
+	ThenValue Expr // then 分支的值
+	ElseValue Expr // else 分支的值
+}
+
+func (t *TernaryExpr) String() string {
+	return fmt.Sprintf("TernaryExpr{Condition: %s, Then: %s, Else: %s}", t.Condition, t.ThenValue, t.ElseValue)
+}
+
+func (t *TernaryExpr) AcceptExpr(visitor ExprVisitor) interface{} {
+	// 注意：ExprVisitor 接口可能没有 VisitTernaryExpr 方法
+	// 暂时返回 nil，后续需要添加 VisitTernaryExpr 到 ExprVisitor 接口
+	return nil
+}
+
 // FuncCall 函数调用节点
 type FuncCall struct {
 	Name     string   // 函数名
@@ -1503,6 +1734,35 @@ func (f *FuncCall) Accept(visitor ASTVisitor) interface{} {
 
 func (f *FuncCall) AcceptExpr(visitor ExprVisitor) interface{} {
 	return visitor.VisitFuncCall(f)
+}
+
+// FromImportElement 表示 from ... import 的单个元素（名称及可选别名）
+type FromImportElement struct {
+	Name  string // 导入的符号名
+	Alias string // 别名，空表示无别名
+}
+
+// FromImportStatement 表示 from <path> import elem1, elem2 ... 语句
+// 用于类型推断阶段将导入的符号注册到 functionTable/symbolTable
+type FromImportStatement struct {
+	ImportPath string               // 导入路径，如 "math"、"utils"
+	Elements   []FromImportElement  // 导入的元素列表
+}
+
+func (f *FromImportStatement) String() string {
+	parts := make([]string, len(f.Elements))
+	for i, e := range f.Elements {
+		if e.Alias != "" {
+			parts[i] = e.Name + " as " + e.Alias
+		} else {
+			parts[i] = e.Name
+		}
+	}
+	return fmt.Sprintf("FromImport{from %s import [%s]}", f.ImportPath, strings.Join(parts, ", "))
+}
+
+func (f *FromImportStatement) Accept(visitor ASTVisitor) interface{} {
+	return nil
 }
 
 // Program 程序AST根节点

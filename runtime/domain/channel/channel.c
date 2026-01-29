@@ -1,42 +1,69 @@
 #include "channel.h"
-#include "../coroutine/coroutine.h"
-#include "../task/task.h"
+// 注意：不再直接包含旧的coroutine.h，因为新的Channel聚合根已经包含了新的coroutine.h
+// #include "../coroutine/coroutine.h"  // 已移除，避免与新的coroutine.h冲突
+#include "../task_execution/aggregate/task.h"  // 使用新的Task聚合根
 #include "../scheduler/scheduler.h"
+#include "../channel_communication/adapter/channel_adapter.h"  // 使用适配层（会间接包含新的coroutine.h）
+#include "../channel_communication/aggregate/channel.h"  // 使用新的Channel聚合根
+#include "../task_execution/repository/task_repository.h"  // 使用TaskRepository
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 // 创建通道
+// TODO: 阶段4后续重构：应该直接使用新的Channel聚合根，而不是创建旧的Channel结构
+// 当前暂时创建旧的Channel结构，同时创建新的Channel聚合根并注册映射
 void* channel_create_impl() {
     printf("DEBUG: channel_create_impl called\n");
-    Channel* ch = (Channel*)malloc(sizeof(Channel));
-    if (!ch) {
-        printf("DEBUG: Failed to allocate channel\n");
+    
+    // 创建新的Channel聚合根（使用新的工厂方法）
+    extern Channel* channel_factory_create_unbuffered(struct EventBus* event_bus);
+    // 从适配层获取EventBus
+    extern EventBus* channel_adapter_get_event_bus(void);
+    EventBus* event_bus = channel_adapter_get_event_bus();
+    Channel* new_channel = channel_factory_create_unbuffered(event_bus);
+    if (!new_channel) {
+        printf("DEBUG: Failed to create new channel aggregate\n");
         return NULL;
     }
+    
+    // 创建旧的Channel结构（用于向后兼容）
+    Channel* legacy_channel = (Channel*)malloc(sizeof(Channel));
+    if (!legacy_channel) {
+        printf("DEBUG: Failed to allocate legacy channel\n");
+        channel_aggregate_destroy(new_channel);  // 清理新创建的聚合根
+        return NULL;
+    }
+    
+    // 从新的聚合根获取ID（用于兼容）
+    uint64_t channel_id = channel_get_id(new_channel);
+    legacy_channel->id = channel_id;
+    legacy_channel->capacity = 0; // 无缓冲通道（默认）
+    legacy_channel->size = 0;
+    legacy_channel->read_pos = 0;
+    legacy_channel->write_pos = 0;
+    legacy_channel->state = CHANNEL_OPEN;
+    legacy_channel->buffer = NULL; // 无缓冲区（无缓冲通道不需要）
+    legacy_channel->temp_value = NULL; // 临时值存储
+    legacy_channel->sender_queue = NULL;  // 旧的队列（不再使用，但保留用于兼容）
+    legacy_channel->receiver_queue = NULL;  // 旧的队列（不再使用，但保留用于兼容）
 
-    static uint64_t next_channel_id = 1;
-    ch->id = next_channel_id++;
-    ch->capacity = 0; // 无缓冲通道（默认）
-    ch->size = 0;
-    ch->read_pos = 0;
-    ch->write_pos = 0;
-    ch->state = CHANNEL_OPEN;
-    ch->buffer = NULL; // 无缓冲区（无缓冲通道不需要）
-    ch->temp_value = NULL; // 临时值存储
-    ch->sender_queue = NULL;
-    ch->receiver_queue = NULL;
+    // 初始化同步机制（旧的Channel结构需要，但实际使用新的聚合根的同步机制）
+    pthread_mutex_init(&legacy_channel->lock, NULL);
+    pthread_cond_init(&legacy_channel->send_cond, NULL);
+    pthread_cond_init(&legacy_channel->recv_cond, NULL);
 
-    // 初始化同步机制
-    pthread_mutex_init(&ch->lock, NULL);
-    pthread_cond_init(&ch->send_cond, NULL);
-    pthread_cond_init(&ch->recv_cond, NULL);
-
-    printf("DEBUG: Created unbuffered channel %llu\n", ch->id);
-    return ch;
+    // 注册映射：将旧的Channel*映射到新的Channel聚合根
+    channel_adapter_register_mapping(legacy_channel, new_channel);
+    
+    printf("DEBUG: Created unbuffered channel %llu (legacy: %p, new: %p)\n", 
+           channel_id, legacy_channel, new_channel);
+    return legacy_channel;
 }
 
 // 创建有缓冲通道
+// TODO: 阶段4后续重构：应该直接使用新的Channel聚合根，而不是创建旧的Channel结构
+// 当前暂时创建旧的Channel结构，同时创建新的Channel聚合根并注册映射
 void* channel_create_buffered_impl(uint32_t capacity) {
     if (capacity == 0) {
         printf("DEBUG: Cannot create buffered channel with capacity 0, use channel_create_impl() instead\n");
@@ -44,46 +71,69 @@ void* channel_create_buffered_impl(uint32_t capacity) {
     }
 
     printf("DEBUG: channel_create_buffered_impl called with capacity %u\n", capacity);
-    Channel* ch = (Channel*)malloc(sizeof(Channel));
-    if (!ch) {
-        printf("DEBUG: Failed to allocate channel\n");
+    
+    // 创建新的Channel聚合根（使用新的工厂方法）
+    extern Channel* channel_factory_create_buffered(uint32_t capacity, struct EventBus* event_bus);
+    // 从适配层获取EventBus
+    extern EventBus* channel_adapter_get_event_bus(void);
+    EventBus* event_bus = channel_adapter_get_event_bus();
+    Channel* new_channel = channel_factory_create_buffered(capacity, event_bus);
+    if (!new_channel) {
+        printf("DEBUG: Failed to create new buffered channel aggregate\n");
         return NULL;
     }
+    
+    // 创建旧的Channel结构（用于向后兼容）
+    Channel* legacy_channel = (Channel*)malloc(sizeof(Channel));
+    if (!legacy_channel) {
+        printf("DEBUG: Failed to allocate legacy channel\n");
+        channel_aggregate_destroy(new_channel);  // 清理新创建的聚合根
+        return NULL;
+    }
+    
+    // 从新的聚合根获取ID和容量（用于兼容）
+    uint64_t channel_id = channel_get_id(new_channel);
+    uint32_t channel_capacity = channel_get_capacity(new_channel);
+    legacy_channel->id = channel_id;
+    legacy_channel->capacity = channel_capacity;
+    legacy_channel->size = 0;
+    legacy_channel->read_pos = 0;
+    legacy_channel->write_pos = 0;
+    legacy_channel->state = CHANNEL_OPEN;
+    legacy_channel->temp_value = NULL;
+    legacy_channel->sender_queue = NULL;  // 旧的队列（不再使用，但保留用于兼容）
+    legacy_channel->receiver_queue = NULL;  // 旧的队列（不再使用，但保留用于兼容）
 
-    static uint64_t next_channel_id = 1;
-    ch->id = next_channel_id++;
-    ch->capacity = capacity;
-    ch->size = 0;
-    ch->read_pos = 0;
-    ch->write_pos = 0;
-    ch->state = CHANNEL_OPEN;
-    ch->temp_value = NULL;
-    ch->sender_queue = NULL;
-    ch->receiver_queue = NULL;
-
-    // 分配环形缓冲区
-    ch->buffer = (void**)malloc(sizeof(void*) * capacity);
-    if (!ch->buffer) {
-        printf("DEBUG: Failed to allocate buffer for channel %llu\n", ch->id);
-        free(ch);
+    // 分配环形缓冲区（旧的Channel结构需要，但实际使用新的聚合根的缓冲区）
+    legacy_channel->buffer = (void**)malloc(sizeof(void*) * capacity);
+    if (!legacy_channel->buffer) {
+        printf("DEBUG: Failed to allocate buffer for legacy channel %llu\n", channel_id);
+        free(legacy_channel);
+        channel_aggregate_destroy(new_channel);  // 清理新创建的聚合根
         return NULL;
     }
 
     // 初始化缓冲区为 NULL
     for (uint32_t i = 0; i < capacity; i++) {
-        ch->buffer[i] = NULL;
+        legacy_channel->buffer[i] = NULL;
     }
 
-    // 初始化同步机制
-    pthread_mutex_init(&ch->lock, NULL);
-    pthread_cond_init(&ch->send_cond, NULL);
-    pthread_cond_init(&ch->recv_cond, NULL);
+    // 初始化同步机制（旧的Channel结构需要，但实际使用新的聚合根的同步机制）
+    pthread_mutex_init(&legacy_channel->lock, NULL);
+    pthread_cond_init(&legacy_channel->send_cond, NULL);
+    pthread_cond_init(&legacy_channel->recv_cond, NULL);
 
-    printf("DEBUG: Created buffered channel %llu with capacity %u\n", ch->id, capacity);
-    return ch;
+    // 注册映射：将旧的Channel*映射到新的Channel聚合根
+    channel_adapter_register_mapping(legacy_channel, new_channel);
+
+    printf("DEBUG: Created buffered channel %llu with capacity %u (legacy: %p, new: %p)\n", 
+           channel_id, capacity, legacy_channel, new_channel);
+    return legacy_channel;
 }
 
 // 发送数据到通道（真正的阻塞实现）
+// TODO: 阶段4后续重构：应该直接调用新的聚合根方法，而不是通过适配层
+// 当前暂时通过适配层调用新的聚合根方法
 void channel_send_impl(Channel* ch, void* value) {
     if (!ch) {
         printf("DEBUG: channel_send_impl called with NULL channel\n");
@@ -91,17 +141,72 @@ void channel_send_impl(Channel* ch, void* value) {
     }
 
     printf("DEBUG: channel_send_impl called on channel %llu with value %p\n", ch->id, value);
+    
+    // 获取TaskRepository（暂时使用全局TaskRepository）
+    TaskRepository* task_repo = channel_adapter_get_task_repository();
+    if (!task_repo) {
+        printf("DEBUG: channel_send_impl: TaskRepository not available, creating temporary one\n");
+        // TODO: 阶段4后续重构：应该通过依赖注入传递TaskRepository，而不是创建临时实例
+        extern TaskRepository* task_repository_create(void);
+        task_repo = task_repository_create();
+        if (!task_repo) {
+            printf("DEBUG: channel_send_impl: Failed to create TaskRepository\n");
+            return;
+        }
+        channel_adapter_set_task_repository(task_repo);
+    }
+    
+    // 通过适配层调用新的聚合根方法
+    int result = channel_adapter_send(ch, task_repo, value);
+    if (result != 0) {
+        printf("DEBUG: channel_send_impl: Failed to send via adapter (result=%d)\n", result);
+    }
+    // 旧的实现逻辑已移除，现在通过适配层调用新的聚合根方法
+    // 所有业务逻辑都在新的Channel聚合根中实现
+}
 
-    pthread_mutex_lock(&ch->lock);
-
-    // 检查通道是否已关闭
-    if (ch->state == CHANNEL_CLOSED) {
-        printf("DEBUG: Cannot send to closed channel %llu\n", ch->id);
-        pthread_mutex_unlock(&ch->lock);
-        return;
+// 从通道接收数据（真正的阻塞实现）
+// TODO: 阶段4后续重构：应该直接调用新的聚合根方法，而不是通过适配层
+// 当前暂时通过适配层调用新的聚合根方法
+void* channel_receive_impl(Channel* ch) {
+    if (!ch) {
+        printf("DEBUG: channel_receive_impl called with NULL channel\n");
+        return NULL;
     }
 
-    // 对于无缓冲通道（capacity == 0）
+    printf("DEBUG: channel_receive_impl called on channel %llu\n", ch->id);
+    
+    // 获取TaskRepository（暂时使用全局TaskRepository）
+    TaskRepository* task_repo = channel_adapter_get_task_repository();
+    if (!task_repo) {
+        printf("DEBUG: channel_receive_impl: TaskRepository not available, creating temporary one\n");
+        // TODO: 阶段4后续重构：应该通过依赖注入传递TaskRepository，而不是创建临时实例
+        extern TaskRepository* task_repository_create(void);
+        task_repo = task_repository_create();
+        if (!task_repo) {
+            printf("DEBUG: channel_receive_impl: Failed to create TaskRepository\n");
+            return NULL;
+        }
+        channel_adapter_set_task_repository(task_repo);
+    }
+    
+    // 通过适配层调用新的聚合根方法
+    void* result = channel_adapter_receive(ch, task_repo);
+    if (!result) {
+        printf("DEBUG: channel_receive_impl: Failed to receive via adapter\n");
+    }
+    // 旧的实现逻辑已移除，现在通过适配层调用新的聚合根方法
+    // 所有业务逻辑都在新的Channel聚合根中实现
+    return result;
+}
+
+// 旧的channel_receive_impl实现已移除，现在通过适配层调用新的聚合根方法
+// 以下代码保留作为参考，但不再执行
+#if 0
+void* channel_receive_impl_old(Channel* ch) {
+    pthread_mutex_lock(&ch->lock);
+    
+    // 对于无缓冲通道
     if (ch->capacity == 0) {
         // 检查是否有接收者在等待
         Coroutine* receiver = ch->receiver_queue;
@@ -120,15 +225,17 @@ void channel_send_impl(Channel* ch, void* value) {
             // 唤醒接收者协程
             // 如果接收者有关联的任务，唤醒任务
             if (receiver->task) {
-                Task* task = receiver->task;
-                pthread_mutex_lock(&task->mutex);
-                if (task->status == TASK_WAITING) {
-                    task->status = TASK_READY;
+                Task* task = (Task*)receiver->task;  // 类型转换：旧的struct Task* -> 新的Task*
+                // TODO: 阶段4需要更新为使用新的Task聚合根方法，而不是直接操作mutex和status
+                pthread_mutex_lock(&task->mutex);  // 旧的方式，阶段4更新
+                if (task->status == TASK_WAITING) {  // 旧的方式，阶段4更新
+                    task->status = TASK_READY;  // 旧的方式，阶段4更新
+                    TaskID task_id = task_get_id(task);  // 使用新的聚合根方法获取ID
                     printf("DEBUG: Waking task %llu for receiver coroutine %llu\n", 
-                           task->id, receiver->id);
-                    pthread_cond_signal(&task->cond);
+                           task_id, receiver->id);
+                    pthread_cond_signal(&task->cond);  // 旧的方式，阶段4更新
                 }
-                pthread_mutex_unlock(&task->mutex);
+                pthread_mutex_unlock(&task->mutex);  // 旧的方式，阶段4更新
             }
 
             // 恢复接收者协程状态
@@ -148,18 +255,21 @@ void channel_send_impl(Channel* ch, void* value) {
                     if (processor) {
                         extern bool processor_push_local(Processor* processor, Task* task);
                         processor_push_local(processor, receiver->task);
+                        TaskID task_id = task_get_id((Task*)receiver->task);  // 使用新的聚合根方法
                         printf("DEBUG: Pushed receiver task %llu back to processor queue\n", 
-                               receiver->task->id);
+                               task_id);
                     }
                 }
             }
         } else {
             // 没有接收者，发送者需要阻塞
             // 获取当前协程
-            extern struct Task* current_task;
+            // extern Task* current_task;  // 已在scheduler.h中声明
             Coroutine* sender = NULL;
-            if (current_task && current_task->coroutine) {
-                sender = current_task->coroutine;
+            // TODO: 阶段4需要更新为使用新的Task聚合根方法：task_get_coroutine(current_task)
+            if (current_task) {
+                const struct Coroutine* coroutine = task_get_coroutine(current_task);  // 使用新的聚合根方法
+                sender = (Coroutine*)coroutine;  // 类型转换
             }
 
             if (sender) {
@@ -175,10 +285,15 @@ void channel_send_impl(Channel* ch, void* value) {
                        sender->id, ch->id, value);
 
                 // 将任务状态设置为等待
+                // TODO: 阶段4需要更新为使用新的Task聚合根方法
+                // 新的Task聚合根没有mutex字段（同步在聚合根方法内部处理）
+                // 应该使用task_wait_for_future()等方法，而不是直接访问字段
                 if (current_task) {
-                    pthread_mutex_lock(&current_task->mutex);
-                    current_task->status = TASK_WAITING;
-                    pthread_mutex_unlock(&current_task->mutex);
+                    // TODO: 阶段4更新为：task_wait_for_future(current_task, future_id) 或类似方法
+                    // 当前暂时保留旧的方式（可能无法编译，需要在阶段4中一起更新）
+                    // pthread_mutex_lock(&current_task->mutex);  // 旧的方式，暂时注释
+                    // current_task->status = TASK_WAITING;  // 旧的方式，暂时注释
+                    // pthread_mutex_unlock(&current_task->mutex);  // 旧的方式，暂时注释
                 }
             }
 
@@ -224,10 +339,12 @@ void channel_send_impl(Channel* ch, void* value) {
         // 检查缓冲区是否已满
         if (ch->size >= ch->capacity) {
             // 缓冲区已满，发送者需要阻塞
-            extern struct Task* current_task;
+            // extern Task* current_task;  // 已在scheduler.h中声明
             Coroutine* sender = NULL;
-            if (current_task && current_task->coroutine) {
-                sender = current_task->coroutine;
+            // TODO: 阶段4需要更新为使用新的Task聚合根方法：task_get_coroutine(current_task)
+            if (current_task) {
+                const struct Coroutine* coroutine = task_get_coroutine(current_task);  // 使用新的聚合根方法
+                sender = (Coroutine*)coroutine;  // 类型转换
             }
 
             if (sender) {
@@ -289,15 +406,17 @@ void channel_send_impl(Channel* ch, void* value) {
             receiver->next = NULL;
 
             if (receiver->task) {
-                Task* task = receiver->task;
-                pthread_mutex_lock(&task->mutex);
-                if (task->status == TASK_WAITING) {
-                    task->status = TASK_READY;
+                Task* task = (Task*)receiver->task;  // 类型转换
+                // TODO: 阶段4需要更新为使用新的Task聚合根方法
+                pthread_mutex_lock(&task->mutex);  // 旧的方式，阶段4更新
+                if (task->status == TASK_WAITING) {  // 旧的方式，阶段4更新
+                    task->status = TASK_READY;  // 旧的方式，阶段4更新
+                    TaskID task_id = task_get_id(task);  // 使用新的聚合根方法
                     printf("DEBUG: Waking receiver task %llu for coroutine %llu\n",
-                           task->id, receiver->id);
-                    pthread_cond_signal(&task->cond);
+                           task_id, receiver->id);
+                    pthread_cond_signal(&task->cond);  // 旧的方式，阶段4更新
                 }
-                pthread_mutex_unlock(&task->mutex);
+                pthread_mutex_unlock(&task->mutex);  // 旧的方式，阶段4更新
             }
 
             receiver->state = COROUTINE_READY;
@@ -316,8 +435,9 @@ void channel_send_impl(Channel* ch, void* value) {
                     if (processor) {
                         extern bool processor_push_local(Processor* processor, Task* task);
                         processor_push_local(processor, receiver->task);
+                        TaskID task_id = task_get_id((Task*)receiver->task);  // 使用新的聚合根方法
                         printf("DEBUG: Pushed receiver task %llu back to processor queue\n",
-                               receiver->task->id);
+                               task_id);
                     }
                 }
             }
@@ -362,15 +482,17 @@ void* channel_receive_impl(Channel* ch) {
 
             // 唤醒发送者协程
             if (sender->task) {
-                Task* task = sender->task;
-                pthread_mutex_lock(&task->mutex);
-                if (task->status == TASK_WAITING) {
-                    task->status = TASK_READY;
+                Task* task = (Task*)sender->task;  // 类型转换
+                // TODO: 阶段4需要更新为使用新的Task聚合根方法
+                pthread_mutex_lock(&task->mutex);  // 旧的方式，阶段4更新
+                if (task->status == TASK_WAITING) {  // 旧的方式，阶段4更新
+                    task->status = TASK_READY;  // 旧的方式，阶段4更新
+                    TaskID task_id = task_get_id(task);  // 使用新的聚合根方法
                     printf("DEBUG: Waking task %llu for sender coroutine %llu\n", 
-                           task->id, sender->id);
-                    pthread_cond_signal(&task->cond);
+                           task_id, sender->id);
+                    pthread_cond_signal(&task->cond);  // 旧的方式，阶段4更新
                 }
-                pthread_mutex_unlock(&task->mutex);
+                pthread_mutex_unlock(&task->mutex);  // 旧的方式，阶段4更新
             }
 
             // 恢复发送者协程状态
@@ -403,10 +525,12 @@ void* channel_receive_impl(Channel* ch) {
 
         // 没有发送者，接收者需要阻塞
         // 获取当前协程
-        extern struct Task* current_task;
+        // extern Task* current_task;  // 已在scheduler.h中声明
         Coroutine* receiver = NULL;
-        if (current_task && current_task->coroutine) {
-            receiver = current_task->coroutine;
+        // TODO: 阶段4需要更新为使用新的Task聚合根方法：task_get_coroutine(current_task)
+        if (current_task) {
+            const struct Coroutine* coroutine = task_get_coroutine(current_task);  // 使用新的聚合根方法
+            receiver = (Coroutine*)coroutine;  // 类型转换
         }
 
         if (receiver) {
@@ -477,10 +601,12 @@ void* channel_receive_impl(Channel* ch) {
         // 检查缓冲区是否为空
         if (ch->size == 0) {
             // 缓冲区为空，接收者需要阻塞
-            extern struct Task* current_task;
+            // extern Task* current_task;  // 已在scheduler.h中声明
             Coroutine* receiver = NULL;
-            if (current_task && current_task->coroutine) {
-                receiver = current_task->coroutine;
+            // TODO: 阶段4需要更新为使用新的Task聚合根方法：task_get_coroutine(current_task)
+            if (current_task) {
+                const struct Coroutine* coroutine = task_get_coroutine(current_task);  // 使用新的聚合根方法
+                receiver = (Coroutine*)coroutine;  // 类型转换
             }
 
             if (receiver) {
@@ -570,8 +696,9 @@ void* channel_receive_impl(Channel* ch) {
                     if (processor) {
                         extern bool processor_push_local(Processor* processor, Task* task);
                         processor_push_local(processor, sender->task);
+                        TaskID task_id = task_get_id((Task*)sender->task);  // 使用新的聚合根方法
                         printf("DEBUG: Pushed sender task %llu back to processor queue\n",
-                               sender->task->id);
+                               task_id);
                     }
                 }
             }
@@ -584,6 +711,7 @@ void* channel_receive_impl(Channel* ch) {
         return value;
     }
 }
+#endif  // 关闭 channel_receive_impl_old 的 #if 0 块（第205行开始）
 
 // select语句支持（真正的多路复用实现）
 int32_t channel_select_impl(int32_t num_cases, Channel** channels, int32_t* operations, int32_t* result_ptr) {
@@ -641,11 +769,69 @@ int32_t channel_select_impl(int32_t num_cases, Channel** channels, int32_t* oper
 }
 
 // 关闭通道
+// TODO: 阶段4后续重构：应该直接调用新的聚合根方法，而不是通过适配层
+// 当前暂时通过适配层调用新的聚合根方法
 void channel_close_impl(Channel* ch) {
+    if (!ch) {
+        printf("DEBUG: channel_close_impl called with NULL channel\n");
+        return;
+    }
+
+    printf("DEBUG: channel_close_impl called on channel %llu\n", ch->id);
+    
+    // 获取TaskRepository（暂时使用全局TaskRepository）
+    TaskRepository* task_repo = channel_adapter_get_task_repository();
+    if (!task_repo) {
+        printf("DEBUG: channel_close_impl: TaskRepository not available, creating temporary one\n");
+        // TODO: 阶段4后续重构：应该通过依赖注入传递TaskRepository，而不是创建临时实例
+        extern TaskRepository* task_repository_create(void);
+        task_repo = task_repository_create();
+        if (!task_repo) {
+            printf("DEBUG: channel_close_impl: Failed to create TaskRepository\n");
+            return;
+        }
+        channel_adapter_set_task_repository(task_repo);
+    }
+    
+    // 通过适配层调用新的聚合根方法
+    channel_adapter_close(ch, task_repo);
+    // 旧的实现逻辑已移除，现在通过适配层调用新的聚合根方法
+    // 所有业务逻辑都在新的Channel聚合根中实现
+}
+
+// 销毁通道
+void channel_destroy_impl(Channel* ch) {
     if (!ch) return;
 
-    printf("DEBUG: Closing channel %llu\n", ch->id);
+    printf("DEBUG: Destroying channel %llu\n", ch->id);
 
+    // 确保通道已关闭
+    if (ch->state != CHANNEL_CLOSED) {
+        channel_close_impl(ch);
+    }
+
+    // 清理同步机制
+    pthread_mutex_destroy(&ch->lock);
+    pthread_cond_destroy(&ch->send_cond);
+    pthread_cond_destroy(&ch->recv_cond);
+
+    // 释放缓冲区（如果有的话，仅用于有缓冲通道）
+    if (ch->buffer && ch->capacity > 0) {
+        free(ch->buffer);
+        ch->buffer = NULL;
+    }
+
+    // 清理临时值（如果有的话）
+    ch->temp_value = NULL;
+
+    free(ch);
+    printf("DEBUG: Channel %llu destroyed\n", ch->id);
+}
+
+// 旧的channel_close_impl实现已移除，现在通过适配层调用新的聚合根方法
+// 以下代码保留作为参考，但不再执行
+#if 0
+void channel_close_impl_old(Channel* ch) {
     pthread_mutex_lock(&ch->lock);
     ch->state = CHANNEL_CLOSED;
 
@@ -656,15 +842,17 @@ void channel_close_impl(Channel* ch) {
         sender->next = NULL;
 
         if (sender->task) {
-            Task* task = sender->task;
-            pthread_mutex_lock(&task->mutex);
-            if (task->status == TASK_WAITING) {
-                task->status = TASK_READY;
+            Task* task = (Task*)sender->task;  // 类型转换
+            // TODO: 阶段4需要更新为使用新的Task聚合根方法
+            pthread_mutex_lock(&task->mutex);  // 旧的方式，阶段4更新
+            if (task->status == TASK_WAITING) {  // 旧的方式，阶段4更新
+                task->status = TASK_READY;  // 旧的方式，阶段4更新
+                TaskID task_id = task_get_id(task);  // 使用新的聚合根方法
                 printf("DEBUG: Waking sender task %llu (coroutine %llu) due to channel close\n",
-                       task->id, sender->id);
-                pthread_cond_signal(&task->cond);
+                       task_id, sender->id);
+                pthread_cond_signal(&task->cond);  // 旧的方式，阶段4更新
             }
-            pthread_mutex_unlock(&task->mutex);
+            pthread_mutex_unlock(&task->mutex);  // 旧的方式，阶段4更新
         }
 
         sender->state = COROUTINE_READY;
@@ -698,15 +886,17 @@ void channel_close_impl(Channel* ch) {
         receiver->next = NULL;
 
         if (receiver->task) {
-            Task* task = receiver->task;
-            pthread_mutex_lock(&task->mutex);
-            if (task->status == TASK_WAITING) {
-                task->status = TASK_READY;
+            Task* task = (Task*)receiver->task;  // 类型转换
+            // TODO: 阶段4需要更新为使用新的Task聚合根方法
+            pthread_mutex_lock(&task->mutex);  // 旧的方式，阶段4更新
+            if (task->status == TASK_WAITING) {  // 旧的方式，阶段4更新
+                task->status = TASK_READY;  // 旧的方式，阶段4更新
+                TaskID task_id = task_get_id(task);  // 使用新的聚合根方法
                 printf("DEBUG: Waking receiver task %llu (coroutine %llu) due to channel close\n",
-                       task->id, receiver->id);
-                pthread_cond_signal(&task->cond);
+                       task_id, receiver->id);
+                pthread_cond_signal(&task->cond);  // 旧的方式，阶段4更新
             }
-            pthread_mutex_unlock(&task->mutex);
+            pthread_mutex_unlock(&task->mutex);  // 旧的方式，阶段4更新
         }
 
         receiver->state = COROUTINE_READY;
@@ -741,35 +931,7 @@ void channel_close_impl(Channel* ch) {
 
     printf("DEBUG: Channel %llu closed, all waiting coroutines woken up\n", ch->id);
 }
-
-// 销毁通道
-void channel_destroy_impl(Channel* ch) {
-    if (!ch) return;
-
-    printf("DEBUG: Destroying channel %llu\n", ch->id);
-
-    // 确保通道已关闭
-    if (ch->state != CHANNEL_CLOSED) {
-        channel_close_impl(ch);
-    }
-
-    // 清理同步机制
-    pthread_mutex_destroy(&ch->lock);
-    pthread_cond_destroy(&ch->send_cond);
-    pthread_cond_destroy(&ch->recv_cond);
-
-    // 释放缓冲区（如果有的话，仅用于有缓冲通道）
-    if (ch->buffer && ch->capacity > 0) {
-        free(ch->buffer);
-        ch->buffer = NULL;
-    }
-
-    // 清理临时值（如果有的话）
-    ch->temp_value = NULL;
-
-    free(ch);
-    printf("DEBUG: Channel %llu destroyed\n", ch->id);
-}
+#endif  // 关闭 channel_close_impl_old 的 #if 0 块（第804行开始）
 
 // 获取通道中的消息数量
 uint32_t channel_get_message_count(Channel* channel) {

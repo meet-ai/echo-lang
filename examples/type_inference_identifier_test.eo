@@ -1,0 +1,16 @@
+// 测试变量引用类型推断
+func main() -> int {
+    // 先定义变量（显式类型或推断类型）
+    let arr: [int] = [1, 2, 3, 4, 5]
+    let strArr: [string] = ["a", "b", "c"]
+    
+    // 现在可以从变量引用推断类型
+    let item1 = arr[0]        // 推断为 int（从 arr 变量推断）
+    let item2 = arr[1]        // 推断为 int
+    let item3 = strArr[0]     // 推断为 string
+    let slice1 = arr[1:3]     // 推断为 [int]（从 arr 变量推断）
+    let slice2 = strArr[0:2]   // 推断为 [string]
+    
+    print "Identifier type inference test passed"
+    return 0
+}

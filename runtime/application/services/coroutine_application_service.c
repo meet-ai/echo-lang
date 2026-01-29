@@ -1,11 +1,19 @@
 #include "coroutine_application_service.h"
 #include "../../shared/types/common_types.h"
 #include "../../domain/coroutine/coroutine.h"
+#include "../queries/status_queries.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
 #include <pthread.h>
+#include <stdatomic.h>
+
+// 辅助函数：生成唯一ID
+static uint64_t generate_unique_id(void) {
+    static atomic_uint_fast64_t counter = 0;
+    return atomic_fetch_add(&counter, 1) + 1;
+}
 
 // 内部实现结构体
 typedef struct CoroutineApplicationServiceImpl {
@@ -54,7 +62,7 @@ static CoroutineCreationResultDTO* create_coroutine_creation_result(uint64_t cor
 
     result->coroutine_id = coroutine_id;
     result->success = success;
-    result->timestamp = time(NULL);
+    result->created_at = time(NULL);
 
     if (message) {
         strncpy(result->message, message, sizeof(result->message) - 1);
@@ -73,13 +81,35 @@ static CoroutineDTO* create_coroutine_dto(const Coroutine* coroutine) {
     if (!dto) return NULL;
 
     dto->coroutine_id = coroutine->id;
-    dto->priority = coroutine->priority;
-    dto->state = coroutine->state;
+    // 将枚举转换为字符串
+    const char* priority_str = "normal";
+    switch (coroutine->priority) {
+        case COROUTINE_PRIORITY_LOW: priority_str = "low"; break;
+        case COROUTINE_PRIORITY_NORMAL: priority_str = "normal"; break;
+        case COROUTINE_PRIORITY_HIGH: priority_str = "high"; break;
+        case COROUTINE_PRIORITY_CRITICAL: priority_str = "critical"; break;
+    }
+    strncpy(dto->priority, priority_str, sizeof(dto->priority) - 1);
+    dto->priority[sizeof(dto->priority) - 1] = '\0';
+    
+    const char* status_str = "new";
+    switch (coroutine->state) {
+        case COROUTINE_NEW: status_str = "new"; break;
+        case COROUTINE_READY: status_str = "ready"; break;
+        case COROUTINE_RUNNING: status_str = "running"; break;
+        case COROUTINE_SUSPENDED: status_str = "suspended"; break;
+        case COROUTINE_COMPLETED: status_str = "completed"; break;
+        case COROUTINE_FAILED: status_str = "failed"; break;
+        case COROUTINE_CANCELLED: status_str = "cancelled"; break;
+    }
+    strncpy(dto->status, status_str, sizeof(dto->status) - 1);
+    dto->status[sizeof(dto->status) - 1] = '\0';
     dto->created_at = coroutine->created_at;
     dto->started_at = coroutine->started_at;
     dto->completed_at = coroutine->completed_at;
-    dto->stack_size = coroutine->stack_size;
-    dto->execution_time_ms = calculate_coroutine_execution_time(coroutine);
+    dto->stack_usage = coroutine_get_stack_usage(coroutine);
+    uint64_t time_us = coroutine_get_execution_time_us(coroutine);
+    dto->execution_time_ms = time_us / 1000; // 转换为毫秒
 
     if (coroutine->name[0]) {
         strncpy(dto->name, coroutine->name, sizeof(dto->name) - 1);
@@ -98,6 +128,7 @@ static OperationResultDTO* create_operation_result(bool success, const char* mes
     result->success = success;
     result->timestamp = time(NULL);
     result->operation_id = generate_unique_id();
+    result->error_code = success ? 0 : -1;
 
     if (message) {
         strncpy(result->message, message, sizeof(result->message) - 1);
@@ -105,8 +136,8 @@ static OperationResultDTO* create_operation_result(bool success, const char* mes
     } else {
         result->message[0] = '\0';
     }
-
-    result->details = NULL;
+    
+    result->error_details[0] = '\0';
 
     return result;
 }
@@ -219,11 +250,16 @@ static CoroutineCreationResultDTO* coroutine_application_service_create_coroutin
     pthread_mutex_lock(&impl->mutex);
 
     // 1. 验证参数
-    if (!cmd->name || strlen(cmd->name) == 0) {
+    if (strlen(cmd->name) == 0) {
         pthread_mutex_unlock(&impl->mutex);
         return create_coroutine_creation_result(0, false, "Coroutine name is required");
     }
 
+    if (strlen(cmd->name) == 0) {
+        pthread_mutex_unlock(&impl->mutex);
+        return create_coroutine_creation_result(0, false, "Coroutine name is required");
+    }
+    
     if (!cmd->entry_point) {
         pthread_mutex_unlock(&impl->mutex);
         return create_coroutine_creation_result(0, false, "Coroutine entry point is required");
@@ -237,7 +273,12 @@ static CoroutineCreationResultDTO* coroutine_application_service_create_coroutin
     }
 
     // 3. 设置协程属性
-    coroutine_set_priority(coroutine, cmd->priority);
+    // 将 uint32_t 转换为 CoroutinePriority 枚举
+    CoroutinePriority priority = (CoroutinePriority)cmd->priority;
+    if (priority > COROUTINE_PRIORITY_CRITICAL) {
+        priority = COROUTINE_PRIORITY_NORMAL; // 默认优先级
+    }
+    coroutine_set_priority(coroutine, priority);
 
     // 4. 注册到调度器（如果有调度器）
     // 这里应该调用调度器接口注册协程
@@ -269,8 +310,10 @@ static OperationResultDTO* coroutine_application_service_start_coroutine_impl(Co
 
     pthread_mutex_lock(&impl->mutex);
 
-    bool success = coroutine_start_by_id(cmd->coroutine_id);
-    const char* message = success ? "Coroutine started successfully" : "Failed to start coroutine";
+    // TODO: 需要通过协程仓储查找协程，然后调用 coroutine_start
+    // 暂时返回失败，因为缺少协程仓储接口
+    bool success = false;
+    const char* message = "Coroutine start not implemented (requires coroutine repository)";
 
     impl->operation_count++;
     impl->last_operation_time = time(NULL);

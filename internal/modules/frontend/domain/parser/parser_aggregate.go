@@ -122,7 +122,8 @@ type ParserAggregate struct {
 // NewParserAggregate 创建新的Parser聚合根
 func NewParserAggregate() *ParserAggregate {
 	blockExtractor := NewBlockExtractor()
-	eventPublisher := NewEventPublisher(nil) // TODO: 注入事件总线
+	// 暂无事件总线实现，传 nil；后续若有解析阶段事件（如 AST 节点完成）需求再注入 EventBus。
+	eventPublisher := NewEventPublisher(nil)
 
 	parser := &ParserAggregate{
 		id:             generateParserID(),
@@ -147,6 +148,9 @@ func NewParserAggregate() *ParserAggregate {
 	// 创建基于 Token 的解析器
 	parser.tokenBasedStatementParser = NewTokenBasedStatementParser()
 	parser.tokenBasedExpressionParser = NewTokenBasedExpressionParser()
+	
+	// 设置相互引用，以便表达式解析器可以解析语句块（如 match case body）
+	parser.tokenBasedExpressionParser.SetStatementParser(parser.tokenBasedStatementParser)
 
 	return parser
 }
@@ -208,11 +212,77 @@ func (p *ParserAggregate) parseStatementsFromTokens(tokenStream *lexicalVO.Enhan
 			continue
 		}
 
+		// 跳过 package 和 import 声明（这些应该在程序解析的顶层处理，不在语句解析器中处理）
+		// package 有专门的 token 类型
+		if currentToken.Type() == lexicalVO.EnhancedTokenTypePackage {
+			// 跳过整个 package 声明：package <name> [;]
+			tokenStream.Next() // 消耗 'package'
+			// 跳过包名
+			if !tokenStream.IsAtEnd() {
+				nextToken := tokenStream.Current()
+				if nextToken != nil && nextToken.Type() == lexicalVO.EnhancedTokenTypeIdentifier {
+					tokenStream.Next() // 消耗包名
+				}
+			}
+			// 跳过可选的分号
+			if !tokenStream.IsAtEnd() {
+				nextToken := tokenStream.Current()
+				if nextToken != nil && nextToken.Type() == lexicalVO.EnhancedTokenTypeSemicolon {
+					tokenStream.Next()
+				}
+			}
+			continue
+		}
+		// import 被识别为标识符，需要检查 lexeme
+		if currentToken.Type() == lexicalVO.EnhancedTokenTypeIdentifier && currentToken.Lexeme() == "import" {
+			// 跳过整个 import 声明：import <path> [as <alias>] [;]
+			tokenStream.Next() // 消耗 'import'
+			// 跳过导入路径（可能是字符串或标识符）
+			if !tokenStream.IsAtEnd() {
+				nextToken := tokenStream.Current()
+				if nextToken != nil {
+					if nextToken.Type() == lexicalVO.EnhancedTokenTypeString || nextToken.Type() == lexicalVO.EnhancedTokenTypeIdentifier {
+						tokenStream.Next() // 消耗导入路径
+					}
+				}
+			}
+			// ✅ 修复：跳过可选的 'as <alias>'（as 是关键字类型 EnhancedTokenTypeAs）
+			if !tokenStream.IsAtEnd() {
+				nextToken := tokenStream.Current()
+				if nextToken != nil {
+					// 检查是否是 'as' 关键字
+					isAs := nextToken.Type() == lexicalVO.EnhancedTokenTypeAs
+					// 或者是否是标识符且 lexeme 是 "as"（向后兼容）
+					if !isAs && nextToken.Type() == lexicalVO.EnhancedTokenTypeIdentifier && nextToken.Lexeme() == "as" {
+						isAs = true
+					}
+					if isAs {
+						tokenStream.Next() // 消耗 'as'
+						// 跳过别名
+						if !tokenStream.IsAtEnd() {
+							aliasToken := tokenStream.Current()
+							if aliasToken != nil && aliasToken.Type() == lexicalVO.EnhancedTokenTypeIdentifier {
+								tokenStream.Next() // 消耗别名
+							}
+						}
+					}
+				}
+			}
+			// 跳过可选的分号
+			if !tokenStream.IsAtEnd() {
+				nextToken := tokenStream.Current()
+				if nextToken != nil && nextToken.Type() == lexicalVO.EnhancedTokenTypeSemicolon {
+					tokenStream.Next()
+				}
+			}
+			continue
+		}
+
 		// 解析一个语句
 		stmt, err := p.tokenBasedStatementParser.ParseStatement(tokenStream)
 		if err != nil {
 			return nil, fmt.Errorf("failed to parse statement at token %s (line %d): %w",
-				currentToken.Type(), currentToken.Location().Line, err)
+				currentToken.Type(), currentToken.Location().Line(), err)
 		}
 
 		if stmt != nil {
@@ -287,13 +357,22 @@ func (p *ParserAggregate) ParseProgramLegacy(sourceCode string) (*entities.Progr
 				return nil, err
 			}
 			continue
-		} else if p.inIfBody || p.inWhileBody || p.inForBody {
-			// 在其他块结构中，跳过内容（暂时简化处理）
-			if line == "}" {
-				// 块结束，重置状态
-				p.inIfBody = false
-				p.inWhileBody = false
-				p.inForBody = false
+		} else if p.inIfBody {
+			// 使用专门的processIfBody方法处理if语句体（包括else if和else）
+			if err := p.processIfBody(lines, &i); err != nil {
+				return nil, err
+			}
+			continue
+		} else if p.inWhileBody {
+			// 使用专门的processWhileBody方法处理while循环体
+			if err := p.processWhileBody(lines, &i); err != nil {
+				return nil, err
+			}
+			continue
+		} else if p.inForBody {
+			// 使用专门的processForBody方法处理for循环体
+			if err := p.processForBody(lines, &i); err != nil {
+				return nil, err
 			}
 			continue
 		}
@@ -650,6 +729,69 @@ func (p *ParserAggregate) processElseBlock(line string, i *int) error {
 	return nil
 }
 
+// processElseIfOnNewLine 处理换行格式的 else if
+// 格式：}  (上一行)
+//       else if condition {  (当前行)
+func (p *ParserAggregate) processElseIfOnNewLine(line string, i *int) error {
+	// 提取 "else if condition {" 中的 condition
+	// 格式：else if condition {
+	elseIfPattern := "else if "
+	if !strings.HasPrefix(line, elseIfPattern) {
+		return fmt.Errorf("line %d: invalid else if syntax", *i+1)
+	}
+
+	conditionStart := len(elseIfPattern)
+	braceIndex := strings.Index(line[conditionStart:], " {")
+	if braceIndex == -1 {
+		return fmt.Errorf("line %d: invalid else if syntax, missing opening brace", *i+1)
+	}
+
+	conditionStr := strings.TrimSpace(line[conditionStart : conditionStart+braceIndex])
+
+	// 解析 else if 条件
+	condition, err := p.expressionParser.ParseExpr(conditionStr)
+	if err != nil {
+		return fmt.Errorf("line %d: invalid else if condition: %v", *i+1, err)
+	}
+
+	// 创建嵌套 if 语句
+	nestedIf := &entities.IfStmt{
+		Condition: condition,
+		ThenBody:  []entities.ASTNode{},
+		ElseBody:  []entities.ASTNode{},
+	}
+
+	// 添加到当前 if 的 else 分支
+	if p.currentIfStmt != nil {
+		p.currentIfStmt.ElseBody = append(p.currentIfStmt.ElseBody, nestedIf)
+	}
+
+	// 切换到嵌套 if
+	p.currentIfStmt = nestedIf
+	p.parsingElse = false
+	p.thenBranchEnded = false
+	p.ifBodyLines = []string{}
+
+	return nil
+}
+
+// processElseOnNewLine 处理独立行的 else
+// 格式：}  (上一行)
+//       else  (当前行)
+//       {  (下一行，可选)
+func (p *ParserAggregate) processElseOnNewLine(i *int) error {
+	// 设置 else 分支状态
+	p.parsingElse = true
+	p.thenBranchEnded = false
+	p.ifBodyLines = []string{}
+	p.inIfBody = true
+
+	// 注意：如果下一行是 `{`，会在下一次 processIfBody 调用时被跳过（因为 line == "{" 会被跳过）
+	// 如果下一行直接是语句（单行 else），会在下一次 processIfBody 调用时被收集
+
+	return nil
+}
+
 // processTopLevelStatement 处理顶级语句
 func (p *ParserAggregate) processTopLevelStatement(line string, lineNum int) error {
 	stmt, err := p.statementParser.ParseStatement(line, lineNum)
@@ -668,6 +810,37 @@ func (p *ParserAggregate) processTopLevelStatement(line string, lineNum int) err
 // processIfBody 处理if语句体
 func (p *ParserAggregate) processIfBody(lines []string, i *int) error {
 	line := strings.TrimSpace(lines[*i])
+
+	// 检查 then 分支是否已结束，如果是，检查下一行是否是 else if 或 else
+	if p.thenBranchEnded && !p.parsingElse {
+		// 检查换行格式的 else if
+		if strings.HasPrefix(line, "else if ") {
+			return p.processElseIfOnNewLine(line, i)
+		}
+		// 检查独立行的 else
+		if line == "else" {
+			return p.processElseOnNewLine(i)
+		}
+		// 检查同一行的 } else if（已支持，保持兼容）
+		if strings.Contains(line, "} else if ") {
+			return p.processNestedElseIf(line, i)
+		}
+		// 检查同一行的 } else {（已支持，保持兼容）
+		if strings.Contains(line, "} else {") {
+			return p.processElseBlock(line, i)
+		}
+		// 不是 else 相关内容，重置状态并退出 if 语句
+		p.thenBranchEnded = false
+		p.inIfBody = false
+		// 重新处理当前行（作为顶级语句）
+		*i--
+		return nil
+	}
+
+	// 如果正在解析 else 分支，跳过独立的 {（else 后的开括号）
+	if p.parsingElse && line == "{" {
+		return nil
+	}
 
 	if line == "}" {
 		if p.parsingElse {

@@ -1,0 +1,59 @@
+// map_resize_test.eo - Map扩容测试
+// 测试Map的负载因子检查和自动扩容功能
+// 初始容量：16个bucket，负载因子阈值：0.75
+// 当插入超过12个条目（16 * 0.75 = 12）时，应该触发扩容
+
+func test_map_resize() -> void {
+    print "=== Testing Map Resize (Load Factor Check) ==="
+    
+    // 创建一个空map[string]string
+    let mut headers: map[string]string = {}
+    
+    print "Initial map created (default capacity: 16 buckets)"
+    print "Load factor threshold: 0.75"
+    print "Expected resize trigger: after 12 entries (16 * 0.75 = 12)"
+    
+    // 插入13个条目，应该在第13个条目插入后触发扩容
+    // 前12个条目：负载因子 = 12/16 = 0.75（不触发）
+    // 第13个条目：负载因子 = 13/16 = 0.8125 > 0.75（触发扩容）
+    
+    headers["key-01"] = "value-01"
+    headers["key-02"] = "value-02"
+    headers["key-03"] = "value-03"
+    headers["key-04"] = "value-04"
+    headers["key-05"] = "value-05"
+    headers["key-06"] = "value-06"
+    headers["key-07"] = "value-07"
+    headers["key-08"] = "value-08"
+    headers["key-09"] = "value-09"
+    headers["key-10"] = "value-10"
+    headers["key-11"] = "value-11"
+    headers["key-12"] = "value-12"
+    print "Inserted 12 entries (load factor = 0.75, should not resize yet)"
+    
+    headers["key-13"] = "value-13"
+    print "Inserted 13th entry (load factor = 0.8125, should trigger resize to 32 buckets)"
+    
+    // 继续插入更多条目，验证扩容后的Map仍然正常工作
+    headers["key-14"] = "value-14"
+    headers["key-15"] = "value-15"
+    headers["key-16"] = "value-16"
+    headers["key-17"] = "value-17"
+    headers["key-18"] = "value-18"
+    print "Inserted 6 more entries (total: 18 entries)"
+    
+    // 验证所有条目都可以正确访问（通过简单的访问测试）
+    // 注意：字符串连接功能暂不支持，所以只测试基本功能
+    let _ = headers["key-01"]  // 访问测试
+    let _ = headers["key-12"]  // 访问测试
+    let _ = headers["key-13"]  // 访问测试
+    let _ = headers["key-18"]  // 访问测试
+    
+    print "Map resize test completed"
+    print "Expected behavior: Map should have resized from 16 to 32 buckets after 13th entry"
+    print "All 18 entries have been inserted and are accessible"
+}
+
+func main() -> void {
+    test_map_resize()
+}

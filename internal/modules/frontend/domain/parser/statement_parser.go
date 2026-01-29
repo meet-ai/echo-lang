@@ -240,7 +240,10 @@ func (sp *StatementParser) parseAssignment(line string, lineNum int) (entities.A
 		return nil, fmt.Errorf("line %d: invalid assignment value: %v", lineNum, err)
 	}
 
-	return &entities.AssignStmt{Name: varName, Value: value}, nil
+	return &entities.AssignStmt{
+		Target: &entities.Identifier{Name: varName},
+		Value:  value,
+	}, nil
 }
 
 // parseIfStatement 解析if语句

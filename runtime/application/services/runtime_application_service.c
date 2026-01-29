@@ -5,6 +5,14 @@
 #include <string.h>
 #include <time.h>
 #include <pthread.h>
+#include <stdatomic.h>
+#include <unistd.h>  // for sleep
+
+// 辅助函数：生成唯一ID
+static uint64_t generate_unique_id(void) {
+    static atomic_uint_fast64_t counter = 0;
+    return atomic_fetch_add(&counter, 1) + 1;
+}
 
 // 内部实现结构体
 typedef struct RuntimeApplicationServiceImpl {
@@ -78,10 +86,12 @@ static OperationResultDTO* create_operation_result(bool success, const char* mes
         result->message[0] = '\0';
     }
 
+    // OperationResultDTO 中没有 details 字段，使用 error_details 字段
     if (details) {
-        result->details = strdup(details);
+        strncpy(result->error_details, details, sizeof(result->error_details) - 1);
+        result->error_details[sizeof(result->error_details) - 1] = '\0';
     } else {
-        result->details = NULL;
+        result->error_details[0] = '\0';
     }
 
     return result;
@@ -91,19 +101,24 @@ static RuntimeStatusDTO* create_runtime_status(void) {
     RuntimeStatusDTO* status = (RuntimeStatusDTO*)malloc(sizeof(RuntimeStatusDTO));
     if (!status) return NULL;
 
+    strncpy(status->version, "1.0.0", sizeof(status->version) - 1);
+    status->version[sizeof(status->version) - 1] = '\0';
+    strncpy(status->status, "running", sizeof(status->status) - 1);
+    status->status[sizeof(status->status) - 1] = '\0';
+    status->started_at = time(NULL);
     status->uptime_seconds = 0;
-    status->total_tasks = 0;
     status->active_tasks = 0;
-    status->completed_tasks = 0;
-    status->failed_tasks = 0;
-    status->total_coroutines = 0;
     status->active_coroutines = 0;
-    status->memory_usage_mb = 0.0;
-    status->cpu_usage_percent = 0.0;
-    status->gc_cycles = 0;
-    status->last_gc_time = 0;
-    status->status = RUNTIME_STATUS_RUNNING;
-    status->timestamp = time(NULL);
+    status->active_channels = 0;
+    status->active_futures = 0;
+    status->total_memory_used = 0;
+    status->heap_size = 0;
+    status->cpu_usage_percentage = 0.0;
+    status->last_updated = time(NULL);
+    // RuntimeStatusDTO 中没有 gc_cycles, last_gc_time, timestamp 字段
+    // status 字段是字符串类型，不是枚举
+    strncpy(status->status, "running", sizeof(status->status) - 1);
+    status->status[sizeof(status->status) - 1] = '\0';
 
     return status;
 }

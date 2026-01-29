@@ -56,7 +56,7 @@ typedef struct Task {
 
 // 任务方法
 Task* task_create(const char* name, void* entry_point, void* arg, size_t stack_size);
-void task_destroy(Task* task);
+void task_entity_destroy(Task* task);  // 重命名：避免与 task_aggregate.c 中的 task_destroy 冲突
 bool task_can_schedule(const Task* task);
 bool task_can_cancel(const Task* task);
 bool task_is_completed(const Task* task);

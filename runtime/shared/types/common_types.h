@@ -89,20 +89,74 @@ typedef struct {
     size_t element_size;
 } dynamic_array_t;
 
-// 哈希表条目
+// Map键类型枚举（用于支持多种Map类型）
+typedef enum {
+    MAP_KEY_TYPE_STRING = 0,  // 字符串键
+    MAP_KEY_TYPE_INT32,       // 32位整数键
+    MAP_KEY_TYPE_INT64,       // 64位整数键
+    MAP_KEY_TYPE_FLOAT,       // 浮点数键（double/f64）
+    MAP_KEY_TYPE_BOOL,        // 布尔键（较少使用）
+    MAP_KEY_TYPE_STRUCT,      // ✅ 新增：结构体键（需要Hash和Eq trait）
+} map_key_type_t;
+
+// Map值类型枚举（用于支持多种Map类型）
+typedef enum {
+    MAP_VALUE_TYPE_STRING = 0,  // 字符串值
+    MAP_VALUE_TYPE_INT32,       // 32位整数值
+    MAP_VALUE_TYPE_INT64,       // 64位整数值
+    MAP_VALUE_TYPE_FLOAT,       // 浮点数值（double/f64）
+    MAP_VALUE_TYPE_BOOL,        // 布尔值
+    MAP_VALUE_TYPE_SLICE,       // ✅ 新增：切片/数组值（void*指针）
+    MAP_VALUE_TYPE_MAP,         // ✅ 新增：嵌套Map值（void*指针，指向另一个Map）
+    MAP_VALUE_TYPE_STRUCT,      // ✅ 新增：结构体值（void*指针，指向结构体实例）
+} map_value_type_t;
+
+// 哈希表条目（原有实现，用于map[string]string，保持向后兼容）
 typedef struct hash_entry {
     string_t key;
     void* value;
     struct hash_entry* next;
 } hash_entry_t;
 
-// 哈希表
+// 哈希表（原有实现，用于map[string]string，保持向后兼容）
 typedef struct {
     hash_entry_t** buckets;
     size_t bucket_count;
     size_t entry_count;
     uint32_t (*hash_function)(const char* key);
 } hash_table_t;
+
+// 哈希函数指针类型（用于结构体键）
+typedef int64_t (*map_key_hash_func_t)(const void* key);
+
+// 比较函数指针类型（用于结构体键）
+typedef int (*map_key_equals_func_t)(const void* key1, const void* key2);
+
+// 通用哈希表条目（支持多种键值类型）
+typedef struct hash_entry_generic {
+    void* key;                  // 键（通用指针）
+    map_key_type_t key_type;    // 键类型标识
+    size_t key_size;            // 键大小（用于内存管理）
+    
+    // ✅ 新增：函数指针（用于结构体键）
+    map_key_hash_func_t key_hash_func;      // 哈希函数指针（结构体键使用）
+    map_key_equals_func_t key_equals_func;  // 比较函数指针（结构体键使用）
+    
+    void* value;                // 值（通用指针）
+    map_value_type_t value_type;// 值类型标识
+    size_t value_size;          // 值大小（用于内存管理）
+    
+    struct hash_entry_generic* next;  // 链表指针（处理哈希冲突）
+} hash_entry_generic_t;
+
+// 通用哈希表（支持多种键值类型）
+typedef struct {
+    hash_entry_generic_t** buckets;   // 桶数组
+    size_t bucket_count;               // 桶数量
+    size_t entry_count;                // 条目数量
+    map_key_type_t key_type;          // 键类型（所有条目共享）
+    map_value_type_t value_type;      // 值类型（所有条目共享）
+} hash_table_generic_t;
 
 // 队列节点
 typedef struct queue_node {

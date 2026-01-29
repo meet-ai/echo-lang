@@ -1,0 +1,27 @@
+// 标准库 Mutex 模块集成测试
+// 验证互斥锁操作是否正确调用运行时函数
+
+import sync
+
+func main() -> int {
+    print_string("=== Mutex Module Integration Test ===\n")
+    
+    // 测试 new() 函数 - 调用 runtime_create_mutex()
+    let mut mutex = sync.new_mutex(42)
+    print_string("Mutex new() called successfully\n")
+    
+    // 测试 lock() 函数 - 调用 runtime_mutex_lock()
+    // 注意：lock() 返回 MutexGuard，需要处理作用域
+    print_string("Mutex lock() test skipped (requires guard handling)\n")
+    
+    // 测试 try_lock() 函数 - 调用 runtime_mutex_try_lock()
+    print_string("Mutex try_lock() test skipped (requires guard handling)\n")
+    
+    // 测试 unlock() 函数 - 通过 MutexGuard 自动调用 runtime_mutex_unlock()
+    print_string("Mutex unlock() test skipped (requires guard handling)\n")
+    
+    print_string("Mutex module test framework created\n")
+    print_string("Note: Full tests require guard pattern implementation\n")
+    
+    return 0
+}

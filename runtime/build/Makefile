@@ -198,29 +198,101 @@ api/runtime_api.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/api/runtime_api.c.s
 .PHONY : api/runtime_api.c.s
 
-domain/async/entity/future.o: domain/async/entity/future.c.o
-.PHONY : domain/async/entity/future.o
+api/runtime_map_iter.o: api/runtime_map_iter.c.o
+.PHONY : api/runtime_map_iter.o
 
 # target to build an object file
-domain/async/entity/future.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/async/entity/future.c.o
-.PHONY : domain/async/entity/future.c.o
+api/runtime_map_iter.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/api/runtime_map_iter.c.o
+.PHONY : api/runtime_map_iter.c.o
 
-domain/async/entity/future.i: domain/async/entity/future.c.i
-.PHONY : domain/async/entity/future.i
+api/runtime_map_iter.i: api/runtime_map_iter.c.i
+.PHONY : api/runtime_map_iter.i
 
 # target to preprocess a source file
-domain/async/entity/future.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/async/entity/future.c.i
-.PHONY : domain/async/entity/future.c.i
+api/runtime_map_iter.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/api/runtime_map_iter.c.i
+.PHONY : api/runtime_map_iter.c.i
 
-domain/async/entity/future.s: domain/async/entity/future.c.s
-.PHONY : domain/async/entity/future.s
+api/runtime_map_iter.s: api/runtime_map_iter.c.s
+.PHONY : api/runtime_map_iter.s
 
 # target to generate assembly for a file
-domain/async/entity/future.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/async/entity/future.c.s
-.PHONY : domain/async/entity/future.c.s
+api/runtime_map_iter.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/api/runtime_map_iter.c.s
+.PHONY : api/runtime_map_iter.c.s
+
+domain/async_computation/aggregate/future.o: domain/async_computation/aggregate/future.c.o
+.PHONY : domain/async_computation/aggregate/future.o
+
+# target to build an object file
+domain/async_computation/aggregate/future.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/async_computation/aggregate/future.c.o
+.PHONY : domain/async_computation/aggregate/future.c.o
+
+domain/async_computation/aggregate/future.i: domain/async_computation/aggregate/future.c.i
+.PHONY : domain/async_computation/aggregate/future.i
+
+# target to preprocess a source file
+domain/async_computation/aggregate/future.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/async_computation/aggregate/future.c.i
+.PHONY : domain/async_computation/aggregate/future.c.i
+
+domain/async_computation/aggregate/future.s: domain/async_computation/aggregate/future.c.s
+.PHONY : domain/async_computation/aggregate/future.s
+
+# target to generate assembly for a file
+domain/async_computation/aggregate/future.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/async_computation/aggregate/future.c.s
+.PHONY : domain/async_computation/aggregate/future.c.s
+
+domain/async_computation/events/future_events.o: domain/async_computation/events/future_events.c.o
+.PHONY : domain/async_computation/events/future_events.o
+
+# target to build an object file
+domain/async_computation/events/future_events.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/async_computation/events/future_events.c.o
+.PHONY : domain/async_computation/events/future_events.c.o
+
+domain/async_computation/events/future_events.i: domain/async_computation/events/future_events.c.i
+.PHONY : domain/async_computation/events/future_events.i
+
+# target to preprocess a source file
+domain/async_computation/events/future_events.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/async_computation/events/future_events.c.i
+.PHONY : domain/async_computation/events/future_events.c.i
+
+domain/async_computation/events/future_events.s: domain/async_computation/events/future_events.c.s
+.PHONY : domain/async_computation/events/future_events.s
+
+# target to generate assembly for a file
+domain/async_computation/events/future_events.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/async_computation/events/future_events.c.s
+.PHONY : domain/async_computation/events/future_events.c.s
+
+domain/async_computation/repository/future_repository_memory.o: domain/async_computation/repository/future_repository_memory.c.o
+.PHONY : domain/async_computation/repository/future_repository_memory.o
+
+# target to build an object file
+domain/async_computation/repository/future_repository_memory.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/async_computation/repository/future_repository_memory.c.o
+.PHONY : domain/async_computation/repository/future_repository_memory.c.o
+
+domain/async_computation/repository/future_repository_memory.i: domain/async_computation/repository/future_repository_memory.c.i
+.PHONY : domain/async_computation/repository/future_repository_memory.i
+
+# target to preprocess a source file
+domain/async_computation/repository/future_repository_memory.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/async_computation/repository/future_repository_memory.c.i
+.PHONY : domain/async_computation/repository/future_repository_memory.c.i
+
+domain/async_computation/repository/future_repository_memory.s: domain/async_computation/repository/future_repository_memory.c.s
+.PHONY : domain/async_computation/repository/future_repository_memory.s
+
+# target to generate assembly for a file
+domain/async_computation/repository/future_repository_memory.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/async_computation/repository/future_repository_memory.c.s
+.PHONY : domain/async_computation/repository/future_repository_memory.c.s
 
 domain/channel/channel.o: domain/channel/channel.c.o
 .PHONY : domain/channel/channel.o
@@ -246,30 +318,6 @@ domain/channel/channel.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/channel/channel.c.s
 .PHONY : domain/channel/channel.c.s
 
-domain/channel/entity/channel.o: domain/channel/entity/channel.c.o
-.PHONY : domain/channel/entity/channel.o
-
-# target to build an object file
-domain/channel/entity/channel.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/channel/entity/channel.c.o
-.PHONY : domain/channel/entity/channel.c.o
-
-domain/channel/entity/channel.i: domain/channel/entity/channel.c.i
-.PHONY : domain/channel/entity/channel.i
-
-# target to preprocess a source file
-domain/channel/entity/channel.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/channel/entity/channel.c.i
-.PHONY : domain/channel/entity/channel.c.i
-
-domain/channel/entity/channel.s: domain/channel/entity/channel.c.s
-.PHONY : domain/channel/entity/channel.s
-
-# target to generate assembly for a file
-domain/channel/entity/channel.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/channel/entity/channel.c.s
-.PHONY : domain/channel/entity/channel.c.s
-
 domain/channel/select.o: domain/channel/select.c.o
 .PHONY : domain/channel/select.o
 
@@ -293,6 +341,78 @@ domain/channel/select.s: domain/channel/select.c.s
 domain/channel/select.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/channel/select.c.s
 .PHONY : domain/channel/select.c.s
+
+domain/channel_communication/adapter/channel_adapter.o: domain/channel_communication/adapter/channel_adapter.c.o
+.PHONY : domain/channel_communication/adapter/channel_adapter.o
+
+# target to build an object file
+domain/channel_communication/adapter/channel_adapter.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/channel_communication/adapter/channel_adapter.c.o
+.PHONY : domain/channel_communication/adapter/channel_adapter.c.o
+
+domain/channel_communication/adapter/channel_adapter.i: domain/channel_communication/adapter/channel_adapter.c.i
+.PHONY : domain/channel_communication/adapter/channel_adapter.i
+
+# target to preprocess a source file
+domain/channel_communication/adapter/channel_adapter.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/channel_communication/adapter/channel_adapter.c.i
+.PHONY : domain/channel_communication/adapter/channel_adapter.c.i
+
+domain/channel_communication/adapter/channel_adapter.s: domain/channel_communication/adapter/channel_adapter.c.s
+.PHONY : domain/channel_communication/adapter/channel_adapter.s
+
+# target to generate assembly for a file
+domain/channel_communication/adapter/channel_adapter.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/channel_communication/adapter/channel_adapter.c.s
+.PHONY : domain/channel_communication/adapter/channel_adapter.c.s
+
+domain/channel_communication/aggregate/channel.o: domain/channel_communication/aggregate/channel.c.o
+.PHONY : domain/channel_communication/aggregate/channel.o
+
+# target to build an object file
+domain/channel_communication/aggregate/channel.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/channel_communication/aggregate/channel.c.o
+.PHONY : domain/channel_communication/aggregate/channel.c.o
+
+domain/channel_communication/aggregate/channel.i: domain/channel_communication/aggregate/channel.c.i
+.PHONY : domain/channel_communication/aggregate/channel.i
+
+# target to preprocess a source file
+domain/channel_communication/aggregate/channel.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/channel_communication/aggregate/channel.c.i
+.PHONY : domain/channel_communication/aggregate/channel.c.i
+
+domain/channel_communication/aggregate/channel.s: domain/channel_communication/aggregate/channel.c.s
+.PHONY : domain/channel_communication/aggregate/channel.s
+
+# target to generate assembly for a file
+domain/channel_communication/aggregate/channel.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/channel_communication/aggregate/channel.c.s
+.PHONY : domain/channel_communication/aggregate/channel.c.s
+
+domain/channel_communication/events/channel_events.o: domain/channel_communication/events/channel_events.c.o
+.PHONY : domain/channel_communication/events/channel_events.o
+
+# target to build an object file
+domain/channel_communication/events/channel_events.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/channel_communication/events/channel_events.c.o
+.PHONY : domain/channel_communication/events/channel_events.c.o
+
+domain/channel_communication/events/channel_events.i: domain/channel_communication/events/channel_events.c.i
+.PHONY : domain/channel_communication/events/channel_events.i
+
+# target to preprocess a source file
+domain/channel_communication/events/channel_events.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/channel_communication/events/channel_events.c.i
+.PHONY : domain/channel_communication/events/channel_events.c.i
+
+domain/channel_communication/events/channel_events.s: domain/channel_communication/events/channel_events.c.s
+.PHONY : domain/channel_communication/events/channel_events.s
+
+# target to generate assembly for a file
+domain/channel_communication/events/channel_events.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/channel_communication/events/channel_events.c.s
+.PHONY : domain/channel_communication/events/channel_events.c.s
 
 domain/coroutine/coroutine.o: domain/coroutine/coroutine.c.o
 .PHONY : domain/coroutine/coroutine.o
@@ -510,6 +630,270 @@ domain/task/task.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/task/task.c.s
 .PHONY : domain/task/task.c.s
 
+domain/task_execution/aggregate/task.o: domain/task_execution/aggregate/task.c.o
+.PHONY : domain/task_execution/aggregate/task.o
+
+# target to build an object file
+domain/task_execution/aggregate/task.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/task_execution/aggregate/task.c.o
+.PHONY : domain/task_execution/aggregate/task.c.o
+
+domain/task_execution/aggregate/task.i: domain/task_execution/aggregate/task.c.i
+.PHONY : domain/task_execution/aggregate/task.i
+
+# target to preprocess a source file
+domain/task_execution/aggregate/task.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/task_execution/aggregate/task.c.i
+.PHONY : domain/task_execution/aggregate/task.c.i
+
+domain/task_execution/aggregate/task.s: domain/task_execution/aggregate/task.c.s
+.PHONY : domain/task_execution/aggregate/task.s
+
+# target to generate assembly for a file
+domain/task_execution/aggregate/task.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/task_execution/aggregate/task.c.s
+.PHONY : domain/task_execution/aggregate/task.c.s
+
+domain/task_execution/events/task_events.o: domain/task_execution/events/task_events.c.o
+.PHONY : domain/task_execution/events/task_events.o
+
+# target to build an object file
+domain/task_execution/events/task_events.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/task_execution/events/task_events.c.o
+.PHONY : domain/task_execution/events/task_events.c.o
+
+domain/task_execution/events/task_events.i: domain/task_execution/events/task_events.c.i
+.PHONY : domain/task_execution/events/task_events.i
+
+# target to preprocess a source file
+domain/task_execution/events/task_events.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/task_execution/events/task_events.c.i
+.PHONY : domain/task_execution/events/task_events.c.i
+
+domain/task_execution/events/task_events.s: domain/task_execution/events/task_events.c.s
+.PHONY : domain/task_execution/events/task_events.s
+
+# target to generate assembly for a file
+domain/task_execution/events/task_events.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/task_execution/events/task_events.c.s
+.PHONY : domain/task_execution/events/task_events.c.s
+
+domain/task_execution/repository/task_repository_memory.o: domain/task_execution/repository/task_repository_memory.c.o
+.PHONY : domain/task_execution/repository/task_repository_memory.o
+
+# target to build an object file
+domain/task_execution/repository/task_repository_memory.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/task_execution/repository/task_repository_memory.c.o
+.PHONY : domain/task_execution/repository/task_repository_memory.c.o
+
+domain/task_execution/repository/task_repository_memory.i: domain/task_execution/repository/task_repository_memory.c.i
+.PHONY : domain/task_execution/repository/task_repository_memory.i
+
+# target to preprocess a source file
+domain/task_execution/repository/task_repository_memory.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/task_execution/repository/task_repository_memory.c.i
+.PHONY : domain/task_execution/repository/task_repository_memory.c.i
+
+domain/task_execution/repository/task_repository_memory.s: domain/task_execution/repository/task_repository_memory.c.s
+.PHONY : domain/task_execution/repository/task_repository_memory.s
+
+# target to generate assembly for a file
+domain/task_execution/repository/task_repository_memory.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/task_execution/repository/task_repository_memory.c.s
+.PHONY : domain/task_execution/repository/task_repository_memory.c.s
+
+domain/task_scheduling/adapter/scheduler_adapter.o: domain/task_scheduling/adapter/scheduler_adapter.c.o
+.PHONY : domain/task_scheduling/adapter/scheduler_adapter.o
+
+# target to build an object file
+domain/task_scheduling/adapter/scheduler_adapter.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/task_scheduling/adapter/scheduler_adapter.c.o
+.PHONY : domain/task_scheduling/adapter/scheduler_adapter.c.o
+
+domain/task_scheduling/adapter/scheduler_adapter.i: domain/task_scheduling/adapter/scheduler_adapter.c.i
+.PHONY : domain/task_scheduling/adapter/scheduler_adapter.i
+
+# target to preprocess a source file
+domain/task_scheduling/adapter/scheduler_adapter.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/task_scheduling/adapter/scheduler_adapter.c.i
+.PHONY : domain/task_scheduling/adapter/scheduler_adapter.c.i
+
+domain/task_scheduling/adapter/scheduler_adapter.s: domain/task_scheduling/adapter/scheduler_adapter.c.s
+.PHONY : domain/task_scheduling/adapter/scheduler_adapter.s
+
+# target to generate assembly for a file
+domain/task_scheduling/adapter/scheduler_adapter.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/task_scheduling/adapter/scheduler_adapter.c.s
+.PHONY : domain/task_scheduling/adapter/scheduler_adapter.c.s
+
+domain/task_scheduling/aggregate/scheduler.o: domain/task_scheduling/aggregate/scheduler.c.o
+.PHONY : domain/task_scheduling/aggregate/scheduler.o
+
+# target to build an object file
+domain/task_scheduling/aggregate/scheduler.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/task_scheduling/aggregate/scheduler.c.o
+.PHONY : domain/task_scheduling/aggregate/scheduler.c.o
+
+domain/task_scheduling/aggregate/scheduler.i: domain/task_scheduling/aggregate/scheduler.c.i
+.PHONY : domain/task_scheduling/aggregate/scheduler.i
+
+# target to preprocess a source file
+domain/task_scheduling/aggregate/scheduler.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/task_scheduling/aggregate/scheduler.c.i
+.PHONY : domain/task_scheduling/aggregate/scheduler.c.i
+
+domain/task_scheduling/aggregate/scheduler.s: domain/task_scheduling/aggregate/scheduler.c.s
+.PHONY : domain/task_scheduling/aggregate/scheduler.s
+
+# target to generate assembly for a file
+domain/task_scheduling/aggregate/scheduler.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/task_scheduling/aggregate/scheduler.c.s
+.PHONY : domain/task_scheduling/aggregate/scheduler.c.s
+
+domain/task_scheduling/events/scheduler_events.o: domain/task_scheduling/events/scheduler_events.c.o
+.PHONY : domain/task_scheduling/events/scheduler_events.o
+
+# target to build an object file
+domain/task_scheduling/events/scheduler_events.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/task_scheduling/events/scheduler_events.c.o
+.PHONY : domain/task_scheduling/events/scheduler_events.c.o
+
+domain/task_scheduling/events/scheduler_events.i: domain/task_scheduling/events/scheduler_events.c.i
+.PHONY : domain/task_scheduling/events/scheduler_events.i
+
+# target to preprocess a source file
+domain/task_scheduling/events/scheduler_events.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/task_scheduling/events/scheduler_events.c.i
+.PHONY : domain/task_scheduling/events/scheduler_events.c.i
+
+domain/task_scheduling/events/scheduler_events.s: domain/task_scheduling/events/scheduler_events.c.s
+.PHONY : domain/task_scheduling/events/scheduler_events.s
+
+# target to generate assembly for a file
+domain/task_scheduling/events/scheduler_events.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/domain/task_scheduling/events/scheduler_events.c.s
+.PHONY : domain/task_scheduling/events/scheduler_events.c.s
+
+infrastructure/event/bus_impl.o: infrastructure/event/bus_impl.c.o
+.PHONY : infrastructure/event/bus_impl.o
+
+# target to build an object file
+infrastructure/event/bus_impl.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/infrastructure/event/bus_impl.c.o
+.PHONY : infrastructure/event/bus_impl.c.o
+
+infrastructure/event/bus_impl.i: infrastructure/event/bus_impl.c.i
+.PHONY : infrastructure/event/bus_impl.i
+
+# target to preprocess a source file
+infrastructure/event/bus_impl.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/infrastructure/event/bus_impl.c.i
+.PHONY : infrastructure/event/bus_impl.c.i
+
+infrastructure/event/bus_impl.s: infrastructure/event/bus_impl.c.s
+.PHONY : infrastructure/event/bus_impl.s
+
+# target to generate assembly for a file
+infrastructure/event/bus_impl.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/infrastructure/event/bus_impl.c.s
+.PHONY : infrastructure/event/bus_impl.c.s
+
+infrastructure/event/event_bus_initializer.o: infrastructure/event/event_bus_initializer.c.o
+.PHONY : infrastructure/event/event_bus_initializer.o
+
+# target to build an object file
+infrastructure/event/event_bus_initializer.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/infrastructure/event/event_bus_initializer.c.o
+.PHONY : infrastructure/event/event_bus_initializer.c.o
+
+infrastructure/event/event_bus_initializer.i: infrastructure/event/event_bus_initializer.c.i
+.PHONY : infrastructure/event/event_bus_initializer.i
+
+# target to preprocess a source file
+infrastructure/event/event_bus_initializer.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/infrastructure/event/event_bus_initializer.c.i
+.PHONY : infrastructure/event/event_bus_initializer.c.i
+
+infrastructure/event/event_bus_initializer.s: infrastructure/event/event_bus_initializer.c.s
+.PHONY : infrastructure/event/event_bus_initializer.s
+
+# target to generate assembly for a file
+infrastructure/event/event_bus_initializer.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/infrastructure/event/event_bus_initializer.c.s
+.PHONY : infrastructure/event/event_bus_initializer.c.s
+
+shared/handles/file_handle_manager.o: shared/handles/file_handle_manager.c.o
+.PHONY : shared/handles/file_handle_manager.o
+
+# target to build an object file
+shared/handles/file_handle_manager.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/shared/handles/file_handle_manager.c.o
+.PHONY : shared/handles/file_handle_manager.c.o
+
+shared/handles/file_handle_manager.i: shared/handles/file_handle_manager.c.i
+.PHONY : shared/handles/file_handle_manager.i
+
+# target to preprocess a source file
+shared/handles/file_handle_manager.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/shared/handles/file_handle_manager.c.i
+.PHONY : shared/handles/file_handle_manager.c.i
+
+shared/handles/file_handle_manager.s: shared/handles/file_handle_manager.c.s
+.PHONY : shared/handles/file_handle_manager.s
+
+# target to generate assembly for a file
+shared/handles/file_handle_manager.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/shared/handles/file_handle_manager.c.s
+.PHONY : shared/handles/file_handle_manager.c.s
+
+shared/handles/socket_handle_manager.o: shared/handles/socket_handle_manager.c.o
+.PHONY : shared/handles/socket_handle_manager.o
+
+# target to build an object file
+shared/handles/socket_handle_manager.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/shared/handles/socket_handle_manager.c.o
+.PHONY : shared/handles/socket_handle_manager.c.o
+
+shared/handles/socket_handle_manager.i: shared/handles/socket_handle_manager.c.i
+.PHONY : shared/handles/socket_handle_manager.i
+
+# target to preprocess a source file
+shared/handles/socket_handle_manager.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/shared/handles/socket_handle_manager.c.i
+.PHONY : shared/handles/socket_handle_manager.c.i
+
+shared/handles/socket_handle_manager.s: shared/handles/socket_handle_manager.c.s
+.PHONY : shared/handles/socket_handle_manager.s
+
+# target to generate assembly for a file
+shared/handles/socket_handle_manager.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/shared/handles/socket_handle_manager.c.s
+.PHONY : shared/handles/socket_handle_manager.c.s
+
+shared/result/result.o: shared/result/result.c.o
+.PHONY : shared/result/result.o
+
+# target to build an object file
+shared/result/result.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/shared/result/result.c.o
+.PHONY : shared/result/result.c.o
+
+shared/result/result.i: shared/result/result.c.i
+.PHONY : shared/result/result.i
+
+# target to preprocess a source file
+shared/result/result.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/shared/result/result.c.i
+.PHONY : shared/result/result.c.i
+
+shared/result/result.s: shared/result/result.c.s
+.PHONY : shared/result/result.s
+
+# target to generate assembly for a file
+shared/result/result.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/echo_runtime.dir/build.make CMakeFiles/echo_runtime.dir/shared/result/result.c.s
+.PHONY : shared/result/result.c.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -526,18 +910,33 @@ help:
 	@echo "... api/runtime_api.o"
 	@echo "... api/runtime_api.i"
 	@echo "... api/runtime_api.s"
-	@echo "... domain/async/entity/future.o"
-	@echo "... domain/async/entity/future.i"
-	@echo "... domain/async/entity/future.s"
+	@echo "... api/runtime_map_iter.o"
+	@echo "... api/runtime_map_iter.i"
+	@echo "... api/runtime_map_iter.s"
+	@echo "... domain/async_computation/aggregate/future.o"
+	@echo "... domain/async_computation/aggregate/future.i"
+	@echo "... domain/async_computation/aggregate/future.s"
+	@echo "... domain/async_computation/events/future_events.o"
+	@echo "... domain/async_computation/events/future_events.i"
+	@echo "... domain/async_computation/events/future_events.s"
+	@echo "... domain/async_computation/repository/future_repository_memory.o"
+	@echo "... domain/async_computation/repository/future_repository_memory.i"
+	@echo "... domain/async_computation/repository/future_repository_memory.s"
 	@echo "... domain/channel/channel.o"
 	@echo "... domain/channel/channel.i"
 	@echo "... domain/channel/channel.s"
-	@echo "... domain/channel/entity/channel.o"
-	@echo "... domain/channel/entity/channel.i"
-	@echo "... domain/channel/entity/channel.s"
 	@echo "... domain/channel/select.o"
 	@echo "... domain/channel/select.i"
 	@echo "... domain/channel/select.s"
+	@echo "... domain/channel_communication/adapter/channel_adapter.o"
+	@echo "... domain/channel_communication/adapter/channel_adapter.i"
+	@echo "... domain/channel_communication/adapter/channel_adapter.s"
+	@echo "... domain/channel_communication/aggregate/channel.o"
+	@echo "... domain/channel_communication/aggregate/channel.i"
+	@echo "... domain/channel_communication/aggregate/channel.s"
+	@echo "... domain/channel_communication/events/channel_events.o"
+	@echo "... domain/channel_communication/events/channel_events.i"
+	@echo "... domain/channel_communication/events/channel_events.s"
 	@echo "... domain/coroutine/coroutine.o"
 	@echo "... domain/coroutine/coroutine.i"
 	@echo "... domain/coroutine/coroutine.s"
@@ -565,6 +964,39 @@ help:
 	@echo "... domain/task/task.o"
 	@echo "... domain/task/task.i"
 	@echo "... domain/task/task.s"
+	@echo "... domain/task_execution/aggregate/task.o"
+	@echo "... domain/task_execution/aggregate/task.i"
+	@echo "... domain/task_execution/aggregate/task.s"
+	@echo "... domain/task_execution/events/task_events.o"
+	@echo "... domain/task_execution/events/task_events.i"
+	@echo "... domain/task_execution/events/task_events.s"
+	@echo "... domain/task_execution/repository/task_repository_memory.o"
+	@echo "... domain/task_execution/repository/task_repository_memory.i"
+	@echo "... domain/task_execution/repository/task_repository_memory.s"
+	@echo "... domain/task_scheduling/adapter/scheduler_adapter.o"
+	@echo "... domain/task_scheduling/adapter/scheduler_adapter.i"
+	@echo "... domain/task_scheduling/adapter/scheduler_adapter.s"
+	@echo "... domain/task_scheduling/aggregate/scheduler.o"
+	@echo "... domain/task_scheduling/aggregate/scheduler.i"
+	@echo "... domain/task_scheduling/aggregate/scheduler.s"
+	@echo "... domain/task_scheduling/events/scheduler_events.o"
+	@echo "... domain/task_scheduling/events/scheduler_events.i"
+	@echo "... domain/task_scheduling/events/scheduler_events.s"
+	@echo "... infrastructure/event/bus_impl.o"
+	@echo "... infrastructure/event/bus_impl.i"
+	@echo "... infrastructure/event/bus_impl.s"
+	@echo "... infrastructure/event/event_bus_initializer.o"
+	@echo "... infrastructure/event/event_bus_initializer.i"
+	@echo "... infrastructure/event/event_bus_initializer.s"
+	@echo "... shared/handles/file_handle_manager.o"
+	@echo "... shared/handles/file_handle_manager.i"
+	@echo "... shared/handles/file_handle_manager.s"
+	@echo "... shared/handles/socket_handle_manager.o"
+	@echo "... shared/handles/socket_handle_manager.i"
+	@echo "... shared/handles/socket_handle_manager.s"
+	@echo "... shared/result/result.o"
+	@echo "... shared/result/result.i"
+	@echo "... shared/result/result.s"
 .PHONY : help
 
 

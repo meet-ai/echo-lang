@@ -72,6 +72,14 @@ CMakeFiles/echo_runtime.dir/domain/coroutine/coroutine.c.o: \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/__stddef_null.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/__stddef_max_align_t.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/__stddef_offsetof.h \
+  /Users/meetai/source/echo-lang/runtime/domain/coroutine/../scheduler/scheduler.h \
+  /Users/meetai/source/echo-lang/runtime/domain/coroutine/../scheduler/../task_execution/aggregate/task.h \
+  /Users/meetai/source/echo-lang/runtime/domain/coroutine/../scheduler/concurrency/processor.h \
+  /Users/meetai/source/echo-lang/runtime/domain/coroutine/../scheduler/concurrency/../../task_execution/aggregate/task.h \
+  /Users/meetai/source/echo-lang/runtime/domain/coroutine/../scheduler/concurrency/machine.h \
+  /Users/meetai/source/echo-lang/runtime/domain/coroutine/../scheduler/concurrency/../../coroutine/context.h \
+  /Users/meetai/source/echo-lang/runtime/domain/coroutine/../scheduler/../task_scheduling/aggregate/scheduler.h \
+  /Users/meetai/source/echo-lang/runtime/domain/coroutine/../scheduler/../task_scheduling/aggregate/../../task_execution/aggregate/task.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/stdlib.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/_stdlib.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/wait.h \

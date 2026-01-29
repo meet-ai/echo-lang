@@ -1,0 +1,152 @@
+// time/time.eo - Time 时间类型
+// 表示时间点，用于时间戳和日期时间操作
+
+package time
+
+import core
+
+// Time 时间类型
+// 内部以 Unix 时间戳（秒）和纳秒偏移存储
+struct Time {
+    sec: i64,   // Unix 时间戳（秒）
+    nsec: i32   // 纳秒偏移（0-999999999）
+}
+
+// 构造函数：从 Unix 时间戳（秒）创建
+func from_unix(sec: i64) -> Time {
+    return Time { sec: sec, nsec: 0 }
+}
+
+// 构造函数：从 Unix 时间戳（秒+纳秒）创建
+func from_unix_nanos(sec: i64, nsec: i32) -> Time {
+    // 规范化：确保 nsec 在有效范围内
+    let mut sec = sec
+    let mut nsec = nsec
+    
+    // 处理纳秒溢出
+    if nsec >= 1_000_000_000 {
+        sec = sec + (i64(nsec) / 1_000_000_000)
+        nsec = nsec % 1_000_000_000
+    } else if nsec < 0 {
+        sec = sec - 1
+        nsec = nsec + 1_000_000_000
+    }
+    
+    return Time { sec: sec, nsec: nsec }
+}
+
+// 构造函数：获取当前时间
+func now() -> Time {
+    // 调用运行时函数获取当前时间
+    // runtime_time_now_ms() -> i64：返回 Unix 时间戳（毫秒）
+    let ms = runtime_time_now_ms()
+    let sec = ms / 1000
+    let nsec = i32((ms % 1000) * 1_000_000)
+    return Time { sec: sec, nsec: nsec }
+}
+
+// 方法实现
+// 获取 Unix 时间戳（秒）
+func (t Time) unix() -> i64 {
+    return t.sec
+}
+
+// 获取 Unix 时间戳（纳秒）
+func (t Time) unix_nanos() -> i64 {
+    return t.sec * 1_000_000_000 + i64(t.nsec)
+}
+
+// 获取纳秒部分
+func (t Time) nanosecond() -> i32 {
+    return t.nsec
+}
+
+// 判断是否为零时间
+func (t Time) is_zero() -> bool {
+    return t.sec == 0 && t.nsec == 0
+}
+
+// 添加时长
+func (t Time) add(d: Duration) -> Time {
+    let nanos = d.as_nanos()
+    let sec_delta = nanos / 1_000_000_000
+    let nsec_delta = i32(nanos % 1_000_000_000)
+    
+    let mut new_sec = t.sec + sec_delta
+    let mut new_nsec = t.nsec + nsec_delta
+    
+    // 处理纳秒溢出
+    if new_nsec >= 1_000_000_000 {
+        new_sec = new_sec + 1
+        new_nsec = new_nsec - 1_000_000_000
+    } else if new_nsec < 0 {
+        new_sec = new_sec - 1
+        new_nsec = new_nsec + 1_000_000_000
+    }
+    
+    return Time { sec: new_sec, nsec: new_nsec }
+}
+
+// 减去时长
+func (t Time) sub_duration(d: Duration) -> Time {
+    return t.add(d.mul(-1))
+}
+
+// 计算时间差（返回 Duration）
+func (t Time) sub(other: Time) -> Duration {
+    let sec_diff = t.sec - other.sec
+    let nsec_diff = i64(t.nsec) - i64(other.nsec)
+    let total_nanos = sec_diff * 1_000_000_000 + nsec_diff
+    return Duration { nanos: total_nanos }
+}
+
+// 判断是否在另一个时间之前
+func (t Time) before(other: Time) -> bool {
+    if t.sec < other.sec {
+        return true
+    }
+    if t.sec == other.sec && t.nsec < other.nsec {
+        return true
+    }
+    return false
+}
+
+// 判断是否在另一个时间之后
+func (t Time) after(other: Time) -> bool {
+    if t.sec > other.sec {
+        return true
+    }
+    if t.sec == other.sec && t.nsec > other.nsec {
+        return true
+    }
+    return false
+}
+
+// 判断是否相等
+func (t Time) eq(other: Time) -> bool {
+    return t.sec == other.sec && t.nsec == other.nsec
+}
+
+// 格式化时间
+func (t Time) format(layout: string) -> string {
+    // 调用运行时函数格式化时间
+    // runtime_time_format(sec: i64, nsec: i32, layout: string) -> string
+    // 实现：使用 strftime 格式化时间，支持Go风格的时间格式（2006-01-02 15:04:05）
+    // 注意：返回的字符串是新分配的内存，需要由调用者或GC管理
+    return runtime_time_format(t.sec, t.nsec, layout)
+}
+
+// 解析时间字符串
+func parse_time(layout: string, value: string) -> Result[Time] {
+    // 调用运行时函数解析时间
+    // runtime_time_parse(layout: string, value: string) -> *TimeParseResult
+    // 返回结构体指针，包含：
+    //   - success: bool (解析是否成功)
+    //   - sec: i64 (Unix时间戳，秒)
+    //   - nsec: i32 (纳秒偏移)
+    let result = runtime_time_parse(layout, value)
+    if !result.success {
+        return Err("failed to parse time")
+    }
+    return Ok(Time { sec: result.sec, nsec: result.nsec })
+}

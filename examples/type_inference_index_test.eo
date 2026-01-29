@@ -1,0 +1,19 @@
+// 测试索引表达式类型推断
+// 注意：索引表达式需要从数组变量推断，需要符号表支持（第二阶段）
+// 当前阶段：先测试数组字面量推断，索引表达式推断需要符号表支持
+func main() -> int {
+    // 创建数组（带显式类型，因为变量引用需要符号表支持）
+    let arr: [int] = [1, 2, 3, 4, 5]
+    let strArr: [string] = ["a", "b", "c"]
+    let floatArr: [float] = [1.0, 2.0, 3.0]
+    
+    // 索引表达式类型推断需要符号表支持（第二阶段实现）
+    // 当前阶段：索引表达式需要显式类型注解
+    let item1: int = arr[0]
+    let item2: int = arr[1]
+    let item3: string = strArr[0]
+    let item4: float = floatArr[0]
+    
+    print "Index expression test (explicit types for now)"
+    return 0
+}

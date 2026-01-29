@@ -1,0 +1,17 @@
+// 测试真正的换行格式的 else if 语法（} 和 else if 不在同一行）
+func main() -> int {
+    let x: int = 7
+    
+    // 测试换行格式的 else if（} 和 else if 不在同一行）
+    if x > 10 {
+        print "big"
+    }
+    else if x > 5 {
+        print "medium"
+    }
+    else {
+        print "small"
+    }
+    
+    return 0
+}

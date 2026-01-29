@@ -313,12 +313,21 @@ func (rdp *RecursiveDescentParser) parseImportStatement() (*sharedVO.ImportState
 
 // parsePackageImportStatement 解析包级导入
 // 注意：import 关键字已在 parseImportStatement 中消耗
+// 支持两种语法：
+// 1. import "package" (字符串形式，向后兼容)
+// 2. import xxpkg (标识符形式，类似 Python)
 func (rdp *RecursiveDescentParser) parsePackageImportStatement(startLocation sharedVO.SourceLocation) (*sharedVO.ImportStatement, error) {
-	if !rdp.match(lexicalVO.EnhancedTokenTypeString) {
-		return nil, fmt.Errorf("expected import path after 'import'")
+	var importPath string
+	
+	// 优先尝试字符串形式（向后兼容）
+	if rdp.match(lexicalVO.EnhancedTokenTypeString) {
+		importPath = rdp.previousToken().StringValue()
+	} else if rdp.match(lexicalVO.EnhancedTokenTypeIdentifier) {
+		// 支持标识符形式（类似 Python）：import xxpkg
+		importPath = rdp.previousToken().Lexeme()
+	} else {
+		return nil, fmt.Errorf("expected import path (string or identifier) after 'import'")
 	}
-
-	importPath := rdp.previousToken().StringValue()
 
 	// 解析可选的别名
 	var alias string
@@ -1063,17 +1072,14 @@ func (rdp *RecursiveDescentParser) parseTraitMethod() (*sharedVO.TraitMethod, er
 	}
 	methodName := rdp.previousToken().Lexeme()
 
-	// 解析泛型参数（可选）
-	// TODO: TraitMethod目前不支持泛型参数，后续需要扩展TraitMethod支持泛型
-	// 暂时跳过泛型参数解析
+	// 解析泛型参数（可选）：func name[T, U](...)
+	var methodGenericParams []*sharedVO.GenericParameter
 	if rdp.match(lexicalVO.EnhancedTokenTypeLessThan) {
-		// 跳过泛型参数，暂时不支持
-		// 可以在这里调用parseGenericParameters()但暂时不使用结果
-		_, err := rdp.parseGenericParameters()
+		params, err := rdp.parseGenericParameters()
 		if err != nil {
 			return nil, err
 		}
-		// genericParams暂时不使用，因为NewTraitMethod不支持
+		methodGenericParams = params
 	}
 
 	// 解析参数列表
@@ -1091,13 +1097,39 @@ func (rdp *RecursiveDescentParser) parseTraitMethod() (*sharedVO.TraitMethod, er
 	}
 
 	// 解析返回类型（可选）
+	// 支持两种语法：
+	// 1. func name() -> ReturnType (旧语法，保持向后兼容)
+	// 2. func name() ReturnType (新语法，不需要箭头)
 	var returnType *sharedVO.TypeAnnotation
 	if rdp.match(lexicalVO.EnhancedTokenTypeArrow) {
+		// 旧语法：使用 -> 箭头
 		typeAnnotation, err := rdp.parseTypeAnnotation()
 		if err != nil {
 			return nil, err
 		}
 		returnType = typeAnnotation
+	} else {
+		// 新语法：尝试直接解析类型（如果后面不是 '{'）
+		// 检查下一个 token 是否是 '{'，如果不是，可能是返回类型
+		if !rdp.check(lexicalVO.EnhancedTokenTypeLeftBrace) {
+			// 尝试解析类型（可能是返回类型）
+			// 保存当前位置以便回退
+			savedPosition := rdp.position
+			typeAnnotation, err := rdp.parseTypeAnnotation()
+			if err == nil {
+				// 解析成功，检查后面是否是 '{'
+				if rdp.check(lexicalVO.EnhancedTokenTypeLeftBrace) {
+					// 确实是返回类型
+					returnType = typeAnnotation
+				} else {
+					// 不是返回类型，回退
+					rdp.position = savedPosition
+				}
+			} else {
+				// 解析失败，回退
+				rdp.position = savedPosition
+			}
+		}
 	}
 
 	// 检查是否有方法体（抽象方法没有方法体）
@@ -1117,7 +1149,7 @@ func (rdp *RecursiveDescentParser) parseTraitMethod() (*sharedVO.TraitMethod, er
 		return nil, fmt.Errorf("expected method body '{' or ';' for abstract method")
 	}
 
-	return sharedVO.NewTraitMethod(methodName, parameters, returnType, isAbstract, funcLocation), nil
+	return sharedVO.NewTraitMethod(methodName, methodGenericParams, parameters, returnType, isAbstract, funcLocation), nil
 }
 
 func (rdp *RecursiveDescentParser) parseGlobalVariableDeclaration(startLocation sharedVO.SourceLocation) (sharedVO.ASTNode, error) {

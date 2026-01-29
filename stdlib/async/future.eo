@@ -1,0 +1,39 @@
+// async/future.eo - Future[T] Trait 定义
+// 定义异步计算接口
+
+package async
+
+import core
+
+// Future[T] 异步计算类型
+// 表示一个可能尚未完成的异步计算
+trait Future[T] {
+    // 等待 Future 完成
+    // 这是一个异步方法，需要使用 await 关键字调用
+    async func await() -> T
+}
+
+// 工具函数：将同步函数转换为 Future
+func from_fn[T](f: func() -> T) -> Future[T] {
+    // TODO: 实现函数到 Future 的转换
+    // 这需要运行时支持
+    return FutureImpl[T] { func: f }
+}
+
+// FutureImpl[T] Future 的简单实现
+// 用于包装同步函数
+struct FutureImpl[T] {
+    func: func() -> T,
+    completed: bool,
+    result: Option[T]
+}
+
+// 实现 Future Trait
+// TODO: 需要编译器支持 async/await 语法
+async func (f *FutureImpl[T]) await() -> T {
+    if !f.completed {
+        f.result = Some(f.func())
+        f.completed = true
+    }
+    return f.result.unwrap()
+}

@@ -1,0 +1,40 @@
+// 类型转换运行时测试
+// 测试新实现的类型转换功能在运行时的行为
+
+import string
+
+func test_type_constructor() -> void {
+    // 测试1：基础类型构造函数语法
+    let x: int = 42
+    let y1: float = float(x)      // 类型构造函数语法
+    let y2: float = x as float    // as 关键字语法
+    
+    // 验证转换结果（应该都是 42.0）
+    // 注意：这里只是编译测试，实际运行时验证需要打印或断言
+}
+
+func test_string_split() -> void {
+    // 测试 string.split() 使用新的类型转换
+    let s: string = "hello,world,test"
+    let parts: []string = s.split(",")
+    
+    // 验证分割结果
+    // parts 应该包含 ["hello", "world", "test"]
+    // 注意：这里需要运行时验证，暂时只测试编译
+}
+
+func test_nested_type_constructor() -> void {
+    // 测试嵌套类型构造函数
+    let x: int = 42
+    let y: f64 = f64(float(x))  // 嵌套：int → float → f64
+}
+
+func main() -> int {
+    test_type_constructor()
+    test_string_split()
+    test_nested_type_constructor()
+    
+    // 打印测试完成信息
+    // 注意：需要运行时支持打印功能
+    return 0
+}

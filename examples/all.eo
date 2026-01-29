@@ -1,0 +1,372 @@
+// comprehensive_concurrent_demo.eo
+// 综合并发演示：展示并行、异步、通道通信和内存管理
+//
+// 功能演示：
+// 1. 并行任务处理（多个spawn并发执行）
+// 2. 异步操作（async/await模式）
+// 3. 通道通信（生产者-消费者模式）
+// 4. Select多路复用（非阻塞通道操作）
+// 5. 内存密集型操作（触发GC）
+
+// ============================================================================
+// 数据结构定义
+// ============================================================================
+
+// 任务结果
+struct TaskResult {
+    taskId: int,
+    status: string,
+    data: string,
+    timestamp: int
+}
+
+// 工作项
+struct WorkItem {
+    id: int,
+    data: string,
+    priority: int
+}
+
+// ============================================================================
+// 异步数据获取（模拟网络请求）
+// ============================================================================
+
+async func fetchDataFromAPI(url: string, requestId: int) -> Result[string] {
+    print "Worker fetching: " + url
+    
+    // 模拟异步延迟
+    // 在实际实现中，这里会等待网络响应
+    
+    if requestId % 3 == 0 {
+        return Err("Network timeout")
+    }
+    
+    return Ok("Data from " + url)
+}
+
+// ============================================================================
+// 并行任务处理
+// ============================================================================
+
+// 并行处理多个任务
+func processTasksParallel(taskCount: int) -> void {
+    print "=== Starting Parallel Task Processing ==="
+    print "Spawning concurrent tasks"
+    
+    // 创建通道收集结果
+    let resultChan: chan TaskResult = chan TaskResult
+    
+    // 并行启动多个任务
+    let i: int = 0
+    while i < taskCount {
+        let taskId: int = i
+        spawn processSingleTask(taskId, resultChan)
+        let i: int = i + 1
+    }
+    
+    // 收集所有结果
+    let completed: int = 0
+    while completed < taskCount {
+        let result: TaskResult = <- resultChan
+        print "Task completed: " + result.status
+        let completed: int = completed + 1
+    }
+    
+    print "All tasks completed"
+}
+
+// 单个任务处理
+func processSingleTask(taskId: int, resultChan: chan TaskResult) -> void {
+    // 模拟工作负载
+    let workTime: int = (taskId % 5) + 1
+    
+    // 创建大量临时对象（触发内存分配和GC）
+    let tempData: [string] = []
+    let j: int = 0
+    while j < 100 {
+        let item: string = "Task item"
+        // 这里会触发内存分配
+        let j: int = j + 1
+    }
+    
+    // 发送结果
+    let result: TaskResult = {taskId: taskId, status: "completed", data: "Processed units", timestamp: taskId * 1000}
+    
+    resultChan <- result
+}
+
+// ============================================================================
+// 异步操作演示
+// ============================================================================
+
+async func performAsyncOperation(operationId: int) -> Result[string] {
+    print "Async operation started"
+    
+    // 模拟异步工作
+    let url: string = "http://api.example.com/data"
+    let fetchResult: Result[string] = await fetchDataFromAPI(url, operationId)
+    
+    match fetchResult {
+        Ok(data) => return Ok("Processed: " + data)
+        Err(error) => return Err("Operation failed: " + error)
+    }
+}
+
+// 并发执行多个异步操作
+func runAsyncOperations() -> void {
+    print "=== Running Async Operations ==="
+    
+    // 启动多个异步操作
+    let futures: [Future[Result[string]]] = []
+    
+    let i: int = 0
+    while i < 5 {
+        let future: Future[Result[string]] = spawn performAsyncOperation(i)
+        // 在实际实现中，这里会收集future到数组
+        let i: int = i + 1
+    }
+    
+    print "All async operations spawned"
+}
+
+// ============================================================================
+// 通道通信：生产者-消费者模式
+// ============================================================================
+
+// 生产者：生成工作项
+func producer(workChan: chan WorkItem, itemCount: int) -> void {
+    print "Producer started, generating items"
+    
+    let i: int = 0
+    while i < itemCount {
+        let item: WorkItem = {id: i, data: "Work item", priority: i % 10}
+        
+        workChan <- item
+        print "Produced item"
+        
+        let i: int = i + 1
+    }
+    
+    print "Producer finished"
+}
+
+// 消费者：处理工作项
+func consumer(workChan: chan WorkItem, consumerId: int) -> void {
+    print "Consumer started"
+    
+    let processed: int = 0
+    while processed < 10 {
+        let item: WorkItem = <- workChan
+        print "Consumer processing: " + item.data
+        
+        // 模拟处理工作（创建临时对象）
+        let temp: [string] = []
+        let j: int = 0
+        while j < 50 {
+            let data: string = "Processing step"
+            let j: int = j + 1
+        }
+        
+        let processed: int = processed + 1
+    }
+    
+    print "Consumer finished"
+}
+
+// 生产者-消费者演示
+func producerConsumerDemo() -> void {
+    print "=== Producer-Consumer Demo ==="
+    
+    let workChan: chan WorkItem = chan WorkItem
+    
+    // 启动生产者
+    spawn producer(workChan, 30)
+    
+    // 启动多个消费者
+    spawn consumer(workChan, 1)
+    spawn consumer(workChan, 2)
+    spawn consumer(workChan, 3)
+    
+    print "Producer and consumers started"
+}
+
+// ============================================================================
+// Select多路复用演示
+// ============================================================================
+
+// Select操作：非阻塞通道操作
+func selectDemo() -> void {
+    print "=== Select Multiplexing Demo ==="
+    
+    let ch1: chan string = chan string
+    let ch2: chan int = chan int
+    let ch3: chan bool = chan bool
+    
+    // 启动多个发送者
+    spawn sendToChannel1(ch1)
+    spawn sendToChannel2(ch2)
+    spawn sendToChannel3(ch3)
+    
+    // 使用select接收
+    let received: int = 0
+    while received < 3 {
+        select {
+            case msg := <- ch1:
+                print "Received from ch1: " + msg
+                let received: int = received + 1
+            case num := <- ch2:
+                print "Received from ch2: " + num
+                let received: int = received + 1
+            case flag := <- ch3:
+                print "Received from ch3: " + flag
+                let received: int = received + 1
+        }
+    }
+    
+    print "Select demo completed"
+}
+
+func sendToChannel1(ch: chan string) -> void {
+    ch <- "Message from channel 1"
+}
+
+func sendToChannel2(ch: chan int) -> void {
+    ch <- 42
+}
+
+func sendToChannel3(ch: chan bool) -> void {
+    ch <- true
+}
+
+// ============================================================================
+// 内存密集型操作（触发GC）
+// ============================================================================
+
+// 创建大量对象，触发内存分配和GC
+func memoryIntensiveOperation(iterations: int) -> void {
+    print "=== Memory Intensive Operation ==="
+    print "Creating objects to trigger GC"
+    
+    // 创建大量临时对象
+    let objects: [string] = []
+    let i: int = 0
+    while i < iterations {
+        let obj: string = "Object with data"
+        // 在实际实现中，这里会添加到数组
+        let i: int = i + 1
+        
+        // 每1000个对象打印一次进度
+        if i % 1000 == 0 {
+            print "Created objects"
+        }
+    }
+    
+    print "Memory intensive operation completed"
+    print "GC should have been triggered during this operation"
+}
+
+// ============================================================================
+// 综合场景：并行处理 + 异步操作 + 通道通信
+// ============================================================================
+
+func comprehensiveScenario() -> void {
+    print "=== Comprehensive Concurrent Scenario ==="
+    
+    // 1. 创建多个通道
+    let dataChan: chan string = chan string
+    let resultChan: chan TaskResult = chan TaskResult
+    let controlChan: chan int = chan int
+    
+    // 2. 启动数据生成器
+    spawn dataGenerator(dataChan, 20)
+    
+    // 3. 启动多个并行处理器
+    spawn parallelProcessor(dataChan, resultChan, 1)
+    spawn parallelProcessor(dataChan, resultChan, 2)
+    spawn parallelProcessor(dataChan, resultChan, 3)
+    
+    // 4. 启动结果收集器
+    spawn resultCollector(resultChan, controlChan)
+    
+    // 5. 等待完成信号
+    let done: int = <- controlChan
+    print "Comprehensive scenario completed"
+}
+
+func dataGenerator(dataChan: chan string, count: int) -> void {
+    let i: int = 0
+    while i < count {
+        let data: string = "Data item " + i
+        dataChan <- data
+        let i: int = i + 1
+    }
+    print "Data generator finished"
+}
+
+func parallelProcessor(dataChan: chan string, resultChan: chan TaskResult, processorId: int) -> void {
+    let processed: int = 0
+    while processed < 7 {
+        let data: string = <- dataChan
+        print "Processor processing: " + data
+        
+        // 模拟异步处理
+        let result: TaskResult = {taskId: processorId * 100 + processed, status: "processed", data: "Result from " + data, timestamp: processed * 100}
+        
+        resultChan <- result
+        let processed: int = processed + 1
+    }
+    
+    print "Processor finished"
+}
+
+func resultCollector(resultChan: chan TaskResult, controlChan: chan int) -> void {
+    let collected: int = 0
+    while collected < 20 {
+        let result: TaskResult = <- resultChan
+        print "Collected result: Task - " + result.status
+        let collected: int = collected + 1
+    }
+    
+    print "Result collector finished"
+    controlChan <- 1
+}
+
+// ============================================================================
+// 主函数：运行所有演示
+// ============================================================================
+
+func main() -> void {
+    print "========================================"
+    print "Echo Language Comprehensive Demo"
+    print "Demonstrating: Parallelism, Async, Channels, Select, Memory GC"
+    print "========================================"
+    print ""
+    
+    // 1. 并行任务处理
+    processTasksParallel(10)
+    print ""
+    
+    // 2. 异步操作
+    runAsyncOperations()
+    print ""
+    
+    // 3. 生产者-消费者
+    producerConsumerDemo()
+    print ""
+    
+    // 4. Select多路复用
+    selectDemo()
+    print ""
+    
+    // 5. 内存密集型操作
+    memoryIntensiveOperation(5000)
+    print ""
+    
+    // 6. 综合场景
+    comprehensiveScenario()
+    print ""
+    
+    print "========================================"
+    print "All demos completed successfully!"
+    print "========================================"
+}

@@ -1,0 +1,73 @@
+// core/result.eo - Result[T] 高级扩展方法
+// Result[T, E] 是语言内置类型，核心方法（unwrap, map, is_ok 等）已内置
+// 这里只提供高级扩展方法，需要导入 core 包使用
+
+package core
+
+// Result[T] 是语言内置类型（Result[T, E] 或简化为 Result[T]）
+// 这里只提供高级扩展方法
+
+extend Result[T, E] {
+    // 映射错误值
+    // 如果为 Ok(v)，返回 Ok(v)，否则将错误通过 f 映射为新的错误类型
+    func map_err[F](f: func(E) -> F) -> Result[T, F] {
+        match self {
+            Ok(v) => Ok(v)
+            Err(e) => Err(f(e))
+        }
+    }
+    
+    // 转换为 Option
+    // 如果为 Ok(v)，返回 Some(v)，否则返回 None
+    func ok() -> Option[T] {
+        match self {
+            Ok(v) => Some(v)
+            Err(_) => None
+        }
+    }
+    
+    // 获取错误为 Option
+    // 如果为 Err(e)，返回 Some(e)，否则返回 None
+    func err() -> Option[E] {
+        match self {
+            Ok(_) => None
+            Err(e) => Some(e)
+        }
+    }
+    
+    // 链式操作：如果为 Ok，则调用函数
+    // 如果为 Ok(v)，返回 f(v)，否则返回 Err(e)
+    func and_then[U](f: func(T) -> Result[U, E]) -> Result[U, E] {
+        match self {
+            Ok(v) => f(v)
+            Err(e) => Err(e)
+        }
+    }
+    
+    // 或操作：如果为 Err，则调用函数
+    // 如果为 Ok(v)，返回 Ok(v)，否则调用 f(e) 生成新的 Result
+    func or_else[F](f: func(E) -> Result[T, F]) -> Result[T, F] {
+        match self {
+            Ok(v) => Ok(v)
+            Err(e) => f(e)
+        }
+    }
+    
+    // 期望值：如果为 Err，使用自定义消息 panic
+    // 如果为 Ok(v)，返回 v，否则使用 msg 和错误信息 panic
+    func expect(msg: string) -> T {
+        match self {
+            Ok(v) => v
+            Err(e) => panic(msg + ": " + e)
+        }
+    }
+    
+    // 期望错误：如果为 Ok，使用自定义消息 panic
+    // 如果为 Err(e)，返回 e，否则使用 msg 和值 panic
+    func expect_err(msg: string) -> E {
+        match self {
+            Ok(v) => panic(msg + ": " + v)
+            Err(e) => e
+        }
+    }
+}

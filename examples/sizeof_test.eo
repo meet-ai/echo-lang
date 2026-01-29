@@ -1,0 +1,30 @@
+// sizeof 功能测试
+
+func test_sizeof_basic_types() {
+    let size_i8 = sizeof(i8)      // 1
+    let size_i32 = sizeof(i32)    // 4
+    let size_i64 = sizeof(i64)    // 8
+    let size_int = sizeof(int)    // 4
+    let size_float = sizeof(float) // 4
+    let size_bool = sizeof(bool)  // 1
+    let size_string = sizeof(string) // 8 (pointer size)
+    
+    assert size_i8 == 1
+    assert size_i32 == 4
+    assert size_i64 == 8
+    assert size_int == 4
+    assert size_float == 4
+    assert size_bool == 1
+    assert size_string == 8
+}
+
+func test_sizeof_generic[T]() -> int {
+    return sizeof(T)
+}
+
+func test_sizeof_usage() {
+    let size1 = test_sizeof_generic[int]()      // 4
+    let size2 = test_sizeof_generic[float]()   // 4
+    assert size1 == 4
+    assert size2 == 4
+}

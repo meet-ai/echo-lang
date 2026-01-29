@@ -122,6 +122,11 @@ func (ls *LexerService) Tokenize(ctx context.Context, sourceFile *value_objects.
 			if ls.peek() == '&' {
 				ls.advance()
 				ls.addTokenToStream(tokenStream, value_objects.TokenTypeAnd, "&&")
+			} else {
+				// 单&用于取地址操作符（函数指针）
+				// 注意：lexer_service.go 使用的是旧的 TokenType，需要检查是否有对应的类型
+				// 如果没有，可能需要使用 EnhancedTokenTypeAmpersand
+				// 暂时跳过，因为可能使用的是 AdvancedLexerService
 			}
 		case char == '|':
 			if ls.peek() == '|' {

@@ -1,0 +1,27 @@
+// map_nested_test.eo - Map嵌套类型支持测试
+
+func main() -> int {
+    // 测试 map[string]map[int]string（嵌套Map）
+    let nestedMap: map[string]map[int]string = {}
+    
+    // 创建内层Map
+    let config: map[int]string = {}
+    config[1] = "value1"
+    config[2] = "value2"
+    
+    // 将内层Map作为值存储到外层Map
+    nestedMap["config"] = config
+    
+    // 测试 map[int]map[string]int（嵌套Map）
+    let reverseNestedMap: map[int]map[string]int = {}
+    
+    // 创建内层Map
+    let scores: map[string]int = {}
+    scores["alice"] = 90
+    scores["bob"] = 85
+    
+    // 将内层Map作为值存储到外层Map
+    reverseNestedMap[1] = scores
+    
+    return 0
+}

@@ -1,0 +1,22 @@
+// type_inference_result_option_test.eo - 测试 Result 和 Option 类型推断
+
+func main() -> int {
+    // 测试1：Result 类型表达式（需要显式类型，因为 ResultExpr 是类型表达式）
+    // 注意：ResultExpr 通常用于类型声明，这里仅作概念验证
+    
+    // 测试2：Option 类型表达式
+    let value: int = 42
+    let opt1 = Option(value)  // 应该推断为 Option[int]
+    print "Option test 1"
+
+    // 测试3：Option 从字面量推断
+    let opt2 = Option(100)  // 应该推断为 Option[int]
+    print "Option test 2"
+
+    // 测试4：Option 从字符串推断
+    let opt3 = Option("hello")  // 应该推断为 Option[string]
+    print "Option test 3"
+
+    print "Result and Option type inference test passed"
+    return 0
+}

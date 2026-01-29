@@ -1,0 +1,20 @@
+// 函数指针功能测试
+
+func test_func() -> int {
+    return 42
+}
+
+func test_function_pointer() {
+    let ptr = &test_func  // *i8
+    // 验证类型（暂时无法验证，因为 typeof 未实现）
+    // assert typeof(ptr) == "*i8"
+}
+
+func test_generic_function_pointer[T]() {
+    func generic_func(x: T) -> T {
+        return x
+    }
+    
+    // 注意：泛型函数指针需要具体类型参数
+    // let ptr = &generic_func[int]  // 暂时不支持泛型函数指针
+}

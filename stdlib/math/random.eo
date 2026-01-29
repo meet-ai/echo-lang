@@ -1,0 +1,109 @@
+// math/random.eo - 随机数生成
+// 提供伪随机数生成器
+
+package math
+
+// Rng 随机数生成器
+// 使用线性同余生成器（LCG）算法
+struct Rng {
+    seed: u64,
+    state: u64
+}
+
+// 构造函数：使用默认种子创建随机数生成器
+func new_rng() -> Rng {
+    // 使用系统熵源作为种子
+    // runtime_get_random_seed() -> u64：返回基于系统时间和进程ID的随机种子
+    let seed = runtime_get_random_seed()
+    return Rng { seed: seed, state: seed }
+}
+
+// 构造函数：使用指定种子创建随机数生成器
+func from_seed(seed: u64) -> Rng {
+    return Rng { seed: seed, state: seed }
+}
+
+// 方法实现
+// 生成下一个随机数（0 到 u64::MAX）
+func (r *Rng) next() -> u64 {
+    // 线性同余生成器：state = (state * a + c) % m
+    // 使用常见的参数：a = 1664525, c = 1013904223, m = 2^64
+    r.state = r.state * 1664525 + 1013904223
+    return r.state
+}
+
+// 生成 [0, 1) 区间的随机浮点数
+func (r *Rng) next_f64() -> f64 {
+    let u = r.next()
+    // 将 u64 转换为 [0, 1) 区间的浮点数
+    return f64(u) / f64(18446744073709551615.0)  // u64::MAX
+}
+
+// 生成 [min, max) 区间的随机整数
+func (r *Rng) next_range(min: i64, max: i64) -> i64 {
+    if min >= max {
+        return min
+    }
+    let range = max - min
+    let random = r.next()
+    return min + (i64(random) % range)
+}
+
+// 生成 [min, max) 区间的随机浮点数
+func (r *Rng) next_f64_range(min: f64, max: f64) -> f64 {
+    if min >= max {
+        return min
+    }
+    let range = max - min
+    return min + r.next_f64() * range
+}
+
+// 生成随机布尔值
+func (r *Rng) next_bool() -> bool {
+    return (r.next() % 2) == 0
+}
+
+// 从切片中随机选择一个元素
+func (r *Rng) choose[T](items: []T) -> Option[T] {
+    if len(items) == 0 {
+        return None
+    }
+    let index = r.next_range(0, i64(len(items)))
+    return Some(items[index])
+}
+
+// 打乱切片（Fisher-Yates 洗牌算法）
+func (r *Rng) shuffle[T](items: []T) {
+    let n = len(items)
+    for i in (n - 1)..0 {
+        let j = r.next_range(0, i64(i + 1))
+        // 交换 items[i] 和 items[j]
+        let temp = items[i]
+        items[i] = items[j]
+        items[j] = temp
+    }
+}
+
+// 重置随机数生成器到初始状态
+func (r *Rng) reset() {
+    r.state = r.seed
+}
+
+// 全局随机数生成器（线程安全版本需要运行时支持）
+// 注意：这是简化版本，实际应该使用线程本地存储
+let mut global_rng = new_rng()
+
+// 全局函数：生成随机整数 [0, max)
+func rand_int(max: i64) -> i64 {
+    return global_rng.next_range(0, max)
+}
+
+// 全局函数：生成随机浮点数 [0, 1)
+func rand_f64() -> f64 {
+    return global_rng.next_f64()
+}
+
+// 全局函数：生成随机布尔值
+func rand_bool() -> bool {
+    return global_rng.next_bool()
+}

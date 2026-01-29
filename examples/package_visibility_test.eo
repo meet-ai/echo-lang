@@ -1,0 +1,51 @@
+// package_visibility_test.eo - 访问控制测试
+// 测试：private 关键字、跨包访问控制
+
+package utils
+
+// 测试1：private 函数（同包内可访问）
+private func helper() int {
+    return 42
+}
+
+// 测试2：public 函数（跨包可访问）
+func publicFunc() int {
+    return helper()  // 同包内可以访问 private 函数
+}
+
+// 测试3：private 函数调用 public 函数
+private func internalHelper() int {
+    return publicFunc()  // private 可以调用 public
+}
+
+// 测试4：结构体字段访问控制
+struct Config {
+    publicField: int
+    privateField: int  // 注意：Echo 可能使用 private 关键字
+}
+
+func getConfig() Config {
+    let c: Config = Config {
+        publicField: 10,
+        privateField: 20
+    }
+    return c
+}
+
+func main() {
+    print "=== Package Visibility Test ==="
+    
+    // 同包内可以访问 private 函数
+    let value1 = helper()
+    print "Private helper result: " + value1
+    
+    // 同包内可以访问 public 函数
+    let value2 = publicFunc()
+    print "Public function result: " + value2
+    
+    // 同包内可以访问 private 字段（如果支持）
+    let config = getConfig()
+    print "Config public field: " + config.publicField
+    
+    print "Package visibility test completed"
+}

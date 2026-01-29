@@ -1,0 +1,174 @@
+// net/http/server.eo - HTTP 服务器
+// 提供 HTTP 服务器功能
+
+package http
+
+import core
+import net
+
+// HttpHandler HTTP 请求处理函数类型
+type HttpHandler = func(HttpRequest) -> HttpResponse
+
+// HttpServer HTTP 服务器
+struct HttpServer {
+    addr: string,
+    handler: HttpHandler,
+    listener: Option[TcpListener]
+}
+
+// 构造函数：创建 HTTP 服务器
+func new_server(addr: string, handler: HttpHandler) -> HttpServer {
+    return HttpServer {
+        addr: addr,
+        handler: handler,
+        listener: None
+    }
+}
+
+// 方法实现
+// 启动服务器（异步）
+async func (s *HttpServer) serve() -> Result[void] {
+    // 绑定地址并监听
+    match net::bind(s.addr) {
+        Ok(listener) => {
+            s.listener = Some(listener)
+        }
+        Err(e) => return Err("failed to bind: " + e)
+    }
+    
+    // 接受连接并处理请求
+    loop {
+        match s.listener.unwrap().accept() {
+            Ok(stream) => {
+                // TODO: 为每个连接创建协程处理请求
+                // spawn(|| s.handle_connection(stream))
+                s.handle_connection(stream)
+            }
+            Err(e) => {
+                // 处理错误
+                return Err("accept failed: " + e)
+            }
+        }
+    }
+}
+
+// 处理连接
+func (s HttpServer) handle_connection(stream: TcpStream) {
+    // TODO: 实现 HTTP 连接处理
+    // 1. 读取 HTTP 请求
+    // 2. 解析请求
+    // 3. 调用处理函数
+    // 4. 构建响应
+    // 5. 发送响应
+    // 6. 关闭连接
+}
+
+// 停止服务器
+func (s *HttpServer) stop() -> Result[void] {
+    match s.listener {
+        Some(listener) => {
+            listener.close()
+            s.listener = None
+            return Ok(())
+        }
+        None => return Ok(())
+    }
+}
+
+// 辅助方法：解析 HTTP 请求
+func parse_request(data: []u8) -> Result[HttpRequest] {
+    // 调用运行时函数解析HTTP请求
+    // 从 []u8 提取指针和长度
+    let data_ptr = &data
+    let data_len = len(data)
+    
+    // 调用运行时函数解析HTTP请求
+    let result = runtime_http_parse_request(data_ptr, data_len)
+    
+    // 检查解析是否成功
+    if !result.success {
+        return Err("failed to parse HTTP request")
+    }
+    
+    // 转换HTTP方法字符串为枚举
+    let method_result = string_to_method(result.method)
+    match method_result {
+        Ok(method) => {
+            // 构建头部map（需要将 char** 转换为 []string）
+            // 使用新的类型转换语法：从 char** + int32_t 转换为 []string
+            // 注意：这里需要手动构造，因为 result 不是 StringSplitResult 结构体
+            // 暂时保留 runtime_slice_from_ptr_len，等待支持更通用的类型转换
+            let header_keys: []string = runtime_slice_from_ptr_len(result.header_keys, result.header_count)
+            let header_values: []string = runtime_slice_from_ptr_len(result.header_values, result.header_count)
+            
+            // 循环构建头部map（使用范围循环）
+            let mut headers: map[string]string = {}
+            for i in 0..result.header_count {
+                headers[header_keys[i]] = header_values[i]
+            }
+            
+            // 构建正文切片（将 uint8_t* + int32_t 转换为 []u8）
+            let body: []u8 = runtime_slice_from_ptr_len(result.body, result.body_len)
+            
+            // 构建并返回 HttpRequest
+            return Ok(HttpRequest {
+                method: method,
+                url: result.path,
+                headers: headers,
+                body: body
+            })
+        }
+        Err(e) => return Err(e)
+    }
+}
+
+// 辅助方法：构建 HTTP 响应
+func build_response(resp: HttpResponse) -> []u8 {
+    // 调用运行时函数构建HTTP响应
+    // 使用 runtime_map_get_keys 将 map[string]string 转换为 char** 数组
+    
+    // 1. 从map获取键值对数组
+    // runtime_map_get_keys(map_ptr: *i8) -> *MapIterResult
+    // MapIterResult 结构体：{ keys: char**, values: char**, count: i32 }
+    let iter_result = runtime_map_get_keys(resp.headers)
+    
+    // 2. 处理空map情况
+    // 如果 iter_result 为 NULL，使用 NULL 指针和 count=0
+    let null_ptr = runtime_null_ptr()
+    let header_keys = null_ptr
+    let header_values = null_ptr
+    let header_count: int32 = 0
+    
+    if iter_result != nil {
+        // 3. 从结果结构体中提取字段
+        // 编译器会自动处理结构体指针字段访问
+        header_keys = iter_result.keys
+        header_values = iter_result.values
+        header_count = iter_result.count
+    }
+    
+    // 4. 从响应正文提取指针和长度
+    let body_ptr = &resp.body
+    let body_len = len(resp.body)
+    
+    // 5. 调用运行时函数构建HTTP响应
+    let result = runtime_http_build_response(
+        resp.status_code,
+        resp.status_text,
+        header_keys,
+        header_values,
+        header_count,
+        body_ptr,
+        body_len
+    )
+    
+    // 6. 检查构建是否成功
+    if !result.success {
+        return []
+    }
+    
+    // 7. 将响应数据转换为切片（将 uint8_t* + int32_t 转换为 []u8）
+    let response_data: []u8 = runtime_slice_from_ptr_len(result.data, result.data_len)
+    
+    return response_data
+}

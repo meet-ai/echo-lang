@@ -1,0 +1,26 @@
+// map_struct_test.eo - Map结构体类型支持测试
+
+struct User {
+    name: string
+    age: int
+}
+
+func main() -> int {
+    // 测试 map[string]User（结构体作为值）
+    let userMap: map[string]User = {}
+    
+    // 创建User结构体实例
+    let alice: User = User{name: "alice", age: 30}
+    let bob: User = User{name: "bob", age: 25}
+    
+    // 将结构体作为值存储到Map
+    userMap["alice"] = alice
+    userMap["bob"] = bob
+    
+    // 测试 map[int]User（整数键，结构体值）
+    let userMapByID: map[int]User = {}
+    userMapByID[1] = alice
+    userMapByID[2] = bob
+    
+    return 0
+}

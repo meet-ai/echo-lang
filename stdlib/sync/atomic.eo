@@ -1,0 +1,113 @@
+// sync/atomic.eo - Atomic 原子类型
+// 提供无锁的原子操作，用于高性能并发场景
+
+package sync
+
+import core
+
+// AtomicInt 原子整数
+// 提供线程安全的整数操作，无需加锁
+struct AtomicInt {
+    value: i64,  // 底层值（实际应该由运行时保证原子性）
+    // TODO: 需要运行时支持原子操作
+}
+
+// 构造函数：创建原子整数
+func new_atomic_int(initial: i64) -> AtomicInt {
+    return AtomicInt { value: initial }
+}
+
+// 方法实现
+// 加载值（原子读取）
+func (a AtomicInt) load() -> i64 {
+    // 调用运行时原子加载操作
+    // runtime_atomic_load_i64(ptr: *i64) -> i64
+    return runtime_atomic_load_i64(&a.value)
+}
+
+// 存储值（原子写入）
+func (a *AtomicInt) store(value: i64) {
+    // 调用运行时原子存储操作
+    // runtime_atomic_store_i64(ptr: *i64, value: i64) -> void
+    runtime_atomic_store_i64(&a.value, value)
+}
+
+// 交换值（原子交换）
+func (a *AtomicInt) swap(value: i64) -> i64 {
+    // 调用运行时原子交换操作
+    // runtime_atomic_swap_i64(ptr: *i64, value: i64) -> i64（返回旧值）
+    return runtime_atomic_swap_i64(&a.value, value)
+}
+
+// 比较并交换（CAS）
+// 如果当前值等于 expected，则设置为 new_value，返回 true
+// 否则返回 false
+func (a *AtomicInt) compare_and_swap(expected: i64, new_value: i64) -> bool {
+    // 调用运行时 CAS 操作
+    // runtime_atomic_cas_i64(ptr: *i64, expected: i64, desired: i64) -> bool
+    return runtime_atomic_cas_i64(&a.value, expected, new_value)
+}
+
+// 加法（原子加法）
+func (a *AtomicInt) add(delta: i64) -> i64 {
+    // 调用运行时原子加法操作
+    // runtime_atomic_add_i64(ptr: *i64, delta: i64) -> i64（返回旧值）
+    return runtime_atomic_add_i64(&a.value, delta)
+}
+
+// 减法（原子减法）
+func (a *AtomicInt) sub(delta: i64) -> i64 {
+    return a.add(-delta)
+}
+
+// 自增（原子自增）
+func (a *AtomicInt) increment() -> i64 {
+    return a.add(1)
+}
+
+// 自减（原子自减）
+func (a *AtomicInt) decrement() -> i64 {
+    return a.sub(1)
+}
+
+// AtomicBool 原子布尔值
+struct AtomicBool {
+    value: bool
+}
+
+// 构造函数：创建原子布尔值
+func new_atomic_bool(initial: bool) -> AtomicBool {
+    return AtomicBool { value: initial }
+}
+
+// 加载值（原子读取）
+func (a AtomicBool) load() -> bool {
+    // 调用运行时原子加载操作
+    // runtime_atomic_load_bool(ptr: *bool) -> bool
+    // 注意：bool 在 C 运行时中使用 i8 实现，但函数签名会自动处理类型转换
+    return runtime_atomic_load_bool(&a.value)
+}
+
+// 存储值（原子写入）
+func (a *AtomicBool) store(value: bool) {
+    // 调用运行时原子存储操作
+    // runtime_atomic_store_bool(ptr: *bool, value: bool) -> void
+    // 注意：bool 在 C 运行时中使用 i8 实现，但函数签名会自动处理类型转换
+    runtime_atomic_store_bool(&a.value, value)
+}
+
+// 交换值（原子交换）
+func (a *AtomicBool) swap(value: bool) -> bool {
+    // 调用运行时原子交换操作
+    // runtime_atomic_swap_bool(ptr: *bool, value: bool) -> bool（返回旧值）
+    // 注意：bool 在 C 运行时中使用 i8 实现，但函数签名会自动处理类型转换
+    return runtime_atomic_swap_bool(&a.value, value)
+}
+
+// 比较并交换（CAS）
+func (a *AtomicBool) compare_and_swap(expected: bool, new_value: bool) -> bool {
+    // 调用运行时 CAS 操作
+    // runtime_atomic_cas_bool(ptr: *bool, expected: bool, desired: bool) -> bool
+    // 注意：bool 在 C 运行时中使用 i8 实现，但函数签名会自动处理类型转换
+    return runtime_atomic_cas_bool(&a.value, expected, new_value)
+}

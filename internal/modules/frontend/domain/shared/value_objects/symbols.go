@@ -237,3 +237,8 @@ func (s *Scope) AllSymbols() map[string]*Symbol {
 func NewCustomSymbolType(typeName string) SymbolType {
 	return SymbolType{typeName: typeName, isPrimitive: false}
 }
+
+// NewPrimitiveSymbolType 创建基本类型
+func NewPrimitiveSymbolType(typeName string) SymbolType {
+	return SymbolType{typeName: typeName, isPrimitive: true}
+}

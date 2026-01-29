@@ -1,0 +1,35 @@
+// map_iteration_test.eo - Map迭代循环测试
+// 测试 for (key, value) in obj 语法
+// 注意：此测试需要map索引赋值支持（headers[key] = value）
+// 如果解析器不支持，可以暂时注释掉赋值部分，只测试空map的迭代
+
+func test_map_iteration() -> void {
+    print "=== Testing Map Iteration ==="
+    
+    // 创建一个空map[string]string
+    let headers: map[string]string = {}
+    
+    print "Map iteration test (empty map):"
+    
+    // 测试空map迭代循环（应该不输出任何内容）
+    for (key, value) in headers {
+        print "  " + key + ": " + value
+    }
+    
+    print "Empty map iteration completed"
+    
+    // 测试map索引赋值和迭代
+    let mut headers2: map[string]string = {}
+    headers2["Content-Type"] = "application/json"
+    headers2["User-Agent"] = "Echo-Client/1.0"
+    headers2["Accept"] = "text/html"
+    
+    print "Map iteration test (with data):"
+    for (key, value) in headers2 {
+        print "  " + key + ": " + value
+    }
+}
+
+func main() -> void {
+    test_map_iteration()
+}

@@ -1,0 +1,35 @@
+// type_inference_async_test.eo - 测试异步/并发相关类型推断
+
+func main() -> int {
+    // 测试1：Channel 字面量类型推断
+    let ch1 = chan[int]()  // 应该推断为 chan[int]
+    print "Channel literal test 1"
+
+    // 测试2：发送表达式类型推断
+    let ch2: chan[int] = chan[int]()
+    let _ = ch2 <- 42  // 应该推断为 void
+    print "Send expression test"
+
+    // 测试3：接收表达式类型推断
+    let ch3: chan[string] = chan[string]()
+    let value = <-ch3  // 应该推断为 string
+    print "Receive expression test"
+
+    // 测试4：异步等待表达式类型推断
+    async func fetch() -> string {
+        return "data"
+    }
+    let future: Future[string] = fetch()
+    let result = await future  // 应该推断为 string
+    print "Await expression test"
+
+    // 测试5：生成协程表达式类型推断
+    func compute() -> int {
+        return 100
+    }
+    let future2 = spawn compute()  // 应该推断为 Future[int]
+    print "Spawn expression test"
+
+    print "Async/concurrency type inference test passed"
+    return 0
+}

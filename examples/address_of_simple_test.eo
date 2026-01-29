@@ -1,0 +1,6 @@
+// 取地址操作符简单测试
+
+func test_address_of_simple() {
+    let x = 42
+    let ptr = &x  // *i8
+}

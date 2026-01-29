@@ -1,0 +1,36 @@
+// 测试换行格式的 else if 语法
+func main() -> int {
+    let x: int = 7
+    
+    // 测试换行格式的 else if
+    if x > 10 {
+        print "big"
+    } else if x > 5 {  // 换行格式的 else if
+        print "medium"
+    } else {
+        print "small"
+    }
+    
+    // 测试独立行的 else
+    if x > 10 {
+        print "big"
+    } else
+    {
+        print "small"
+    }
+    
+    // 测试嵌套的 else if
+    if x > 10 {
+        print "big"
+    } else if x > 5 {
+        if x > 6 {
+            print "medium-large"
+        } else if x > 5 {
+            print "medium-small"
+        }
+    } else {
+        print "small"
+    }
+    
+    return 0
+}

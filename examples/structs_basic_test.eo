@@ -7,3 +7,4 @@ struct Point {
 let p: Point = {x: 10, y: 20}
 print p.x
 print p.y
+

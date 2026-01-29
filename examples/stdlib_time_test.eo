@@ -1,0 +1,22 @@
+// 标准库 Time 模块集成测试
+// 验证 time.now() 是否正确调用运行时函数 runtime_time_now_ms()
+
+import time
+
+func main() -> int {
+    print_string("=== Time Module Integration Test ===\n")
+    
+    // 测试 now() 函数 - 调用 runtime_time_now_ms()
+    let current_time = time.now()
+    let unix_sec = current_time.unix()
+    
+    print_string("Current time (Unix seconds): ")
+    print_int(i32(unix_sec))
+    print_string("\n")
+    
+    // 测试 unix_nanos() 方法（简化测试）
+    print_string("Time unix_nanos() test skipped\n")
+    
+    print_string("Time module test completed successfully\n")
+    return 0
+}

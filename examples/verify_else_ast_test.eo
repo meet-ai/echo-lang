@@ -1,0 +1,33 @@
+// verify_else_ast_test.eo - 验证 else 和 else if 的 AST 结构
+func main() -> int {
+    let x: int = 7
+    
+    // 测试1: 简单的 if-else (ElseBody 应该包含语句)
+    if x > 10 {
+        print "big"
+    } else {
+        print "small"
+    }
+    
+    // 测试2: if-else if-else (ElseBody 应该包含嵌套的 IfStmt)
+    if x > 10 {
+        print "big"
+    } else if x > 5 {
+        print "medium"
+    } else {
+        print "small"
+    }
+    
+    // 测试3: 多个 else if 链 (应该形成嵌套结构)
+    if x > 20 {
+        print "very big"
+    } else if x > 10 {
+        print "big"
+    } else if x > 5 {
+        print "medium"
+    } else {
+        print "small"
+    }
+    
+    return 0
+}

@@ -791,6 +791,7 @@ func (ed *EnumDeclaration) String() string {
 // TraitMethod Trait方法
 type TraitMethod struct {
 	name       string
+	typeParams []*GenericParameter // 方法级泛型参数，如 func foo[T, U]()
 	parameters []*Parameter
 	returnType *TypeAnnotation
 	isAbstract bool
@@ -798,9 +799,11 @@ type TraitMethod struct {
 }
 
 // NewTraitMethod 创建新的Trait方法
-func NewTraitMethod(name string, parameters []*Parameter, returnType *TypeAnnotation, isAbstract bool, location SourceLocation) *TraitMethod {
+// typeParams 可为 nil，表示无泛型参数
+func NewTraitMethod(name string, typeParams []*GenericParameter, parameters []*Parameter, returnType *TypeAnnotation, isAbstract bool, location SourceLocation) *TraitMethod {
 	return &TraitMethod{
 		name:       name,
+		typeParams: typeParams,
 		parameters: parameters,
 		returnType: returnType,
 		isAbstract: isAbstract,
@@ -811,6 +814,11 @@ func NewTraitMethod(name string, parameters []*Parameter, returnType *TypeAnnota
 // Name 获取方法名
 func (tm *TraitMethod) Name() string {
 	return tm.name
+}
+
+// TypeParams 获取方法级泛型参数
+func (tm *TraitMethod) TypeParams() []*GenericParameter {
+	return tm.typeParams
 }
 
 // Parameters 获取参数列表

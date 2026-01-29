@@ -10,3 +10,4 @@ let color2: Color = Color.Green
 
 print "Color1 is Red"
 print "Color2 is Green"
+

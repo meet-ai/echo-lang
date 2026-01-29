@@ -13,7 +13,7 @@ import (
 // SemanticAnalyzer 语义分析服务
 type SemanticAnalyzer struct {
 	symbolTableEntity *entities.SymbolTableEntity
-	currentFunctionReturnType value_objects.SymbolType // 当前函数的返回类型（用于return语句检查）
+	currentFunctionReturnType *value_objects.SymbolType // 当前函数的返回类型（用于return语句检查）
 }
 
 // NewSemanticAnalyzer 创建新的语义分析器
@@ -149,7 +149,7 @@ func (sa *SemanticAnalyzer) visitNodeForSymbols(node value_objects.ASTNode, resu
 		}
 
 		// 如果有初始化表达式，检查其类型
-		if n.Initializer != nil {
+		if n.Initializer() != nil {
 			// 这里可以添加类型推断逻辑
 		}
 
@@ -196,10 +196,12 @@ func (sa *SemanticAnalyzer) checkNodeTypes(node value_objects.ASTNode, typeCheck
 		
 		// 设置当前函数的返回类型上下文
 		if n.ReturnType() != nil {
-			sa.currentFunctionReturnType = value_objects.NewCustomSymbolType(n.ReturnType().String())
+			returnType := value_objects.NewCustomSymbolType(n.ReturnType().String())
+			sa.currentFunctionReturnType = &returnType
 		} else {
 			// 无返回类型，视为void
-			sa.currentFunctionReturnType = value_objects.NewPrimitiveSymbolType("void")
+			voidType := value_objects.NewPrimitiveSymbolType("void")
+			sa.currentFunctionReturnType = &voidType
 		}
 		
 		// 检查函数体中的类型
@@ -252,16 +254,16 @@ func (sa *SemanticAnalyzer) checkNodeTypes(node value_objects.ASTNode, typeCheck
 
 	case *value_objects.ReturnStatement:
 		// 完善实现：检查返回值的类型是否与函数返回类型匹配
-		if n.Value != nil {
+		if n.Expression() != nil {
 			// 推断返回值的类型
-			returnType := sa.inferExpressionType(n.Value)
+			returnType := sa.inferExpressionType(n.Expression())
 			
 			// 如果当前函数有返回类型，检查是否匹配
 			if sa.currentFunctionReturnType != nil {
 				// 检查类型兼容性（支持隐式类型转换）
-				if !sa.typesCompatible(returnType, sa.currentFunctionReturnType) {
+				if !sa.typesCompatible(returnType, *sa.currentFunctionReturnType) {
 					// 检查是否可以进行隐式类型转换（如 int -> float）
-					if !sa.canImplicitlyConvert(returnType, sa.currentFunctionReturnType) {
+					if !sa.canImplicitlyConvert(returnType, *sa.currentFunctionReturnType) {
 						typeChecker.AddError(value_objects.NewParseError(
 							fmt.Sprintf("return type mismatch: expected %s, got %s", 
 								sa.currentFunctionReturnType.String(), returnType.String()),
@@ -284,7 +286,7 @@ func (sa *SemanticAnalyzer) checkNodeTypes(node value_objects.ASTNode, typeCheck
 			// 无返回值，检查函数是否期望void返回类型
 			if sa.currentFunctionReturnType != nil {
 				// 检查返回类型是否为void
-				if sa.currentFunctionReturnType.TypeName() != "void" {
+				if sa.currentFunctionReturnType.String() != "void" {
 					typeChecker.AddError(value_objects.NewParseError(
 						fmt.Sprintf("function expects return value of type %s, but return statement has no value", 
 							sa.currentFunctionReturnType.String()),
@@ -321,9 +323,9 @@ func (sa *SemanticAnalyzer) performSymbolResolution(
 
 	// 遍历AST，解析所有符号引用
 	for _, node := range programAST.Nodes() {
-		err := sa.resolveNodeSymbols(node, symbolResolver)
+		err := sa.resolveNodeSymbols(node, symbolResolver, result)
 		if err != nil {
-			symbolResolver.AddError(value_objects.NewParseError(
+			result.AddError(value_objects.NewParseError(
 				fmt.Sprintf("symbol resolution failed: %v", err),
 				node.Location(),
 				value_objects.ErrorTypeSymbol,
@@ -337,18 +339,19 @@ func (sa *SemanticAnalyzer) performSymbolResolution(
 }
 
 // resolveNodeSymbols 解析节点中的符号引用
-func (sa *SemanticAnalyzer) resolveNodeSymbols(node value_objects.ASTNode, symbolResolver *value_objects.ResolvedSymbols) error {
+func (sa *SemanticAnalyzer) resolveNodeSymbols(node value_objects.ASTNode, symbolResolver *value_objects.ResolvedSymbols, result *value_objects.SemanticAnalysisResult) error {
 	switch n := node.(type) {
 	case *value_objects.Identifier:
 		// 完善实现：解析标识符引用，支持作用域查找
-		symbol, found := sa.symbolTableEntity.ResolveSymbol(n.Name)
+		symbolName := n.Name()
+		symbol, found := sa.symbolTableEntity.ResolveSymbol(symbolName)
 		if !found {
 			// 尝试在不同作用域中查找符号
 			// 首先在当前作用域查找，然后向上查找父作用域
-			symbol, found = sa.lookupSymbolInScopes(n.Name)
+			symbol, found = sa.lookupSymbolInScopes(symbolName)
 			if !found {
-				symbolResolver.AddError(value_objects.NewParseError(
-					fmt.Sprintf("undefined symbol: %s", n.Name),
+				result.AddError(value_objects.NewParseError(
+					fmt.Sprintf("undefined symbol: %s", symbolName),
 					n.Location(),
 					value_objects.ErrorTypeSymbol,
 					value_objects.SeverityError,
@@ -370,36 +373,19 @@ func (sa *SemanticAnalyzer) resolveNodeSymbols(node value_objects.ASTNode, symbo
 
 	case *value_objects.BinaryExpression:
 		// 递归解析子表达式
-		err := sa.resolveNodeSymbols(n.Left, symbolResolver)
+		err := sa.resolveNodeSymbols(n.Left(), symbolResolver, result)
 		if err != nil {
 			return err
 		}
-		return sa.resolveNodeSymbols(n.Right, symbolResolver)
+		return sa.resolveNodeSymbols(n.Right(), symbolResolver, result)
 
 	case *value_objects.UnaryExpression:
 		// 解析一元表达式
-		return sa.resolveNodeSymbols(n.Operand, symbolResolver)
-
-	case *value_objects.IfStatement:
-		// 解析条件表达式
-		err := sa.resolveNodeSymbols(n.Condition, symbolResolver)
-		if err != nil {
-			return err
-		}
-
-		err = sa.resolveNodeSymbols(n.ThenBranch, symbolResolver)
-		if err != nil {
-			return err
-		}
-
-		if n.ElseBranch != nil {
-			return sa.resolveNodeSymbols(n.ElseBranch, symbolResolver)
-		}
-		return nil
-
-	// 为其他节点类型添加符号解析逻辑...
+		return sa.resolveNodeSymbols(n.Operand(), symbolResolver, result)
 
 	default:
+		// 对于其他节点类型，尝试递归解析子节点
+		// 这里可以根据需要添加更多特定类型的处理
 		return nil
 	}
 }
@@ -416,15 +402,16 @@ func (sa *SemanticAnalyzer) inferExpressionType(expr value_objects.ASTNode) valu
 	case *value_objects.BooleanLiteral:
 		return value_objects.NewPrimitiveSymbolType("bool")
 	case *value_objects.Identifier:
-		if symbol, found := sa.symbolTableEntity.ResolveSymbol(e.Name); found {
+		if symbol, found := sa.symbolTableEntity.ResolveSymbol(e.Name()); found {
 			return symbol.Type()
 		}
 		return value_objects.NewCustomSymbolType("unknown")
 	case *value_objects.BinaryExpression:
 		// 简化的类型推断
-		leftType := sa.inferExpressionType(e.Left)
+		leftType := sa.inferExpressionType(e.Left())
 		// 对于算术运算，通常返回左操作数的类型
-		if e.Operator == "+" || e.Operator == "-" || e.Operator == "*" || e.Operator == "/" {
+		op := e.Operator()
+		if op == "+" || op == "-" || op == "*" || op == "/" {
 			return leftType
 		}
 		// 对于比较运算，返回布尔类型
@@ -438,7 +425,7 @@ func (sa *SemanticAnalyzer) inferExpressionType(expr value_objects.ASTNode) valu
 func (sa *SemanticAnalyzer) typesCompatible(actual, expected value_objects.SymbolType) bool {
 	// 完善实现：类型兼容性检查
 	// 1. 完全匹配
-	if actual.TypeName() == expected.TypeName() {
+	if actual.String() == expected.String() {
 		return true
 	}
 	
@@ -448,8 +435,8 @@ func (sa *SemanticAnalyzer) typesCompatible(actual, expected value_objects.Symbo
 
 // canImplicitlyConvert 检查是否可以进行隐式类型转换
 func (sa *SemanticAnalyzer) canImplicitlyConvert(from, to value_objects.SymbolType) bool {
-	fromName := from.TypeName()
-	toName := to.TypeName()
+	fromName := from.String()
+	toName := to.String()
 	
 	// 允许的隐式转换规则
 	// int -> float（数值提升）
@@ -490,7 +477,7 @@ func (sa *SemanticAnalyzer) canApplyOperator(operator string, leftType, rightTyp
 		return sa.isNumericType(leftType) && sa.isNumericType(rightType)
 	case "==", "!=", "<", ">", "<=", ">=":
 		// 可以比较相同类型的值
-		return leftType.TypeName() == rightType.TypeName()
+		return leftType.String() == rightType.String()
 	case "&&", "||":
 		// 逻辑运算符需要布尔类型
 		return sa.isBooleanType(leftType) && sa.isBooleanType(rightType)
@@ -501,13 +488,13 @@ func (sa *SemanticAnalyzer) canApplyOperator(operator string, leftType, rightTyp
 
 // isNumericType 检查是否为数值类型
 func (sa *SemanticAnalyzer) isNumericType(symbolType value_objects.SymbolType) bool {
-	typeName := symbolType.TypeName()
+		typeName := symbolType.String()
 	return typeName == "int" || typeName == "float"
 }
 
 // isBooleanType 检查是否为布尔类型
 func (sa *SemanticAnalyzer) isBooleanType(symbolType value_objects.SymbolType) bool {
-	return symbolType.TypeName() == "bool"
+	return symbolType.String() == "bool"
 }
 
 // parametersToString 将参数列表转换为字符串表示
@@ -521,7 +508,11 @@ func parametersToString(parameters []*value_objects.Parameter) string {
 		if i > 0 {
 			result += ", "
 		}
-		result += param.Type
+		if param.TypeAnnotation() != nil {
+			result += param.TypeAnnotation().String()
+		} else {
+			result += "unknown"
+		}
 	}
 	return result
 }

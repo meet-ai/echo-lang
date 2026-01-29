@@ -279,15 +279,36 @@ func TestParsePackageImportStatement(t *testing.T) {
 		wantErr  bool
 	}{
 		{
-			name:     "简单导入",
+			name:     "简单导入（字符串形式）",
 			source:   "package test; import \"math\";",
 			wantPath: "math",
 			wantAlias: "",
 			wantErr:  false,
 		},
 		{
-			name:     "带别名的导入",
+			name:     "简单导入（标识符形式，类似 Python）",
+			source:   "package test; import math;",
+			wantPath: "math",
+			wantAlias: "",
+			wantErr:  false,
+		},
+		{
+			name:     "简单导入（标识符形式，无分号）",
+			source:   "package test; import math",
+			wantPath: "math",
+			wantAlias: "",
+			wantErr:  false,
+		},
+		{
+			name:     "带别名的导入（字符串形式）",
 			source:   "package test; import \"math\" as Math;",
+			wantPath: "math",
+			wantAlias: "Math",
+			wantErr:  false,
+		},
+		{
+			name:     "带别名的导入（标识符形式）",
+			source:   "package test; import math as Math;",
 			wantPath: "math",
 			wantAlias: "Math",
 			wantErr:  false,
@@ -336,6 +357,93 @@ func TestParsePackageImportStatement(t *testing.T) {
 			if importStmt.ImportType() != sharedVO.ImportTypePackage {
 				t.Errorf("导入类型不匹配: 期望 ImportTypePackage, 得到 %v", importStmt.ImportType())
 			}
+		})
+	}
+}
+
+// TestNewSyntaxFeatures 测试新语法特性
+func TestNewSyntaxFeatures(t *testing.T) {
+	tests := []struct {
+		name        string
+		source      string
+		wantErr     bool
+		desc        string
+		wantImports int
+	}{
+		{
+			name:        "package 无分号 + import 标识符形式",
+			source:      "package main; import math",
+			wantErr:     false,
+			desc:        "测试 package 无分号和 import 标识符形式（类似 Python）",
+			wantImports: 1,
+		},
+		{
+			name:        "package 无分号 + import 字符串形式",
+			source:      "package main; import \"math\";",
+			wantErr:     false,
+			desc:        "测试 package 无分号和 import 字符串形式（向后兼容）",
+			wantImports: 1,
+		},
+		{
+			name:        "package 有分号 + import 标识符形式",
+			source:      "package main; import math",
+			wantErr:     false,
+			desc:        "测试 package 有分号和 import 标识符形式",
+			wantImports: 1,
+		},
+		{
+			name:        "多个 import（混合形式）",
+			source:      "package main; import math; import \"utils\"; import types as TypesLib",
+			wantErr:     false,
+			desc:        "测试多个 import，混合使用标识符和字符串形式",
+			wantImports: 3,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// 创建词法分析器
+			sourceFile := lexicalVO.NewSourceFile("test.eo", tt.source)
+			lexer := lexicalServices.NewAdvancedLexerService()
+			tokenStream, err := lexer.Tokenize(context.Background(), sourceFile)
+			if err != nil {
+				t.Fatalf("词法分析失败: %v", err)
+			}
+
+			// 创建解析器
+			parser := NewRecursiveDescentParser()
+			programAST, err := parser.ParseProgram(context.Background(), tokenStream)
+			if tt.wantErr {
+				if err == nil {
+					t.Errorf("期望错误，但没有错误: %s", tt.desc)
+				}
+				return
+			}
+
+			if err != nil {
+				t.Fatalf("解析失败: %v\n描述: %s", err, tt.desc)
+			}
+
+			// 验证包声明存在
+			pkgDecl := programAST.Package()
+			if pkgDecl == nil {
+				t.Fatal("包声明为空")
+			}
+
+			// 验证导入语句
+			imports := programAST.Imports()
+			if len(imports) != tt.wantImports {
+				t.Errorf("导入数量不匹配: 期望 %d, 得到 %d", tt.wantImports, len(imports))
+			}
+
+			// 验证每个导入语句
+			for i, imp := range imports {
+				if imp.ImportPath() == "" {
+					t.Errorf("导入 %d 的路径为空", i)
+				}
+			}
+
+			t.Logf("✅ 测试通过: %s", tt.desc)
 		})
 	}
 }

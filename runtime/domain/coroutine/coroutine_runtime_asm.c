@@ -582,9 +582,17 @@ void echo_main(void) {
     printf("DEBUG: echo_main completed\n");
 }
 
-// 打印函数
+// 打印函数（与 LLVM 声明一致：print_int i32, print_float double, print_bool i1）
 void print_int(int64_t value) {
     printf("%lld", value);
+}
+
+void print_float(double value) {
+    printf("%g", value);
+}
+
+void print_bool(int value) {
+    printf("%s", value ? "true" : "false");
 }
 
 void print_string(char* value) {

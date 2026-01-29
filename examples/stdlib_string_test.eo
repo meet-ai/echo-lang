@@ -1,0 +1,33 @@
+// 标准库 String 模块集成测试
+// 验证 string.len() 是否正确调用运行时函数 runtime_string_len_utf8()
+
+import string
+
+func main() -> int {
+    print_string("=== String Module Integration Test ===\n")
+    
+    // 测试 len() 函数 - 调用 runtime_string_len_utf8()
+    let test_str1 = "Hello"
+    let len1 = test_str1.len()
+    print_string("String 'Hello' length: ")
+    print_int(len1)
+    print_string("\n")
+    
+    let test_str2 = "你好"
+    let len2 = test_str2.len()
+    print_string("String '你好' length (UTF-8): ")
+    print_int(len2)
+    print_string("\n")
+    
+    // 测试 is_empty() 函数
+    let empty_str = ""
+    let empty_check = empty_str.is_empty()
+    print_string("Empty string is_empty check completed\n")
+    
+    let non_empty_str = "test"
+    let non_empty_check = non_empty_str.is_empty()
+    print_string("Non-empty string is_empty check completed\n")
+    
+    print_string("String module test completed successfully\n")
+    return 0
+}

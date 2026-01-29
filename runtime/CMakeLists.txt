@@ -76,6 +76,14 @@ list(FILTER RUNTIME_SOURCES EXCLUDE REGEX ".*/reactor/.*")
 list(FILTER RUNTIME_SOURCES EXCLUDE REGEX ".*/scheduler/.*")
 # list(FILTER RUNTIME_SOURCES EXCLUDE REGEX ".*/task/.*") # 已修复，重新包含
 list(FILTER RUNTIME_SOURCES EXCLUDE REGEX ".*/infrastructure/.*")
+# 排除已删除的文件（移动到.deleted目录）
+list(FILTER RUNTIME_SOURCES EXCLUDE REGEX ".*/\.deleted/.*")
+
+# 明确包含新的EventBus实现文件（阶段7：事件发布机制更新）
+list(APPEND RUNTIME_SOURCES
+    "${CMAKE_CURRENT_SOURCE_DIR}/infrastructure/event/bus_impl.c"
+    "${CMAKE_CURRENT_SOURCE_DIR}/infrastructure/event/event_bus_initializer.c"
+)
 
 # Create the main library
 add_library(echo_runtime ${RUNTIME_SOURCES})

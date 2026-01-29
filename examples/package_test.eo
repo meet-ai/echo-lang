@@ -1,0 +1,11 @@
+package main
+
+// 测试新语法：import xxpkg (标识符形式，类似 Python)
+import tpk
+
+// 也支持旧语法：import "tpk" (字符串形式，向后兼容)
+
+func main() {
+  print "hello"
+  tpk.test()
+}

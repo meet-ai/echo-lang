@@ -1,0 +1,49 @@
+// io/reader.eo - Reader Trait 定义
+// 定义可读接口，用于文件、网络等输入源
+
+package io
+
+import core
+
+// Reader Trait：可读接口
+// 提供读取数据的能力，用于文件、网络流等
+trait Reader {
+    // 读取数据到缓冲区
+    // 返回读取的字节数，如果到达文件末尾则返回 0
+    // 如果发生错误，返回 Err
+    func read(buf: []u8) -> Result[int]
+    
+    // 读取确切数量的字节
+    // 如果无法读取足够的数据，返回 Err
+    func read_exact(buf: []u8) -> Result[void] {
+        let mut total = 0
+        while total < buf.len() {
+            match self.read(buf[total:]) {
+                Ok(n) if n == 0 => return Err("unexpected EOF")
+                Ok(n) => total = total + n
+                Err(e) => return Err(e)
+            }
+        }
+        return Ok(())
+    }
+    
+    // 读取所有数据直到文件末尾
+    // 返回读取的所有字节
+    func read_to_end() -> Result[[]u8] {
+        let mut buf: []u8 = []
+        let mut temp: []u8 = [0; 4096]  // 临时缓冲区
+        loop {
+            match self.read(temp) {
+                Ok(0) => break  // 到达文件末尾
+                Ok(n) => {
+                    // 将读取的数据追加到 buf（逐个添加）
+                    for i in 0..n {
+                        buf.push(temp[i])
+                    }
+                }
+                Err(e) => return Err(e)
+            }
+        }
+        return Ok(buf)
+    }
+}

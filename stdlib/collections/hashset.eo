@@ -1,0 +1,70 @@
+// collections/hashset.eo - HashSet[T] 哈希集合
+// 提供类似 Rust HashSet 的集合功能
+// 要求 T 实现 Hash 和 Eq Trait
+
+package collections
+
+import core
+
+// HashSet[T] 哈希集合
+// 要求 T 实现 Hash 和 Eq Trait
+struct HashSet[T] {
+    // 使用 HashMap[T, ()] 作为底层实现
+    map: HashMap[T, ()]
+}
+
+// 构造函数：创建空集合
+func new[T]() -> HashSet[T] {
+    return HashSet[T] {
+        map: new[T, ()]()
+    }
+}
+
+// 构造函数：创建指定容量的集合
+func with_capacity[T](cap: int) -> HashSet[T] {
+    return HashSet[T] {
+        map: with_capacity[T, ()](cap)
+    }
+}
+
+// 方法实现
+// 插入元素（需要修改，使用指针接收者）
+func (s *HashSet[T]) insert(item: T) -> bool {
+    // 如果元素已存在，返回 false
+    // 如果元素不存在，插入并返回 true
+    if s.map.contains_key(item) {
+        return false
+    }
+    s.map.insert(item, ())
+    return true
+}
+
+// 移除元素（需要修改，使用指针接收者）
+func (s *HashSet[T]) remove(item: T) -> bool {
+    // 如果元素存在，移除并返回 true
+    // 如果元素不存在，返回 false
+    match s.map.remove(item) {
+        Some(_) => true
+        None => false
+    }
+}
+
+// 判断是否包含元素（只读，使用值接收者）
+func (s HashSet[T]) contains(item: T) -> bool {
+    return s.map.contains_key(item)
+}
+
+// 获取长度（只读，使用值接收者）
+func (s HashSet[T]) len() -> int {
+    return s.map.len()
+}
+
+// 判断是否为空（只读，使用值接收者）
+func (s HashSet[T]) is_empty() -> bool {
+    return s.map.is_empty()
+}
+
+// 清空集合（需要修改，使用指针接收者）
+func (s *HashSet[T]) clear() {
+    s.map.clear()
+}

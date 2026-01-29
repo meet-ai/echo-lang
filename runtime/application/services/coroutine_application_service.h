@@ -5,6 +5,7 @@
 #include "../commands/create_coroutine.h"
 #include "../dtos/result_dtos.h"
 #include "../dtos/coroutine_dtos.h"
+#include "../queries/status_queries.h"  // for GetCoroutineStatusQuery
 #include <stdint.h>
 #include <stdbool.h>
 

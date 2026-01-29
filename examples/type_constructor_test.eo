@@ -1,0 +1,39 @@
+// 类型构造函数语法测试
+// 测试 Type(expr) 语法（类型构造函数）
+
+func test_type_constructor() -> void {
+    let x: int = 42
+    
+    // 方式1：类型构造函数语法（推荐，更简洁）
+    let y1: float = float(x)
+    
+    // 方式2：as 关键字语法（备选）
+    let y2: float = x as float
+    
+    // 两种方式应该生成相同的代码
+    // 验证：y1 == y2
+}
+
+func test_pointer_type_constructor() -> void {
+    // 测试指针类型转换
+    // let ptr: *i8 = get_pointer()
+    // let str1: string = string(ptr)  // 类型构造函数
+    // let str2: string = ptr as string  // as 关键字
+}
+
+func test_slice_type_constructor() -> void {
+    // 测试切片类型构造函数
+    // let ptr: *i8 = get_pointer()
+    // let slice1: []T = []T(ptr)  // 切片类型构造函数
+    // let slice2: []T = ptr as []T  // as 关键字
+}
+
+func test_nested_type_constructor() -> void {
+    let x: int = 42
+    
+    // 嵌套类型构造函数
+    let y: f64 = f64(float(x))  // 嵌套函数调用风格
+    
+    // 链式 as 关键字
+    let z: f64 = x as float as f64  // 链式 as
+}

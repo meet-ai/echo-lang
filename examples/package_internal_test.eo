@@ -1,0 +1,25 @@
+// package_internal_test.eo - internal 路径限制测试
+// 测试：internal/ 路径的访问限制规则
+// 注意：这个文件在 examples/ 目录下，应该可以访问 examples/internal/ 包
+
+package main
+
+// 测试1：同项目内导入 internal 包（应该允许）
+from "internal/cache" import newItem, getValue;
+from "internal/utils" import helper;
+
+func main() {
+    print "=== Package Internal Test ==="
+    
+    // 测试同项目内导入 internal 包
+    let item = newItem("key1", "value1")
+    let value = getValue(item)
+    print "Cache item value: " + value
+    
+    let helperValue = helper()
+    print "Internal helper result: " + helperValue
+    
+    print "Note: Internal path restrictions are validated during compilation"
+    print "If this compiles, it means internal packages are accessible within the same project"
+    print "Package internal test completed"
+}

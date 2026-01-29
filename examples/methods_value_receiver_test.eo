@@ -14,3 +14,4 @@ let p1: Point = {x: 0, y: 0}
 let p2: Point = {x: 3, y: 4}
 let dist: int = p1.distance(p2)
 print dist
+

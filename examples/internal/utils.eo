@@ -1,0 +1,15 @@
+// internal/utils.eo - 内部工具包
+// 用于测试 internal/ 路径限制
+// 注意：这个包只能被同一项目内的其他包导入
+
+package utils
+
+// 公开函数：内部辅助函数
+func helper() int {
+    return 42
+}
+
+// 公开函数：内部格式化函数
+func format(msg: string) string {
+    return "[INTERNAL] " + msg
+}

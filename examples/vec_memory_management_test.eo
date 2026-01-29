@@ -1,0 +1,23 @@
+// Vec 内存管理函数测试
+// 测试类型转换和内存管理功能
+
+import collections
+
+func main() {
+    // 测试1：创建Vec并添加元素（测试grow()）
+    let v1 = collections.new[int]()
+    v1.push(1)
+    v1.push(2)
+    v1.push(3)
+    
+    // 测试2：测试reserve()函数
+    let v2 = collections.new[int]()
+    v2.reserve(10)
+    
+    // 测试3：测试shrink_to_fit()函数
+    let v3 = collections.new[int]()
+    v3.push(1)
+    v3.push(2)
+    v3.push(3)
+    v3.shrink_to_fit()
+}

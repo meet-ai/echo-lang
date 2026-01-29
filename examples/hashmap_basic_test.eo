@@ -1,0 +1,43 @@
+// hashmap_basic_test.eo - HashMap 基础功能测试
+// 测试 HashMap[K, V] 的基本功能：插入、查找、移除
+
+import collections
+
+// 注意：此测试需要 K 实现 Hash 和 Eq trait
+// 目前 Echo 可能不支持 trait 方法调用，此测试可能无法编译
+// 这是一个占位测试文件，用于验证 HashMap 实现的语法正确性
+
+func test_hashmap_basic() -> void {
+    // 创建 HashMap
+    let map: HashMap[int, string] = new[int, string]()
+    
+    // 测试插入
+    // 注意：如果 int 没有实现 Hash 和 Eq trait，这里会导致编译错误
+    map.insert(1, "one")
+    map.insert(2, "two")
+    map.insert(3, "three")
+    
+    // 测试查找
+    let value1: Option[string] = map.get(1)
+    match value1 {
+        Some(v) => print "Found: " + v
+        None => print "Not found"
+    }
+    
+    // 测试移除
+    let removed: Option[string] = map.remove(2)
+    match removed {
+        Some(v) => print "Removed: " + v
+        None => print "Not found"
+    }
+    
+    // 测试长度
+    let len: int = map.len()
+    print "Map length: " + len
+    
+    print "HashMap basic test completed"
+}
+
+func main() -> void {
+    test_hashmap_basic()
+}

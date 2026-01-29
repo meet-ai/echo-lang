@@ -112,13 +112,22 @@ CMakeFiles/echo_runtime.dir/domain/coroutine/coroutine_runtime.c.o: \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/__stddef_max_align_t.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/__stddef_offsetof.h \
   /Users/meetai/source/echo-lang/runtime/domain/coroutine/../scheduler/scheduler.h \
-  /Users/meetai/source/echo-lang/runtime/domain/coroutine/../scheduler/task/task.h \
+  /Users/meetai/source/echo-lang/runtime/domain/coroutine/../scheduler/../task_execution/aggregate/task.h \
   /Users/meetai/source/echo-lang/runtime/domain/coroutine/../scheduler/concurrency/processor.h \
-  /Users/meetai/source/echo-lang/runtime/domain/coroutine/../scheduler/concurrency/../task/task.h \
+  /Users/meetai/source/echo-lang/runtime/domain/coroutine/../scheduler/concurrency/../../task_execution/aggregate/task.h \
   /Users/meetai/source/echo-lang/runtime/domain/coroutine/../scheduler/concurrency/machine.h \
   /Users/meetai/source/echo-lang/runtime/domain/coroutine/../scheduler/concurrency/../../coroutine/context.h \
-  /Users/meetai/source/echo-lang/runtime/domain/coroutine/../task/task.h \
-  /Users/meetai/source/echo-lang/runtime/domain/coroutine/../future/future.h \
+  /Users/meetai/source/echo-lang/runtime/domain/coroutine/../scheduler/../task_scheduling/aggregate/scheduler.h \
+  /Users/meetai/source/echo-lang/runtime/domain/coroutine/../scheduler/../task_scheduling/aggregate/../../task_execution/aggregate/task.h \
+  /Users/meetai/source/echo-lang/runtime/domain/coroutine/../task_scheduling/adapter/scheduler_adapter.h \
+  /Users/meetai/source/echo-lang/runtime/domain/coroutine/../task_scheduling/adapter/../aggregate/scheduler.h \
+  /Users/meetai/source/echo-lang/runtime/domain/coroutine/../task_scheduling/adapter/../../task_execution/repository/task_repository.h \
+  /Users/meetai/source/echo-lang/runtime/domain/coroutine/../task_scheduling/adapter/../../task_execution/repository/../aggregate/task.h \
+  /Users/meetai/source/echo-lang/runtime/domain/coroutine/../task_scheduling/adapter/../../task_execution/aggregate/task.h \
+  /Users/meetai/source/echo-lang/runtime/domain/coroutine/../task_scheduling/adapter/../../scheduler/concurrency/processor.h \
+  /Users/meetai/source/echo-lang/runtime/domain/coroutine/../task_scheduling/adapter/../../shared/events/bus.h \
+  /Users/meetai/source/echo-lang/runtime/domain/coroutine/../task_execution/aggregate/task.h \
+  /Users/meetai/source/echo-lang/runtime/domain/coroutine/../async_computation/aggregate/future.h \
   /Users/meetai/source/echo-lang/runtime/domain/coroutine/coroutine.h \
   /Users/meetai/source/echo-lang/runtime/domain/coroutine/../channel/channel.h \
   /Users/meetai/source/echo-lang/runtime/domain/coroutine/../scheduler/processor.h

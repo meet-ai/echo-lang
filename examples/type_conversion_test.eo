@@ -1,0 +1,55 @@
+// 类型转换功能测试
+// 测试新实现的类型转换功能：
+// 1. 类型构造函数语法 Type(expr)
+// 2. char* → string 类型转换
+// 3. char** + int32_t → []string 类型转换（从 StringSplitResult* 转换）
+
+import string
+
+func test_type_constructor_syntax() -> void {
+    // 测试1：基础类型构造函数语法
+    let x: int = 42
+    let y1: float = float(x)      // 类型构造函数语法（推荐）
+    let y2: float = x as float    // as 关键字语法（备选）
+    
+    // 测试2：指针类型转换
+    // let ptr: *i8 = get_pointer()
+    // let str1: string = string(ptr)  // 类型构造函数
+    // let str2: string = ptr as string  // as 关键字
+}
+
+func test_char_ptr_to_string() -> void {
+    // 测试 char* → string 类型转换
+    // 这个测试需要调用一个返回 char* 的运行时函数
+    // 例如：从某个 C 函数获取 char*，然后转换为 string
+    
+    // 示例：假设有一个函数返回 char*
+    // let c_str: *i8 = get_c_string()
+    // let echo_str1: string = string(c_str)  // 使用类型构造函数
+    // let echo_str2: string = c_str as string  // 使用 as 关键字
+}
+
+func test_string_split_conversion() -> void {
+    // 测试 string.split() 使用新的类型转换
+    // 这个函数现在使用 []string(result) 语法，从 StringSplitResult* 转换
+    
+    let s: string = "hello,world,test"
+    let parts: []string = s.split(",")
+    
+    // 验证分割结果
+    // parts 应该包含 ["hello", "world", "test"]
+}
+
+func test_nested_type_constructor() -> void {
+    // 测试嵌套类型构造函数
+    let x: int = 42
+    let y: f64 = f64(float(x))  // 嵌套：int → float → f64
+}
+
+func main() -> int {
+    test_type_constructor_syntax()
+    test_char_ptr_to_string()
+    test_string_split_conversion()
+    test_nested_type_constructor()
+    return 0
+}

@@ -1,0 +1,54 @@
+// 标准库运行时集成测试
+// 验证已完全更新的标准库模块是否正确调用运行时函数
+
+import time
+import string
+import math
+
+func main() -> int {
+    // ==================== 时间操作测试 ====================
+    print_string("=== Time module test ===\n")
+    
+    // 测试 now() 函数
+    let current_time = time.now()
+    print_string("Current time (Unix seconds): ")
+    let unix_sec = current_time.unix()
+    print_int(i32(unix_sec))
+    print_string("\n")
+    
+    // ==================== 字符串操作测试 ====================
+    print_string("\n=== String module test ===\n")
+    
+    // 测试 len() 函数
+    let test_str = "Hello, Echo!"
+    let str_len = test_str.len()
+    print_string("String length: ")
+    print_int(str_len)
+    print_string("\n")
+    
+    // 测试 is_empty() 函数
+    let empty_str = ""
+    let empty_check = empty_str.is_empty()
+    print_string("Empty string is_empty check completed\n")
+    
+    let non_empty_str = "test"
+    let non_empty_check = non_empty_str.is_empty()
+    print_string("Non-empty string is_empty check completed\n")
+    
+    // ==================== 数学函数测试 ====================
+    print_string("\n=== Math module test ===\n")
+    
+    // 测试 sqrt() 函数
+    let sqrt_result = math.sqrt(16.0)
+    print_string("sqrt(16.0) called successfully\n")
+    
+    // 测试 pow() 函数
+    let pow_result = math.pow(2.0, 3.0)
+    print_string("pow(2.0, 3.0) called successfully\n")
+    
+    // 测试 sin() 函数
+    let sin_result = math.sin(0.0)
+    print_string("sin(0.0) called successfully\n")
+    
+    return 0
+}

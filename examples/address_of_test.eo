@@ -1,0 +1,24 @@
+// 取地址操作符测试
+
+func test_address_of_variable() {
+    let x: int = 42
+    let ptr = &x  // *i8
+    // 验证类型（暂时无法验证，因为 typeof 未实现）
+}
+
+func test_address_of_array_element() {
+    let arr: [int] = [1, 2, 3]
+    let ptr = &arr[0]  // *i8，获取第一个元素的地址
+    // 验证类型（暂时无法验证）
+}
+
+func test_address_of_struct_field() {
+    struct Point {
+        x: int
+        y: int
+    }
+    
+    let p = Point { x: 10, y: 20 }
+    let ptr = &p.x  // *i8，获取字段 x 的地址
+    // 验证类型（暂时无法验证）
+}

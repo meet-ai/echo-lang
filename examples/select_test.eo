@@ -1,14 +1,5 @@
 // select_test.eo - select语句测试
 
-// 创建通道
-let ch1: chan int = chan int
-let ch2: chan string = chan string
-
-// 简单的select语句测试（简化版本）
-select {
-    // 这里应该有case分支，但暂时用占位符
-}
-
 // 测试函数
 func testSelect() -> void {
     // 这里可以添加更复杂的select测试

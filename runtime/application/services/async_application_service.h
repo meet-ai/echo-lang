@@ -4,12 +4,15 @@
 #include "../commands/future_commands.h"
 #include "../dtos/result_dtos.h"
 #include "../dtos/async_dtos.h"
+#include "../queries/status_queries.h"  // for GetFutureStatusQuery
 #include <stdint.h>
 #include <stdbool.h>
 
 // 前向声明
 struct AsyncApplicationService;
 typedef struct AsyncApplicationService AsyncApplicationService;
+struct EventBus;  // 事件总线前向声明
+typedef struct EventBus EventBus;
 
 // 异步应用服务接口 - 负责异步编程相关的用例编排
 typedef struct {
@@ -40,7 +43,7 @@ struct AsyncApplicationService {
     // 依赖的领域服务
     void* async_runtime;       // 异步运行时领域服务
     void* future_manager;      // Future管理器领域服务
-    void* event_publisher;     // 事件发布器
+    EventBus* event_bus;       // 事件总线（用于发布领域事件）
 
     // 应用服务状态
     bool initialized;
@@ -56,7 +59,7 @@ void async_application_service_destroy(AsyncApplicationService* service);
 bool async_application_service_initialize(AsyncApplicationService* service,
                                         void* async_runtime,
                                         void* future_manager,
-                                        void* event_publisher);
+                                        EventBus* event_bus);
 void async_application_service_cleanup(AsyncApplicationService* service);
 
 // 服务状态查询
@@ -78,6 +81,16 @@ static inline OperationResultDTO* async_application_service_resolve_future(
 static inline AsyncOperationResultDTO* async_application_service_await_future(
     AsyncApplicationService* service, const AwaitFutureCommand* cmd) {
     return service->vtable->await_future(service, cmd);
+}
+
+static inline OperationResultDTO* async_application_service_reject_future(
+    AsyncApplicationService* service, const RejectFutureCommand* cmd) {
+    return service->vtable->reject_future(service, cmd);
+}
+
+static inline FutureDTO* async_application_service_get_future(
+    AsyncApplicationService* service, uint64_t future_id) {
+    return service->vtable->get_future(service, future_id);
 }
 
 #endif // ASYNC_APPLICATION_SERVICE_H

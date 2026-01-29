@@ -1,0 +1,43 @@
+// types.eo - 类型定义包
+// 用于测试跨包类型使用
+
+package types
+
+// 公开结构体：点
+struct Point {
+    x: int
+    y: int
+}
+
+// 公开结构体：矩形
+struct Rectangle {
+    x: int
+    y: int
+    width: int
+    height: int
+}
+
+// 公开枚举：颜色
+enum Color {
+    Red
+    Green
+    Blue
+}
+
+// 公开枚举：状态
+enum Status {
+    Pending
+    Running
+    Completed
+    Failed
+}
+
+// 公开函数：创建点
+func newPoint(x: int, y: int) Point {
+    return Point { x: x, y: y }
+}
+
+// 公开函数：计算矩形面积
+func area(rect: Rectangle) int {
+    return rect.width * rect.height
+}

@@ -1,0 +1,159 @@
+// async/channel.eo - Channel[T] 通道类型
+// 提供协程间的通信机制
+
+package async
+
+import core
+
+// ChanHandle 通道句柄（底层类型，由运行时提供）
+type ChanHandle = int  // 简化为 int，实际应该是运行时定义的类型
+
+// Channel[T] 通道类型
+// 用于在协程之间传递数据
+struct Channel[T] {
+    buffer: []T,
+    cap: int,
+    chan_handle: ChanHandle
+}
+
+// 构造函数：创建无缓冲通道
+func new[T]() -> Channel[T] {
+    // 调用运行时函数创建无缓冲通道
+    // runtime_create_channel_unbuffered() -> i32：返回通道句柄
+    let handle = runtime_create_channel_unbuffered()
+    return Channel[T] {
+        buffer: [],
+        cap: 0,
+        chan_handle: handle
+    }
+}
+
+// 构造函数：创建有缓冲通道
+func with_capacity[T](cap: int) -> Channel[T] {
+    // 调用运行时函数创建有缓冲通道
+    // runtime_create_channel_buffered(cap: int) -> ChannelHandle（返回 i32）
+    let handle = runtime_create_channel_buffered(cap)
+    return Channel[T] {
+        buffer: [],
+        cap: cap,
+        chan_handle: handle
+    }
+}
+
+// 方法实现
+// 发送数据（异步）
+// 如果通道已满，会阻塞直到有空间
+async func (c *Channel[T]) send(item: T) -> Result[void] {
+    // TODO: 调用运行时函数发送数据（异步）
+    // 需要调用运行时函数：runtime_channel_send(handle, item_ptr, item_size)
+    // 编译器签名：i8* runtime_channel_send(i32 handle, i8* item_ptr, i32 item_size)
+    // 实现步骤：
+    // 1. 获取 item 的内存地址（需要编译器支持泛型类型擦除）
+    // 2. 获取 item 的大小 sizeof(T)（需要编译器支持）
+    // 3. 调用 runtime_channel_send(c.chan_handle, &item, sizeof(T))
+    // 4. 处理返回的 Result[void, string]（使用 match 语句）
+    // 5. 如果是异步阻塞，需要等待通道有空间（需要异步运行时支持）
+    // 参考文档：docs/T-STDLIB-001-运行时函数需求文档.md
+    
+    // 临时实现：检查缓冲区容量（同步实现，非异步）
+    if c.cap > 0 && len(c.buffer) >= c.cap {
+        return Err("channel is full")
+    }
+    c.buffer.push(item)
+    return Ok(())
+}
+
+// 接收数据（异步）
+// 如果通道为空，会阻塞直到有数据
+async func (c *Channel[T]) recv() -> Result[T] {
+    // TODO: 调用运行时函数接收数据（异步）
+    // 需要调用运行时函数：runtime_channel_recv(handle, item_ptr, item_size)
+    // 编译器签名：i8* runtime_channel_recv(i32 handle, i8* item_ptr, i32 item_size)
+    // 实现步骤：
+    // 1. 分配临时缓冲区存储接收的数据（需要编译器支持泛型类型大小）
+    // 2. 获取元素大小 sizeof(T)（需要编译器支持）
+    // 3. 调用 runtime_channel_recv(c.chan_handle, buffer_ptr, sizeof(T))
+    // 4. 处理返回的 Result[int, string]（使用 match 语句）
+    // 5. 如果成功，将缓冲区数据反序列化为 T 类型（需要编译器支持泛型反序列化）
+    // 6. 如果是异步阻塞，需要等待通道有数据（需要异步运行时支持）
+    // 参考文档：docs/T-STDLIB-001-运行时函数需求文档.md
+    
+    // 临时实现：从缓冲区取出数据（同步实现，非异步）
+    if len(c.buffer) == 0 {
+        return Err("channel is empty")
+    }
+    let item = c.buffer[0]
+    c.buffer = c.buffer[1:]
+    return Ok(item)
+}
+
+// 尝试发送数据（非阻塞）
+// 如果通道已满，立即返回 Err
+func (c *Channel[T]) try_send(item: T) -> Result[void] {
+    // TODO: 调用运行时函数尝试发送数据（非阻塞）
+    // 需要调用运行时函数：runtime_channel_try_send(handle, item_ptr, item_size)
+    // 编译器签名：i8* runtime_channel_try_send(i32 handle, i8* item_ptr, i32 item_size)
+    // 实现步骤：
+    // 1. 获取 item 的内存地址（需要编译器支持泛型类型擦除）
+    // 2. 获取 item 的大小 sizeof(T)（需要编译器支持）
+    // 3. 调用 runtime_channel_try_send(c.chan_handle, &item, sizeof(T))
+    // 4. 处理返回的 Result[void, string]（使用 match 语句）
+    // 参考文档：docs/T-STDLIB-001-运行时函数需求文档.md
+    
+    // 临时实现：检查缓冲区容量（同步实现）
+    if c.cap > 0 && len(c.buffer) >= c.cap {
+        return Err("channel is full")
+    }
+    c.buffer.push(item)
+    return Ok(())
+}
+
+// 尝试接收数据（非阻塞）
+// 如果通道为空，立即返回 Err
+func (c *Channel[T]) try_recv() -> Result[T] {
+    // TODO: 调用运行时函数尝试接收数据（非阻塞）
+    // 需要调用运行时函数：runtime_channel_try_recv(handle, item_ptr, item_size)
+    // 编译器签名：i8* runtime_channel_try_recv(i32 handle, i8* item_ptr, i32 item_size)
+    // 实现步骤：
+    // 1. 分配临时缓冲区存储接收的数据（需要编译器支持泛型类型大小）
+    // 2. 获取元素大小 sizeof(T)（需要编译器支持）
+    // 3. 调用 runtime_channel_try_recv(c.chan_handle, buffer_ptr, sizeof(T))
+    // 4. 处理返回的 Result[int, string]（使用 match 语句）
+    // 5. 如果成功，将缓冲区数据反序列化为 T 类型（需要编译器支持泛型反序列化）
+    // 参考文档：docs/T-STDLIB-001-运行时函数需求文档.md
+    
+    // 临时实现：从缓冲区取出数据（同步实现）
+    if len(c.buffer) == 0 {
+        return Err("channel is empty")
+    }
+    let item = c.buffer[0]
+    c.buffer = c.buffer[1:]
+    return Ok(item)
+}
+
+// 关闭通道
+func (c *Channel[T]) close() -> Result[void] {
+    // 调用运行时函数关闭通道
+    // runtime_channel_close(handle) -> void
+    // 编译器签名：void runtime_channel_close(i32 handle)
+    runtime_channel_close(c.chan_handle)
+    return Ok(())
+}
+
+// 判断通道是否已关闭
+func (c Channel[T]) is_closed() -> bool {
+    // 调用运行时函数检查通道状态
+    // runtime_channel_status(handle: ChannelHandle) -> string：返回状态字符串
+    let status = runtime_channel_status(c.chan_handle)
+    return status == "closed"
+}
+
+// 获取通道长度（当前缓冲区中的数据数量）
+func (c Channel[T]) len() -> int {
+    return len(c.buffer)
+}
+
+// 获取通道容量
+func (c Channel[T]) cap() -> int {
+    return c.cap
+}

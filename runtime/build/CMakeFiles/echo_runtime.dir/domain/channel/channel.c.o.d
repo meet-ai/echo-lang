@@ -59,10 +59,15 @@ CMakeFiles/echo_runtime.dir/domain/channel/channel.c.o: \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/qos.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_mach_port_t.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_sigset_t.h \
-  /Users/meetai/source/echo-lang/runtime/domain/channel/../coroutine/coroutine.h \
+  /Users/meetai/source/echo-lang/runtime/domain/channel/../task_execution/aggregate/task.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/stdbool.h \
-  /Users/meetai/source/echo-lang/runtime/domain/channel/../coroutine/context.h \
-  /Users/meetai/source/echo-lang/runtime/domain/channel/../coroutine/../../shared/types/common_types.h \
+  /Users/meetai/source/echo-lang/runtime/domain/channel/../scheduler/scheduler.h \
+  /Users/meetai/source/echo-lang/runtime/domain/channel/../scheduler/../task_execution/aggregate/task.h \
+  /Users/meetai/source/echo-lang/runtime/domain/channel/../scheduler/concurrency/processor.h \
+  /Users/meetai/source/echo-lang/runtime/domain/channel/../scheduler/concurrency/../../task_execution/aggregate/task.h \
+  /Users/meetai/source/echo-lang/runtime/domain/channel/../scheduler/concurrency/machine.h \
+  /Users/meetai/source/echo-lang/runtime/domain/channel/../scheduler/concurrency/../../coroutine/context.h \
+  /Users/meetai/source/echo-lang/runtime/domain/channel/../scheduler/concurrency/../../coroutine/../../shared/types/common_types.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/stddef.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/stddef.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/__stddef_header_macro.h \
@@ -73,13 +78,21 @@ CMakeFiles/echo_runtime.dir/domain/channel/channel.c.o: \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/__stddef_null.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/__stddef_max_align_t.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/__stddef_offsetof.h \
-  /Users/meetai/source/echo-lang/runtime/domain/channel/../task/task.h \
-  /Users/meetai/source/echo-lang/runtime/domain/channel/../scheduler/scheduler.h \
-  /Users/meetai/source/echo-lang/runtime/domain/channel/../scheduler/task/task.h \
-  /Users/meetai/source/echo-lang/runtime/domain/channel/../scheduler/concurrency/processor.h \
-  /Users/meetai/source/echo-lang/runtime/domain/channel/../scheduler/concurrency/../task/task.h \
-  /Users/meetai/source/echo-lang/runtime/domain/channel/../scheduler/concurrency/machine.h \
-  /Users/meetai/source/echo-lang/runtime/domain/channel/../scheduler/concurrency/../../coroutine/context.h \
+  /Users/meetai/source/echo-lang/runtime/domain/channel/../scheduler/../task_scheduling/aggregate/scheduler.h \
+  /Users/meetai/source/echo-lang/runtime/domain/channel/../scheduler/../task_scheduling/aggregate/../../task_execution/aggregate/task.h \
+  /Users/meetai/source/echo-lang/runtime/domain/channel/../channel_communication/adapter/channel_adapter.h \
+  /Users/meetai/source/echo-lang/runtime/domain/channel/../channel_communication/adapter/../aggregate/channel.h \
+  /Users/meetai/source/echo-lang/runtime/domain/channel/../channel_communication/adapter/../aggregate/../../task_execution/aggregate/task.h \
+  /Users/meetai/source/echo-lang/runtime/domain/channel/../channel_communication/adapter/../aggregate/../../task_execution/repository/task_repository.h \
+  /Users/meetai/source/echo-lang/runtime/domain/channel/../channel_communication/adapter/../aggregate/../../task_execution/repository/../aggregate/task.h \
+  /Users/meetai/source/echo-lang/runtime/domain/channel/../channel_communication/adapter/../aggregate/../../task_execution/aggregate/coroutine.h \
+  /Users/meetai/source/echo-lang/runtime/domain/channel/../channel_communication/adapter/../aggregate/../../task_execution/aggregate/../../coroutine/context.h \
+  /Users/meetai/source/echo-lang/runtime/domain/channel/../channel_communication/adapter/../../task_execution/repository/task_repository.h \
+  /Users/meetai/source/echo-lang/runtime/domain/channel/../channel_communication/adapter/../../task_execution/aggregate/task.h \
+  /Users/meetai/source/echo-lang/runtime/domain/channel/../channel_communication/adapter/../../scheduler/scheduler.h \
+  /Users/meetai/source/echo-lang/runtime/domain/channel/../channel_communication/adapter/../../shared/events/bus.h \
+  /Users/meetai/source/echo-lang/runtime/domain/channel/../channel_communication/aggregate/channel.h \
+  /Users/meetai/source/echo-lang/runtime/domain/channel/../task_execution/repository/task_repository.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/stdio.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/_stdio.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_va_list.h \

@@ -1,0 +1,15 @@
+// 测试浮点数二元表达式类型推断
+func main() -> int {
+    // 测试浮点数算术运算
+    let a = 1.5 + 2.5        // 推断为 float
+    let b = 3.0 - 1.5        // 推断为 float
+    let c = 2.0 * 3.5        // 推断为 float
+    let d = 10.0 / 2.0       // 推断为 float
+    
+    // 测试浮点数比较运算
+    let e = 1.5 > 2.5        // 推断为 bool
+    let f = 3.0 == 3.0       // 推断为 bool
+    
+    print "Binary float type inference test passed"
+    return 0
+}

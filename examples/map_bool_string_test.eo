@@ -1,0 +1,33 @@
+// map_bool_string_test.eo - Map[bool]string 类型支持测试
+
+func main() -> int {
+    print "=== Testing map[bool]string ==="
+    
+    // 创建一个空map[bool]string
+    let status: map[bool]string = {}
+    
+    // 测试设置键值对
+    status[true] = "enabled"
+    status[false] = "disabled"
+    
+    print "Map initialized with 2 entries"
+    
+    // 测试获取值
+    let enabledStatus: string = status[true]
+    print enabledStatus  // 应该输出 "enabled"
+    
+    let disabledStatus: string = status[false]
+    print disabledStatus  // 应该输出 "disabled"
+    
+    // 测试更新值
+    status[true] = "active"
+    let updatedStatus: string = status[true]
+    print updatedStatus  // 应该输出 "active"
+    
+    // 测试删除键值对
+    delete(status, false)
+    print "Deleted key false"
+    
+    print "=== Map[bool]string test completed ==="
+    return 0
+}

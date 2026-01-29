@@ -1,0 +1,19 @@
+// package_basic_test.eo - 包管理基础功能测试
+// 测试：包声明、基本导入、包级导入
+
+package main
+
+// 测试1：包级导入（标识符形式，类似 Python）
+import tpk
+
+// 测试2：包级导入（字符串形式，向后兼容）
+// import "tpk"
+
+func main() {
+    print "=== Package Basic Test ==="
+    
+    // 调用导入的包中的函数
+    tpk.test()
+    
+    print "Package basic test completed"
+}

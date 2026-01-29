@@ -1,0 +1,15 @@
+struct Point {
+    x: int,
+    y: int
+}
+
+func (p Point) distance() -> float {
+    return 0.0
+}
+
+func main() -> int {
+    let p: Point = {x: 1, y: 2}
+    let d = p.distance()
+    print "Method call type inference test passed"
+    return 0
+}

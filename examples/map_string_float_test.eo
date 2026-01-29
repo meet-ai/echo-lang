@@ -1,0 +1,37 @@
+// map_string_float_test.eo - Map[string]float 类型支持测试
+
+func main() -> int {
+    print "=== Testing map[string]float ==="
+    
+    // 创建一个空map[string]float
+    let scores: map[string]float = {}
+    
+    // 测试设置键值对
+    scores["math"] = 95.5
+    scores["english"] = 88.0
+    scores["science"] = 92.75
+    
+    print "Map initialized with 3 entries"
+    
+    // 测试获取值
+    let mathScore: float = scores["math"]
+    print mathScore  // 应该输出 95.5
+    
+    let englishScore: float = scores["english"]
+    print englishScore  // 应该输出 88.0
+    
+    let scienceScore: float = scores["science"]
+    print scienceScore  // 应该输出 92.75
+    
+    // 测试更新值
+    scores["math"] = 98.0
+    let updatedScore: float = scores["math"]
+    print updatedScore  // 应该输出 98.0
+    
+    // 测试删除键值对
+    delete(scores, "english")
+    print "Deleted key 'english'"
+    
+    print "=== Map[string]float test completed ==="
+    return 0
+}

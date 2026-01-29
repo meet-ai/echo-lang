@@ -82,7 +82,7 @@ Task* task_create(const char* name, void* entry_point, void* arg, size_t stack_s
 }
 
 // 销毁任务
-void task_destroy(Task* task) {
+void task_entity_destroy(Task* task) {  // 重命名：避免与 task_aggregate.c 中的 task_destroy 冲突
     if (task) {
         free(task);
     }

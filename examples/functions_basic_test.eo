@@ -4,3 +4,4 @@ func greet() -> void {
 }
 
 greet()
+

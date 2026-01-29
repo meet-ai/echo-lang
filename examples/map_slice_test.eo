@@ -1,0 +1,15 @@
+// map_slice_test.eo - Map切片类型支持测试
+
+func main() -> int {
+    // 测试 map[string][]int（切片作为值）
+    let scores: map[string][]int = {}
+    let aliceScores: []int = [90, 85, 92]
+    scores["alice"] = aliceScores
+    
+    // 测试 map[int][]string（切片作为值）
+    let names: map[int][]string = {}
+    let group1: []string = ["alice", "bob"]
+    names[1] = group1
+    
+    return 0
+}

@@ -28,14 +28,19 @@ typedef struct {
 // 异步操作结果DTO
 typedef struct {
     uint64_t operation_id;          // 操作ID
+    bool success;                   // 操作是否成功
+    char message[512];               // 结果消息
     char status[32];                // 操作状态
     void* result_data;              // 结果数据
     size_t result_size;             // 结果数据大小
+    size_t data_size;                // 数据大小（兼容字段）
     char error_message[1024];       // 错误信息
     time_t started_at;              // 开始时间
     time_t completed_at;            // 完成时间
+    time_t timestamp;               // 时间戳（兼容字段）
     uint64_t duration_ms;           // 执行时长
     double progress_percentage;     // 进度百分比（0.0-100.0）
+    void* details;                  // 详细信息（兼容字段）
 } AsyncOperationResultDTO;
 
 // 批量操作结果DTO

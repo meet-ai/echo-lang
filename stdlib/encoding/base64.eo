@@ -1,0 +1,163 @@
+// encoding/base64.eo - Base64 编码和解码
+// 提供 Base64 编码功能
+
+package encoding
+
+// Base64 字符表
+let BASE64_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+
+// Base64 填充字符
+let BASE64_PAD = '='
+
+// Base64Encoder Base64 编码器
+struct Base64Encoder {
+    // 无状态，所有方法都是静态的
+}
+
+// 编码字节数组为 Base64 字符串
+func encode(data: []u8) -> string {
+    let mut result = ""
+    let mut i = 0
+    
+    while i < len(data) {
+        // 读取 3 个字节（24 位）
+        let b1 = data[i]
+        let b2 = if i + 1 < len(data) { data[i + 1] } else { 0 }
+        let b3 = if i + 2 < len(data) { data[i + 2] } else { 0 }
+        
+        // 转换为 4 个 Base64 字符
+        let c1 = BASE64_CHARS[(b1 >> 2) as int]
+        let c2 = BASE64_CHARS[(((b1 & 0x03) << 4) | (b2 >> 4)) as int]
+        let c3 = if i + 1 < len(data) {
+            BASE64_CHARS[(((b2 & 0x0F) << 2) | (b3 >> 6)) as int]
+        } else {
+            BASE64_PAD
+        }
+        let c4 = if i + 2 < len(data) {
+            BASE64_CHARS[(b3 & 0x3F) as int]
+        } else {
+            BASE64_PAD
+        }
+        
+        result = result + string(c1) + string(c2) + string(c3) + string(c4)
+        i = i + 3
+    }
+    
+    return result
+}
+
+// 编码字符串为 Base64 字符串
+func encode_string(s: string) -> string {
+    // 临时实现：直接调用运行时函数编码字符串为Base64
+    // 这样可以绕过切片类型转换的限制
+    // 后续可以改为使用 encode() 函数（需要切片类型转换支持）
+    // 
+    // runtime_base64_encode_string(s: string) -> string
+    // 返回Base64编码后的字符串
+    return runtime_base64_encode_string(s)
+    
+    // 完整实现（需要切片类型转换支持）：
+    // let result = runtime_string_to_bytes(s)
+    // let bytes: []u8 = // 从 result.bytes 和 result.len 构造切片
+    // return encode(bytes)
+}
+
+// Base64Decoder Base64 解码器
+struct Base64Decoder {
+    // 无状态，所有方法都是静态的
+}
+
+// 查找字符在 Base64 字符表中的索引
+func find_char(ch: char) -> Option[int] {
+    for i in 0..len(BASE64_CHARS) {
+        if BASE64_CHARS[i] == ch {
+            return Some(i)
+        }
+    }
+    return None
+}
+
+// 解码 Base64 字符串为字节数组
+func decode(encoded: string) -> Result[[]u8] {
+    // 移除填充字符
+    let mut s = encoded
+    while len(s) > 0 && s[len(s)-1] == BASE64_PAD {
+        s = s[0:len(s)-1]
+    }
+    
+    // Base64 字符串长度必须是 4 的倍数
+    if len(s) % 4 != 0 {
+        return Err("invalid base64 string length")
+    }
+    
+    let mut result: []u8 = []
+    let mut i = 0
+    
+    while i < len(s) {
+        // 读取 4 个 Base64 字符
+        let c1 = s[i]
+        let c2 = s[i + 1]
+        let c3 = s[i + 2]
+        let c4 = s[i + 3]
+        
+        // 查找字符索引
+        let idx1 = match find_char(c1) {
+            Some(v) => v
+            None => return Err("invalid base64 character: " + string(c1))
+        }
+        let idx2 = match find_char(c2) {
+            Some(v) => v
+            None => return Err("invalid base64 character: " + string(c2))
+        }
+        let idx3 = if c3 != BASE64_PAD {
+            match find_char(c3) {
+                Some(v) => v
+                None => return Err("invalid base64 character: " + string(c3))
+            }
+        } else {
+            0
+        }
+        let idx4 = if c4 != BASE64_PAD {
+            match find_char(c4) {
+                Some(v) => v
+                None => return Err("invalid base64 character: " + string(c4))
+            }
+        } else {
+            0
+        }
+        
+        // 转换为 3 个字节
+        let b1 = u8((idx1 << 2) | (idx2 >> 4))
+        let b2 = u8(((idx2 & 0x0F) << 4) | (idx3 >> 2))
+        let b3 = u8(((idx3 & 0x03) << 6) | idx4)
+        
+        result.push(b1)
+        if c3 != BASE64_PAD {
+            result.push(b2)
+        }
+        if c4 != BASE64_PAD {
+            result.push(b3)
+        }
+        
+        i = i + 4
+    }
+    
+    return Ok(result)
+}
+
+// 解码 Base64 字符串为字符串
+func decode_string(encoded: string) -> Result[string] {
+    match decode(encoded) {
+        Ok(bytes) => {
+            // 调用运行时函数将字节数组转换为字符串
+            // runtime_bytes_to_string(bytes: []u8) -> string
+            // 实现：将UTF-8字节数组转换为字符串（添加null终止符）
+            // 
+            // 注意：bytes 是 []u8 切片，需要传递指针和长度
+            // 编译器签名：i8* runtime_bytes_to_string(i8* bytes, i32 len)
+            let s = runtime_bytes_to_string(bytes, len(bytes))
+            return Ok(s)
+        }
+        Err(e) => return Err(e)
+    }
+}

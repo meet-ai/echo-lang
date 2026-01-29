@@ -1,0 +1,22 @@
+// 测试结构体字面量类型推断
+struct Point {
+    x: int,
+    y: int
+}
+
+struct Rect {
+    x: int,
+    y: int,
+    width: int,
+    height: int
+}
+
+func main() -> int {
+    // 测试结构体字面量类型推断
+    // 注意：结构体字面量需要显式类型（如 {x: 10, y: 20}），类型推断从 StructLiteral.Type 获取
+    let p: Point = {x: 10, y: 20}        // 类型在解析时已确定
+    let r: Rect = {x: 0, y: 0, width: 100, height: 200}  // 类型在解析时已确定
+    
+    print "Struct type inference test passed"
+    return 0
+}

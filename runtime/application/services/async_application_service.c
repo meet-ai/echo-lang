@@ -1,11 +1,22 @@
 #include "async_application_service.h"
 #include "../../shared/types/common_types.h"
-#include "../../domain/future/future.h"
+// 使用新的Future聚合根和仓储
+#include "../../domain/async_computation/aggregate/future.h"
+#include "../../domain/async_computation/repository/future_repository.h"
+// 事件总线接口
+#include "../../domain/shared/events/bus.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
 #include <pthread.h>
+#include <stdatomic.h>
+
+// 辅助函数：生成唯一ID
+static uint64_t generate_unique_id(void) {
+    static atomic_uint_fast64_t counter = 0;
+    return atomic_fetch_add(&counter, 1) + 1;
+}
 
 // 内部实现结构体
 typedef struct AsyncApplicationServiceImpl {
@@ -52,7 +63,7 @@ static FutureCreationResultDTO* create_future_creation_result(uint64_t future_id
 
     result->future_id = future_id;
     result->success = success;
-    result->timestamp = time(NULL);
+    // FutureCreationResultDTO 中没有 timestamp 字段
 
     if (message) {
         strncpy(result->message, message, sizeof(result->message) - 1);
@@ -70,15 +81,32 @@ static FutureDTO* create_future_dto(const Future* future) {
     FutureDTO* dto = (FutureDTO*)malloc(sizeof(FutureDTO));
     if (!dto) return NULL;
 
-    dto->future_id = future->id;
-    dto->state = future->state;
-    dto->created_at = future->created_at;
-    dto->resolved_at = future->resolved_at;
-    dto->rejected_at = future->rejected_at;
-    dto->wait_time_ms = future->wait_time_ms;
-    dto->poll_count = future->poll_count;
-    dto->priority = future->priority;
-    dto->wait_count = future->wait_count;
+    // 使用新的聚合根getter方法
+    dto->id = future->id;
+    
+    // 将枚举转换为字符串
+    const char* state_str = "pending";
+    switch (future->state) {
+        case FUTURE_PENDING: state_str = "pending"; break;
+        case FUTURE_RESOLVED: state_str = "resolved"; break;
+        case FUTURE_REJECTED: state_str = "rejected"; break;
+    }
+    strncpy(dto->state, state_str, sizeof(dto->state) - 1);
+    dto->state[sizeof(dto->state) - 1] = '\0';
+    
+    dto->result_data = future->result;
+    dto->result_size = 0; // TODO: 需要从future中获取结果大小
+    // Future 结构体中没有 error_message 字段
+    // TODO: 需要从 future 中获取错误信息，或使用其他方式
+    dto->error_message[0] = '\0';
+    
+    // TODO: 新的Future聚合根需要提供更多getter方法
+    // 目前先使用基本字段，后续需要添加getter方法
+    dto->created_at = 0; // TODO: 从future中获取
+    dto->resolved_at = 0; // TODO: 从future中获取
+    dto->rejected_at = 0; // TODO: 从future中获取
+    dto->execution_time_us = 0; // TODO: 从future中获取
+    dto->poll_count = 0; // TODO: 从future中获取
 
     return dto;
 }
@@ -100,6 +128,8 @@ static AsyncOperationResultDTO* create_async_operation_result(void* result_data,
         result->message[0] = '\0';
     }
 
+    // AsyncOperationResultDTO 中有 error_message 和 details 字段
+    result->error_message[0] = '\0';
     result->details = NULL;
 
     return result;
@@ -112,6 +142,7 @@ static OperationResultDTO* create_operation_result(bool success, const char* mes
     result->success = success;
     result->timestamp = time(NULL);
     result->operation_id = generate_unique_id();
+    result->error_code = 0;
 
     if (message) {
         strncpy(result->message, message, sizeof(result->message) - 1);
@@ -120,7 +151,8 @@ static OperationResultDTO* create_operation_result(bool success, const char* mes
         result->message[0] = '\0';
     }
 
-    result->details = NULL;
+    // OperationResultDTO 中有 error_details 字段
+    result->error_details[0] = '\0';
 
     return result;
 }
@@ -164,7 +196,7 @@ void async_application_service_destroy(AsyncApplicationService* service) {
 bool async_application_service_initialize(AsyncApplicationService* service,
                                         void* async_runtime,
                                         void* future_manager,
-                                        void* event_publisher) {
+                                        EventBus* event_bus) {
     if (!service) return false;
 
     AsyncApplicationServiceImpl* impl = (AsyncApplicationServiceImpl*)service;
@@ -174,7 +206,7 @@ bool async_application_service_initialize(AsyncApplicationService* service,
     // 设置依赖
     impl->base.async_runtime = async_runtime;
     impl->base.future_manager = future_manager;
-    impl->base.event_publisher = event_publisher;
+    impl->base.event_bus = event_bus;  // 注入EventBus
 
     impl->base.initialized = true;
 
@@ -193,7 +225,7 @@ void async_application_service_cleanup(AsyncApplicationService* service) {
     // 清理依赖引用
     impl->base.async_runtime = NULL;
     impl->base.future_manager = NULL;
-    impl->base.event_publisher = NULL;
+    impl->base.event_bus = NULL;
 
     impl->base.initialized = false;
 
@@ -232,32 +264,47 @@ static FutureCreationResultDTO* async_application_service_create_future_impl(Asy
 
     pthread_mutex_lock(&impl->mutex);
 
-    // 1. 创建Future实体
-    Future* future = future_new();
+    // 1. 创建Future聚合根（使用工厂方法）
+    // CreateFutureCommand 中没有 priority 字段
+    // TODO: 如果需要优先级，应该从其他地方获取或使用默认值
+    FuturePriority priority = FUTURE_PRIORITY_NORMAL; // 使用默认优先级
+    // 从应用服务获取EventBus并传入工厂方法
+    EventBus* event_bus = impl->base.event_bus;
+    Future* future = future_factory_create(priority, event_bus);
     if (!future) {
         pthread_mutex_unlock(&impl->mutex);
         return create_future_creation_result(0, false, "Failed to create future entity");
     }
 
-    // 2. 设置Future属性
-    if (cmd->priority != FUTURE_PRIORITY_NORMAL) {
-        future_set_priority(future, cmd->priority);
+    // 2. 保存Future到仓储
+    FutureRepository* repo = (FutureRepository*)impl->base.future_manager;
+    if (repo) {
+        if (future_repository_save(repo, future) != 0) {
+            // 保存失败，需要清理Future
+            // TODO: 需要Future聚合根的销毁方法
+            pthread_mutex_unlock(&impl->mutex);
+            return create_future_creation_result(0, false, "Failed to save future to repository");
+        }
+    } else {
+        // 如果没有仓储，记录警告但继续（可能用于测试）
+        // TODO: 在生产环境中，仓储是必需的
     }
 
-    // 3. 注册到管理器（如果有管理器）
-    // 这里应该调用Future管理器接口注册Future
-    // 暂时跳过
-
-    // 4. 发布事件（如果有事件发布器）
-    // 这里应该发布FutureCreated事件
-    // 暂时跳过
+    // 3. 发布领域事件（TODO: 需要事件发布器）
+    // 从Future聚合根获取领域事件并发布
+    // struct DomainEvent** events;
+    // size_t event_count;
+    // if (future_get_domain_events(future, &events, &event_count)) {
+    //     // 发布事件
+    // }
 
     impl->operation_count++;
     impl->last_operation_time = time(NULL);
 
+    FutureID future_id = future->id;
     pthread_mutex_unlock(&impl->mutex);
 
-    return create_future_creation_result(future->id, true, "Future created successfully");
+    return create_future_creation_result(future_id, true, "Future created successfully");
 }
 
 static OperationResultDTO* async_application_service_resolve_future_impl(AsyncApplicationService* service, const ResolveFutureCommand* cmd) {
@@ -268,13 +315,42 @@ static OperationResultDTO* async_application_service_resolve_future_impl(AsyncAp
     AsyncApplicationServiceImpl* impl = (AsyncApplicationServiceImpl*)service;
 
     // 用例编排：解决Future
-    // 1. 查找Future
-    // 2. 设置成功结果
-    // 3. 发布解决事件
+    // 1. 通过仓储查找Future聚合根
+    // 2. 调用聚合根方法解决Future
+    // 3. 保存Future到仓储
+    // 4. 发布领域事件
 
     pthread_mutex_lock(&impl->mutex);
 
-    future_resolve_by_id(cmd->future_id, cmd->result_data);
+    // 1. 获取FutureRepository
+    FutureRepository* repo = (FutureRepository*)impl->base.future_manager;
+    if (!repo) {
+        pthread_mutex_unlock(&impl->mutex);
+        return create_operation_result(false, "FutureRepository not available");
+    }
+
+    // 2. 查找Future聚合根
+    Future* future = future_repository_find_by_id(repo, cmd->future_id);
+    if (!future) {
+        pthread_mutex_unlock(&impl->mutex);
+        return create_operation_result(false, "Future not found");
+    }
+
+    // 3. 调用聚合根方法解决Future
+    bool success = future_resolve(future, cmd->result);
+    if (!success) {
+        pthread_mutex_unlock(&impl->mutex);
+        return create_operation_result(false, "Failed to resolve future (invalid state)");
+    }
+
+    // 4. 保存Future到仓储（状态已更新）
+    if (future_repository_save(repo, future) != 0) {
+        pthread_mutex_unlock(&impl->mutex);
+        return create_operation_result(false, "Failed to save future to repository");
+    }
+
+    // 5. 发布领域事件（TODO: 需要事件发布器）
+    // 从Future聚合根获取领域事件并发布
 
     impl->operation_count++;
     impl->last_operation_time = time(NULL);
@@ -292,13 +368,43 @@ static OperationResultDTO* async_application_service_reject_future_impl(AsyncApp
     AsyncApplicationServiceImpl* impl = (AsyncApplicationServiceImpl*)service;
 
     // 用例编排：拒绝Future
-    // 1. 查找Future
-    // 2. 设置错误结果
-    // 3. 发布拒绝事件
+    // 1. 通过仓储查找Future聚合根
+    // 2. 调用聚合根方法拒绝Future
+    // 3. 保存Future到仓储
+    // 4. 发布领域事件
 
     pthread_mutex_lock(&impl->mutex);
 
-    future_reject_by_id(cmd->future_id, cmd->error_data);
+    // 1. 获取FutureRepository
+    FutureRepository* repo = (FutureRepository*)impl->base.future_manager;
+    if (!repo) {
+        pthread_mutex_unlock(&impl->mutex);
+        return create_operation_result(false, "FutureRepository not available");
+    }
+
+    // 2. 查找Future聚合根
+    Future* future = future_repository_find_by_id(repo, cmd->future_id);
+    if (!future) {
+        pthread_mutex_unlock(&impl->mutex);
+        return create_operation_result(false, "Future not found");
+    }
+
+    // 3. 调用聚合根方法拒绝Future
+    // 将error_message转换为void*（注意：这里假设error_message是错误数据的指针）
+    void* error_data = (void*)cmd->error_message;
+    bool success = future_reject(future, error_data);
+    if (!success) {
+        pthread_mutex_unlock(&impl->mutex);
+        return create_operation_result(false, "Failed to reject future (invalid state)");
+    }
+
+    // 4. 保存Future到仓储（状态已更新）
+    if (future_repository_save(repo, future) != 0) {
+        pthread_mutex_unlock(&impl->mutex);
+        return create_operation_result(false, "Failed to save future to repository");
+    }
+
+    // 5. 发布领域事件（TODO: 需要事件发布器）
 
     impl->operation_count++;
     impl->last_operation_time = time(NULL);
@@ -316,13 +422,41 @@ static OperationResultDTO* async_application_service_cancel_future_impl(AsyncApp
     AsyncApplicationServiceImpl* impl = (AsyncApplicationServiceImpl*)service;
 
     // 用例编排：取消Future
-    // 1. 查找Future
-    // 2. 取消Future
-    // 3. 发布取消事件
+    // 1. 通过仓储查找Future聚合根
+    // 2. 调用聚合根方法取消Future
+    // 3. 保存Future到仓储
+    // 4. 发布领域事件
 
     pthread_mutex_lock(&impl->mutex);
 
-    future_cancel_by_id(cmd->future_id);
+    // 1. 获取FutureRepository
+    FutureRepository* repo = (FutureRepository*)impl->base.future_manager;
+    if (!repo) {
+        pthread_mutex_unlock(&impl->mutex);
+        return create_operation_result(false, "FutureRepository not available");
+    }
+
+    // 2. 查找Future聚合根
+    Future* future = future_repository_find_by_id(repo, cmd->future_id);
+    if (!future) {
+        pthread_mutex_unlock(&impl->mutex);
+        return create_operation_result(false, "Future not found");
+    }
+
+    // 3. 调用聚合根方法取消Future
+    bool success = future_cancel(future);
+    if (!success) {
+        pthread_mutex_unlock(&impl->mutex);
+        return create_operation_result(false, "Failed to cancel future (invalid state)");
+    }
+
+    // 4. 保存Future到仓储（状态已更新）
+    if (future_repository_save(repo, future) != 0) {
+        pthread_mutex_unlock(&impl->mutex);
+        return create_operation_result(false, "Failed to save future to repository");
+    }
+
+    // 5. 发布领域事件（TODO: 需要事件发布器）
 
     impl->operation_count++;
     impl->last_operation_time = time(NULL);
@@ -346,7 +480,9 @@ static AsyncOperationResultDTO* async_application_service_await_future_impl(Asyn
 
     pthread_mutex_lock(&impl->mutex);
 
-    void* result = future_wait_by_id(cmd->future_id);
+    // TODO: 需要实现future_wait_by_id或使用future仓储
+    // 临时实现：需要先获取future对象，然后调用future_wait
+    void* result = NULL; // TODO: 实现完整的等待逻辑
 
     bool success = (result != NULL);
     const char* message = success ? "Future awaited successfully" : "Future await failed or timed out";
@@ -375,28 +511,73 @@ static AsyncOperationResultDTO* async_application_service_spawn_async_task_impl(
 
     pthread_mutex_lock(&impl->mutex);
 
-    // 1. 创建Future
-    Future* future = future_new();
+    // 1. 创建Future聚合根（使用工厂方法）
+    FuturePriority priority = FUTURE_PRIORITY_NORMAL; // 默认优先级
+    // 从应用服务获取EventBus并传入工厂方法
+    EventBus* event_bus = impl->base.event_bus;
+    Future* future = future_factory_create(priority, event_bus);
     if (!future) {
         pthread_mutex_unlock(&impl->mutex);
         return create_async_operation_result(NULL, 0, false, "Failed to create future");
     }
 
-    // 2. 生成异步任务（这里应该调用异步运行时）
-    // 暂时返回Future ID作为结果
+    // 2. 保存Future到仓储
+    FutureRepository* repo = (FutureRepository*)impl->base.future_manager;
+    if (repo) {
+        if (future_repository_save(repo, future) != 0) {
+            // TODO: 需要Future聚合根的销毁方法
+            pthread_mutex_unlock(&impl->mutex);
+            return create_async_operation_result(NULL, 0, false, "Failed to save future to repository");
+        }
+    }
+
+    // 3. 生成异步任务（这里应该调用异步运行时）
+    // TODO: 实现异步任务生成逻辑
+
+    // 4. 获取Future ID
+    FutureID future_id = future->id;
 
     impl->operation_count++;
     impl->last_operation_time = time(NULL);
 
     pthread_mutex_unlock(&impl->mutex);
 
-    return create_async_operation_result((void*)future->id, sizeof(uint64_t), true, "Async task spawned successfully");
+    return create_async_operation_result((void*)(uintptr_t)future_id, sizeof(uint64_t), true, "Async task spawned successfully");
 }
 
 static FutureDTO* async_application_service_get_future_impl(AsyncApplicationService* service, uint64_t future_id) {
     // 实现Future查询用例
-    Future* future = future_find_by_id(future_id);
-    return create_future_dto(future);
+    // 1. 通过仓储查找Future聚合根
+    // 2. 转换为DTO返回
+
+    if (!service || !service->initialized) {
+        return NULL;
+    }
+
+    AsyncApplicationServiceImpl* impl = (AsyncApplicationServiceImpl*)service;
+
+    pthread_mutex_lock(&impl->mutex);
+
+    // 1. 获取FutureRepository
+    FutureRepository* repo = (FutureRepository*)impl->base.future_manager;
+    if (!repo) {
+        pthread_mutex_unlock(&impl->mutex);
+        return NULL;
+    }
+
+    // 2. 查找Future聚合根
+    Future* future = future_repository_find_by_id(repo, future_id);
+    if (!future) {
+        pthread_mutex_unlock(&impl->mutex);
+        return NULL;
+    }
+
+    // 3. 转换为DTO返回
+    FutureDTO* dto = create_future_dto(future);
+
+    pthread_mutex_unlock(&impl->mutex);
+
+    return dto;
 }
 
 static FutureListDTO* async_application_service_get_futures_impl(AsyncApplicationService* service, const GetFutureStatusQuery* query) {

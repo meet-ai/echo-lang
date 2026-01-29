@@ -1,0 +1,21 @@
+// map_index_assignment_test.eo - Map索引赋值测试
+// 测试 headers[key] = value 语法
+
+func test_map_index_assignment() -> void {
+    print "=== Testing Map Index Assignment ==="
+    
+    // 创建一个空map[string]string
+    let mut headers: map[string]string = {}
+    
+    // 测试map索引赋值
+    headers["Content-Type"] = "application/json"
+    headers["User-Agent"] = "Echo-Client/1.0"
+    headers["Accept"] = "text/html"
+    
+    print "Map index assignment completed"
+    print "Headers map has been populated"
+}
+
+func main() -> void {
+    test_map_index_assignment()
+}

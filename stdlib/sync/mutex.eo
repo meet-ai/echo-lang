@@ -1,0 +1,79 @@
+// sync/mutex.eo - Mutex[T] 互斥锁
+// 提供线程安全的互斥访问
+
+package sync
+
+import core
+
+// LockHandle 锁句柄（底层类型，由运行时提供）
+type LockHandle = int  // 简化为 int，实际应该是运行时定义的类型
+
+// Mutex[T] 互斥锁
+// 保护类型 T 的数据，提供线程安全的访问
+struct Mutex[T] {
+    data: T,
+    locked: bool,
+    lock_handle: LockHandle
+}
+
+// 构造函数：创建新的互斥锁
+func new[T](data: T) -> Mutex[T] {
+    // 调用运行时函数创建锁
+    // runtime_create_mutex() -> MutexHandle（返回 i32）
+    let handle = runtime_create_mutex()
+    return Mutex[T] {
+        data: data,
+        locked: false,
+        lock_handle: handle
+    }
+}
+
+// 方法实现
+// 获取锁（阻塞）
+// 返回 MutexGuard，在作用域结束时自动释放锁
+func (m *Mutex[T]) lock() -> MutexGuard[T] {
+    // 调用运行时函数获取锁（阻塞）
+    // runtime_mutex_lock(handle: MutexHandle) -> void
+    runtime_mutex_lock(m.lock_handle)
+    m.locked = true
+    return MutexGuard[T] { mutex: m }
+}
+
+// 尝试获取锁（非阻塞）
+// 如果锁已被占用，返回 None
+func (m *Mutex[T]) try_lock() -> Option[MutexGuard[T]] {
+    // 调用运行时函数尝试获取锁（非阻塞）
+    // runtime_mutex_try_lock(handle: MutexHandle) -> bool
+    if runtime_mutex_try_lock(m.lock_handle) {
+        m.locked = true
+        return Some(MutexGuard[T] { mutex: m })
+    }
+    return None
+}
+
+// MutexGuard[T] 锁守卫（RAII 模式）
+// 持有锁的守卫，在析构时自动释放锁
+struct MutexGuard[T] {
+    mutex: *Mutex[T]  // 使用指针，因为需要修改 Mutex
+}
+
+// 方法实现
+// 获取数据引用（只读）
+func (g MutexGuard[T]) get() -> &T {
+    return &g.mutex.data
+}
+
+// 获取数据可变引用
+func (g MutexGuard[T]) get_mut() -> &mut T {
+    return &mut g.mutex.data
+}
+
+// 实现 Drop Trait：自动释放锁
+// 当 MutexGuard 离开作用域时，自动调用 drop() 释放锁
+// TODO: 需要编译器支持 Drop trait 的自动调用
+func (g MutexGuard[T]) drop() {
+    // 调用运行时函数释放锁
+    // runtime_mutex_unlock(handle: MutexHandle) -> void
+    runtime_mutex_unlock(g.mutex.lock_handle)
+    g.mutex.locked = false
+}

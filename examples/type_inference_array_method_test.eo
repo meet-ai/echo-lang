@@ -1,0 +1,30 @@
+// type_inference_array_method_test.eo - 测试数组方法调用类型推断
+
+func main() -> int {
+    // 测试1：pop() 方法返回元素类型
+    let arr1: [int] = [1, 2, 3, 4, 5]
+    let last = arr1.pop()  // 应该推断为 int
+    print "Last element: " + last
+
+    // 测试2：push() 方法返回 void
+    let arr2: [string] = ["a", "b", "c"]
+    let result = arr2.push("d")  // 应该推断为 void
+    print "Push result"
+
+    // 测试3：从数组字面量推断
+    let first = [10, 20, 30].pop()  // 应该推断为 int
+    print "First from literal: " + first
+
+    // 测试4：insert() 方法返回 void
+    let arr3: [int] = [1, 2, 3]
+    let insertResult = arr3.insert(1, 99)  // 应该推断为 void
+    print "Insert result"
+
+    // 测试5：remove() 方法返回 void
+    let arr4: [int] = [1, 2, 3, 4]
+    let removeResult = arr4.remove(2)  // 应该推断为 void
+    print "Remove result"
+
+    print "Array method call type inference test passed"
+    return 0
+}

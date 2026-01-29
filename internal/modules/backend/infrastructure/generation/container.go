@@ -25,7 +25,7 @@ func NewContainer() *Container {
 	expressionEvaluatorImpl := impl.NewExpressionEvaluatorImpl(symbolManagerImpl, typeMapperImpl, irModuleManagerImpl)
 
 	// 先创建语句生成器（暂时传入nil的controlFlowGenerator）
-	tempControlFlowGenerator := impl.NewControlFlowGeneratorImpl(nil, nil)
+	tempControlFlowGenerator := impl.NewControlFlowGeneratorImpl(nil, nil, nil)
 	statementGeneratorImpl := impl.NewStatementGeneratorImpl(
 		expressionEvaluatorImpl,
 		tempControlFlowGenerator, // 暂时传入nil
@@ -35,10 +35,13 @@ func NewContainer() *Container {
 	)
 
 	// 创建控制流生成器（传入真实的statementGenerator和expressionEvaluator）
-	controlFlowGeneratorImpl := impl.NewControlFlowGeneratorImpl(statementGeneratorImpl, expressionEvaluatorImpl)
+	controlFlowGeneratorImpl := impl.NewControlFlowGeneratorImpl(statementGeneratorImpl, expressionEvaluatorImpl, symbolManagerImpl)
 
 	// 更新语句生成器中的控制流生成器引用
 	statementGeneratorImpl.SetControlFlowGenerator(controlFlowGeneratorImpl)
+	
+	// ✅ 新增：设置ExpressionEvaluator的StatementGenerator引用（用于延迟编译）
+	expressionEvaluatorImpl.SetStatementGenerator(statementGeneratorImpl)
 
 	return &Container{
 		statementGenerator:   statementGeneratorImpl,

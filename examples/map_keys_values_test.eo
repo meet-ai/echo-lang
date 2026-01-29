@@ -1,0 +1,27 @@
+// map_keys_values_test.eo - Map keys() 和 values() 方法测试
+
+func main() -> int {
+    // 测试 map[string]string
+    let m1: map[string]string = {}
+    m1["a"] = "apple"
+    m1["b"] = "banana"
+    
+    // 测试 keys()
+    let keys1 = m1.keys()  // 应该返回字符串数组
+    
+    // 测试 values()
+    let values1 = m1.values()  // 应该返回字符串数组
+    
+    // 测试 map[int]string
+    let m2: map[int]string = {}
+    m2[1] = "one"
+    m2[2] = "two"
+    
+    // 测试 keys()
+    let keys2 = m2.keys()  // 应该返回整数数组
+    
+    // 测试 values()
+    let values2 = m2.values()  // 应该返回字符串数组
+    
+    return 0
+}

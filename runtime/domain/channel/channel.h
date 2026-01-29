@@ -4,11 +4,12 @@
 #include <stdint.h>
 #include <pthread.h>
 
-// 通道状态
+// 通道状态（旧版本，用于向后兼容）
+// 注意：新的Channel聚合根使用CHANNEL_STATE_OPEN和CHANNEL_STATE_CLOSED
 typedef enum {
     CHANNEL_OPEN,
     CHANNEL_CLOSED
-} ChannelState;
+} LegacyChannelState;
 
 // 通道结构体
 typedef struct Channel {
@@ -19,7 +20,7 @@ typedef struct Channel {
     uint32_t size;             // 当前大小
     uint32_t read_pos;         // 读指针（环形缓冲区）
     uint32_t write_pos;        // 写指针（环形缓冲区）
-    ChannelState state;        // 通道状态
+    LegacyChannelState state;        // 通道状态（旧版本，用于向后兼容）
     pthread_mutex_t lock;
     pthread_cond_t send_cond;  // 发送条件变量
     pthread_cond_t recv_cond;  // 接收条件变量

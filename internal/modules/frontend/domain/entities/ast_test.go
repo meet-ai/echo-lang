@@ -235,6 +235,7 @@ func TestASTNodeInterface(t *testing.T) {
 		&FuncDef{Name: "test"},
 		&VarDecl{Name: "x", Type: "int"},
 		&ReturnStmt{},
+		&BlockStmt{Statements: []ASTNode{&ReturnStmt{}}},
 		&IfStmt{},
 		&PrintStmt{Value: &StringLiteral{Value: "hello"}},
 		&StructDef{Name: "Point"},
@@ -352,6 +353,7 @@ func (m *mockASTVisitor) VisitFuncDef(node *FuncDef) interface{}     { return ni
 func (m *mockASTVisitor) VisitVarDecl(node *VarDecl) interface{}     { return nil }
 func (m *mockASTVisitor) VisitAssignStmt(node *AssignStmt) interface{} { return nil }
 func (m *mockASTVisitor) VisitReturnStmt(node *ReturnStmt) interface{} { return nil }
+func (m *mockASTVisitor) VisitBlockStmt(node *BlockStmt) interface{}  { return nil }
 func (m *mockASTVisitor) VisitIfStmt(node *IfStmt) interface{}       { return nil }
 func (m *mockASTVisitor) VisitPrintStmt(node *PrintStmt) interface{} { return nil }
 func (m *mockASTVisitor) VisitExprStmt(node *ExprStmt) interface{}   { return nil }
@@ -371,6 +373,7 @@ func (m *mockASTVisitor) VisitAgentSendStmt(node *AgentSendStmt) interface{}    
 func (m *mockASTVisitor) VisitAgentReceiveStmt(node *AgentReceiveStmt) interface{} { return nil }
 func (m *mockASTVisitor) VisitBreakStmt(node *BreakStmt) interface{}               { return nil }
 func (m *mockASTVisitor) VisitContinueStmt(node *ContinueStmt) interface{}         { return nil }
+func (m *mockASTVisitor) VisitDeleteStmt(node *DeleteStmt) interface{}             { return nil }
 func (m *mockASTVisitor) VisitArrayLiteral(node *ArrayLiteral) interface{}   { return nil }
 func (m *mockASTVisitor) VisitStructLiteral(node *StructLiteral) interface{} { return nil }
 func (m *mockASTVisitor) VisitStructAccess(node *StructAccess) interface{}   { return nil }

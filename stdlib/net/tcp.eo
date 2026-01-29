@@ -1,0 +1,177 @@
+// net/tcp.eo - TCP 客户端/服务器
+// 提供 TCP 网络编程功能
+
+package net
+
+import core
+import io
+
+// SocketHandle 套接字句柄（底层类型，由运行时提供）
+type SocketHandle = int  // 简化为 int，实际应该是运行时定义的类型
+
+// TcpStream TCP 流
+// 表示一个 TCP 连接，可以读写数据
+struct TcpStream {
+    socket: SocketHandle,
+    is_connected: bool
+}
+
+// 构造函数：连接到服务器
+func connect(addr: string) -> Result[TcpStream] {
+    // 调用运行时函数建立 TCP 连接
+    // runtime_tcp_connect(addr: string) -> Result[SocketHandle, string]
+    match runtime_tcp_connect(addr) {
+        Ok(socket) => return Ok(TcpStream { socket: socket, is_connected: true })
+        Err(e) => return Err("failed to connect to " + addr + ": " + e)
+    }
+}
+
+// 方法实现
+// 读取数据（实现 Reader Trait）
+func (s TcpStream) read(buf: []u8) -> Result[int] {
+    if !s.is_connected {
+        return Err("socket is not connected")
+    }
+    // 调用运行时函数读取 TCP 数据
+    // runtime_tcp_read(socket: SocketHandle, buf: []u8) -> Result[int, string]
+    match runtime_tcp_read(s.socket, buf) {
+        Ok(n) => return Ok(n)
+        Err(e) => return Err("failed to read from socket: " + e)
+    }
+}
+
+// 写入数据（实现 Writer Trait）
+func (s TcpStream) write(buf: []u8) -> Result[int] {
+    if !s.is_connected {
+        return Err("socket is not connected")
+    }
+    // 调用运行时函数写入 TCP 数据
+    // runtime_tcp_write(socket: SocketHandle, buf: []u8) -> Result[int, string]
+    match runtime_tcp_write(s.socket, buf) {
+        Ok(n) => return Ok(n)
+        Err(e) => return Err("failed to write to socket: " + e)
+    }
+}
+
+// 刷新缓冲区（实现 Writer Trait）
+func (s TcpStream) flush() -> Result[void] {
+    if !s.is_connected {
+        return Err("socket is not connected")
+    }
+    // 调用运行时函数刷新 TCP 缓冲区
+    // runtime_tcp_flush(socket: SocketHandle) -> Result[void, string]
+    // 注意：TCP 是流式协议，实际上无需 flush，此函数为 API 一致性提供
+    match runtime_tcp_flush(s.socket) {
+        Ok(_) => return Ok(())
+        Err(e) => return Err("failed to flush socket: " + e)
+    }
+}
+
+// 关闭连接
+func (s *TcpStream) close() -> Result[void] {
+    if !s.is_connected {
+        return Ok(())
+    }
+    // 调用运行时函数关闭 TCP 连接
+    // runtime_tcp_close(socket: SocketHandle) -> Result[void, string]
+    match runtime_tcp_close(s.socket) {
+        Ok(_) => {
+            s.is_connected = false
+            return Ok(())
+        }
+        Err(e) => return Err("failed to close socket: " + e)
+    }
+}
+
+// 获取本地地址
+func (s TcpStream) local_addr() -> Result[string] {
+    if !s.is_connected {
+        return Err("socket is not connected")
+    }
+    // 调用运行时函数获取本地地址
+    // runtime_tcp_local_addr(socket: SocketHandle) -> Result[string, string]
+    match runtime_tcp_local_addr(s.socket) {
+        Ok(addr) => return Ok(addr)
+        Err(e) => return Err("failed to get local address: " + e)
+    }
+}
+
+// 获取远程地址
+func (s TcpStream) peer_addr() -> Result[string] {
+    if !s.is_connected {
+        return Err("socket is not connected")
+    }
+    // 调用运行时函数获取远程地址
+    // runtime_tcp_peer_addr(socket: SocketHandle) -> Result[string, string]
+    match runtime_tcp_peer_addr(s.socket) {
+        Ok(addr) => return Ok(addr)
+        Err(e) => return Err("failed to get peer address: " + e)
+    }
+}
+
+// TcpListener TCP 监听器
+// 用于监听 TCP 连接请求
+struct TcpListener {
+    socket: SocketHandle,
+    addr: string,
+    is_listening: bool
+}
+
+// 构造函数：绑定地址并监听
+func bind(addr: string) -> Result[TcpListener] {
+    // 调用运行时函数绑定地址并监听
+    // runtime_tcp_bind(addr: string) -> Result[SocketHandle, string]
+    match runtime_tcp_bind(addr) {
+        Ok(socket) => return Ok(TcpListener { socket: socket, addr: addr, is_listening: true })
+        Err(e) => return Err("failed to bind to " + addr + ": " + e)
+    }
+}
+
+// net_bind 命名空间访问函数
+// 用于支持 net::bind(addr) 语法
+// 返回 Result[TcpListener, string]，与 bind 函数一致
+func net_bind(addr: string) -> Result[TcpListener] {
+    // 调用运行时函数绑定地址并监听
+    // runtime_tcp_bind(addr: string) -> Result[SocketHandle, string]
+    match runtime_tcp_bind(addr) {
+        Ok(socket) => return Ok(TcpListener { socket: socket, addr: addr, is_listening: true })
+        Err(e) => return Err("failed to bind to " + addr + ": " + e)
+    }
+}
+
+// 方法实现
+// 接受连接（异步）
+// 返回一个新的 TcpStream
+async func (l *TcpListener) accept() -> Result[TcpStream] {
+    if !l.is_listening {
+        return Err("listener is not listening")
+    }
+    // 调用运行时函数接受连接
+    // runtime_tcp_accept(listener: SocketHandle) -> Result[SocketHandle, string]
+    // 注意：当前实现是同步的，未来可能需要异步支持
+    match runtime_tcp_accept(l.socket) {
+        Ok(socket) => return Ok(TcpStream { socket: socket, is_connected: true })
+        Err(e) => return Err("failed to accept connection: " + e)
+    }
+}
+
+// 关闭监听器
+func (l *TcpListener) close() -> Result[void] {
+    if !l.is_listening {
+        return Ok(())
+    }
+    // 调用运行时函数关闭监听器
+    // runtime_tcp_close(socket: SocketHandle) -> Result[void, string]
+    match runtime_tcp_close(l.socket) {
+        Ok(_) => {
+            l.is_listening = false
+            return Ok(())
+        }
+        Err(e) => return Err("failed to close listener: " + e)
+    }
+}
+
+// 获取监听地址
+func (l TcpListener) addr() -> string {
+    return l.addr
+}

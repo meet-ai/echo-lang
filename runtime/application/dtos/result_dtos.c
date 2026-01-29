@@ -107,15 +107,16 @@ void query_result_dto_destroy(QueryResultDTO* dto) {
 }
 
 // 错误结果DTO构造函数
-ErrorResultDTO* error_result_dto_create(int error_code, const char* message) {
+ErrorResultDTO* error_result_dto_create(int error_code, const char* error_message) {
     ErrorResultDTO* dto = (ErrorResultDTO*)malloc(sizeof(ErrorResultDTO));
     if (!dto) return NULL;
 
     memset(dto, 0, sizeof(ErrorResultDTO));
     dto->error_code = error_code;
 
-    if (message) {
-        strncpy(dto->message, message, sizeof(dto->message) - 1);
+    if (error_message) {
+        strncpy(dto->error_message, error_message, sizeof(dto->error_message) - 1);
+        dto->error_message[sizeof(dto->error_message) - 1] = '\0';
     }
 
     return dto;
@@ -167,6 +168,30 @@ ValidationResultDTO* validation_result_dto_create(bool valid) {
 
 // 验证结果DTO销毁函数
 void validation_result_dto_destroy(ValidationResultDTO* dto) {
+    if (dto) {
+        free(dto);
+    }
+}
+
+// 操作结果DTO构造函数
+OperationResultDTO* operation_result_dto_create(bool success, const char* message, int error_code) {
+    OperationResultDTO* dto = (OperationResultDTO*)malloc(sizeof(OperationResultDTO));
+    if (!dto) return NULL;
+
+    memset(dto, 0, sizeof(OperationResultDTO));
+    dto->success = success;
+    dto->error_code = error_code;
+
+    if (message) {
+        strncpy(dto->error_details, message, sizeof(dto->error_details) - 1);
+        dto->error_details[sizeof(dto->error_details) - 1] = '\0';
+    }
+
+    return dto;
+}
+
+// 操作结果DTO销毁函数
+void operation_result_dto_destroy(OperationResultDTO* dto) {
     if (dto) {
         free(dto);
     }

@@ -1,0 +1,26 @@
+package main
+
+// 导入依赖包（支持所有导入语法）
+import mathlib
+import "network/http" as HttpLib
+from "utils" import helper, format
+
+func main() {
+    print "=== Echo.toml 依赖包管理演示 ==="
+    
+    // 使用 mathlib（从 vendor/mathlib 加载）
+    let sum = mathlib.add(10, 20)
+    print "mathlib.add(10, 20) = " + sum
+    
+    // 使用 network/http（从 vendor/http 加载）
+    HttpLib.get("https://example.com")
+    print "HTTP 请求已发送"
+    
+    // 使用 utils（从 vendor/utils 加载）
+    let helperValue = helper()
+    let formatted = format("测试消息")
+    print "helper() = " + helperValue
+    print "format() = " + formatted
+    
+    print "演示完成！"
+}

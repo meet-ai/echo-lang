@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include <stddef.h>  // for size_t
 
 // 创建协程命令
 typedef struct {

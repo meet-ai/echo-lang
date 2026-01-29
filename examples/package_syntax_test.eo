@@ -1,0 +1,34 @@
+// package_syntax_test.eo - 测试新的语法特性
+// 测试：package 无分号、import 标识符形式（类似 Python）
+
+package main
+
+// 测试1：import 标识符形式（类似 Python）
+import tpk
+import math
+import utils
+
+// 测试2：import 字符串形式（向后兼容）
+import "types"
+
+// 测试3：带别名的导入（标识符形式）
+import math as MathLib
+
+// 测试4：带别名的导入（字符串形式）
+import "utils" as UtilsLib
+
+func main() {
+    print "=== Package Syntax Test ==="
+    
+    // 测试标识符形式导入
+    tpk.test()
+    
+    // 测试字符串形式导入
+    // types.someFunction()
+    
+    // 测试别名导入
+    // MathLib.add(1, 2)
+    // UtilsLib.format("test")
+    
+    print "Package syntax test completed"
+}

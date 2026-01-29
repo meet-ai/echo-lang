@@ -1,0 +1,79 @@
+// core/option.eo - Option[T] 高级扩展方法
+// Option[T] 是语言内置类型，核心方法（unwrap, map, is_some 等）已内置
+// 这里只提供高级扩展方法，需要导入 core 包使用
+
+package core
+
+// Option[T] 是语言内置类型，这里只提供高级扩展方法
+// 使用 extend 关键字为内置类型添加方法
+
+extend Option[T] {
+    // 扁平化嵌套 Option
+    // 将 Option[Option[U]] 转换为 Option[U]
+    func flatten[U]() -> Option[U] where T = Option[U] {
+        match self {
+            Some(inner) => inner
+            None => None
+        }
+    }
+    
+    // 转换为 Result
+    // 如果为 Some，返回 Ok(v)，否则返回 Err(err)
+    func ok_or[E](err: E) -> Result[T, E] {
+        match self {
+            Some(v) => Ok(v)
+            None => Err(err)
+        }
+    }
+    
+    // 转换为 Result（使用函数生成错误）
+    // 如果为 Some，返回 Ok(v)，否则调用 err_fn 生成错误
+    func ok_or_else[E](err_fn: func() -> E) -> Result[T, E] {
+        match self {
+            Some(v) => Ok(v)
+            None => Err(err_fn())
+        }
+    }
+    
+    // 链式操作：如果为 Some，则调用函数
+    // 如果为 Some(v)，返回 f(v)，否则返回 None
+    func and_then[U](f: func(T) -> Option[U]) -> Option[U] {
+        match self {
+            Some(v) => f(v)
+            None => None
+        }
+    }
+    
+    // 过滤：如果为 Some 且满足条件，则返回 Some，否则返回 None
+    // 如果为 Some(v) 且 pred(&v) 为 true，返回 Some(v)，否则返回 None
+    func filter(pred: func(&T) -> bool) -> Option[T] {
+        match self {
+            Some(v) => {
+                if pred(&v) {
+                    return Some(v)
+                } else {
+                    return None
+                }
+            }
+            None => None
+        }
+    }
+    
+    // 或操作：如果为 Some，返回 self，否则返回 other
+    // 如果为 Some，返回 self，否则返回 other
+    func or(other: Option[T]) -> Option[T] {
+        match self {
+            Some(_) => self
+            None => other
+        }
+    }
+    
+    // 或操作（延迟求值）
+    // 如果为 Some，返回 self，否则调用 f() 生成新的 Option
+    func or_else(f: func() -> Option[T]) -> Option[T] {
+        match self {
+            Some(_) => self
+            None => f()
+        }
+    }
+}

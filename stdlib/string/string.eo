@@ -1,0 +1,80 @@
+// string/string.eo - String 扩展方法
+// 为内置 string 类型添加扩展方法
+
+package string
+
+// string 是语言内置类型，这里只提供扩展方法
+// 使用 extend 关键字为内置类型添加方法
+
+extend string {
+    // 获取字符串长度
+    func len() -> int {
+        // 调用运行时函数计算字符串长度（UTF-8 编码）
+        // runtime_string_len_utf8(s: string) -> int：返回 UTF-8 字符数
+        return runtime_string_len_utf8(self)
+    }
+    
+    // 判断是否为空
+    func is_empty() -> bool {
+        return self.len() == 0
+    }
+    
+    // 判断是否包含子字符串
+    func contains(sub: string) -> bool {
+        // 调用运行时函数检查是否包含子字符串
+        // runtime_string_contains(s: string, sub: string) -> bool
+        return runtime_string_contains(self, sub)
+    }
+    
+    // 判断是否以指定字符串开头
+    func starts_with(prefix: string) -> bool {
+        // 调用运行时函数检查是否以指定字符串开头
+        // runtime_string_starts_with(s: string, prefix: string) -> bool
+        return runtime_string_starts_with(self, prefix)
+    }
+    
+    // 判断是否以指定字符串结尾
+    func ends_with(suffix: string) -> bool {
+        // 调用运行时函数检查是否以指定字符串结尾
+        // runtime_string_ends_with(s: string, suffix: string) -> bool
+        return runtime_string_ends_with(self, suffix)
+    }
+    
+    // 分割字符串
+    func split(delimiter: string) -> []string {
+        // 调用运行时函数分割字符串
+        let result = runtime_string_split(self, delimiter)
+        
+        // 检查结果是否为空
+        // 注意：runtime_string_split 可能返回 NULL，需要检查
+        // 使用 nil 关键字进行指针比较
+        if result == nil {
+            return []
+        }
+        
+        // 使用新的类型转换语法：从 StringSplitResult* 转换为 []string
+        // 编译器会自动提取 result.strings 和 result.count 字段并调用运行时函数
+        return []string(result)
+    }
+    
+    // 去除首尾空白字符
+    func trim() -> string {
+        // 调用运行时函数去除首尾空白字符
+        // runtime_string_trim(s: string) -> string
+        return runtime_string_trim(self)
+    }
+    
+    // 转换为大写
+    func to_upper() -> string {
+        // 调用运行时函数转换为大写
+        // runtime_string_to_upper(s: string) -> string
+        return runtime_string_to_upper(self)
+    }
+    
+    // 转换为小写
+    func to_lower() -> string {
+        // 调用运行时函数转换为小写
+        // runtime_string_to_lower(s: string) -> string
+        return runtime_string_to_lower(self)
+    }
+}

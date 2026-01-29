@@ -1,0 +1,76 @@
+// string/builder.eo - StringBuilder 字符串构建器
+// 提供高效的字符串拼接功能
+
+package string
+
+// StringBuilder 字符串构建器
+// 用于高效地构建字符串，避免频繁的内存分配
+struct StringBuilder {
+    parts: []string,
+    total_len: int
+}
+
+// 构造函数：创建空的字符串构建器
+func new() -> StringBuilder {
+    return StringBuilder {
+        parts: [],
+        total_len: 0
+    }
+}
+
+// 构造函数：创建指定容量的字符串构建器
+func with_capacity(cap: int) -> StringBuilder {
+    return StringBuilder {
+        parts: [],
+        total_len: 0
+    }
+}
+
+// 方法实现
+// 追加字符串（需要修改，使用指针接收者）
+func (b *StringBuilder) append_str(s: string) {
+    b.parts.push(s)
+    b.total_len = b.total_len + s.len()
+}
+
+// 追加字符（需要修改，使用指针接收者）
+func (b *StringBuilder) append(ch: char) {
+    // 将字符转换为字符串后追加
+    let s = string(ch)
+    b.append_str(s)
+}
+
+// 追加整数（需要修改，使用指针接收者）
+func (b *StringBuilder) append_int(n: int) {
+    // 将整数转换为字符串后追加
+    let s = int_to_string(n)
+    b.append_str(s)
+}
+
+// 转换为字符串（只读，使用值接收者）
+func (b StringBuilder) to_string() -> string {
+    // 将所有部分拼接成一个字符串
+    // TODO: 实现高效的字符串拼接
+    // 可以预先分配足够的内存，然后逐个复制
+    let mut result = ""
+    for part in b.parts {
+        result = result + part
+    }
+    return result
+}
+
+// 清空构建器（需要修改，使用指针接收者）
+func (b *StringBuilder) clear() {
+    b.parts.clear()
+    b.total_len = 0
+}
+
+// 获取当前长度（只读，使用值接收者）
+func (b StringBuilder) len() -> int {
+    return b.total_len
+}
+
+// 判断是否为空（只读，使用值接收者）
+func (b StringBuilder) is_empty() -> bool {
+    return b.total_len == 0
+}

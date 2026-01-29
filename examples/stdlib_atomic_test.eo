@@ -1,0 +1,38 @@
+// 标准库 Atomic 模块集成测试
+// 验证原子操作是否正确调用运行时函数
+
+import sync
+
+func main() -> int {
+    print_string("=== Atomic Module Integration Test ===\n")
+    
+    // 测试 AtomicInt - 调用运行时原子操作函数
+    let mut atomic = sync.new_atomic_int(42)
+    
+    // 测试 load() - 调用 runtime_atomic_load_i64()
+    let value1 = atomic.load()
+    print_string("AtomicInt load() called successfully\n")
+    
+    // 测试 store() - 调用 runtime_atomic_store_i64()
+    atomic.store(100)
+    print_string("AtomicInt store() called successfully\n")
+    
+    // 测试 swap() - 调用 runtime_atomic_swap_i64()
+    let old_value = atomic.swap(200)
+    print_string("AtomicInt swap() called successfully\n")
+    
+    // 测试 compare_and_swap() - 调用 runtime_atomic_cas_i64()
+    let cas_result = atomic.compare_and_swap(200, 300)
+    print_string("AtomicInt compare_and_swap() called successfully\n")
+    
+    // 测试 add() - 调用 runtime_atomic_add_i64()
+    let add_result = atomic.add(10)
+    print_string("AtomicInt add() called successfully\n")
+    
+    // 测试 increment() - 内部调用 add(1)
+    let inc_result = atomic.increment()
+    print_string("AtomicInt increment() called successfully\n")
+    
+    print_string("Atomic module test completed successfully\n")
+    return 0
+}

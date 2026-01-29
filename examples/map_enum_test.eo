@@ -1,0 +1,23 @@
+// map_enum_test.eo - Map枚举类型支持测试
+
+enum Status {
+    Pending
+    Running
+    Completed
+}
+
+func main() -> int {
+    // 测试 map[Status]string（枚举作为键）
+    let statusMap: map[Status]string = {}
+    statusMap[Status.Pending] = "等待中"
+    statusMap[Status.Running] = "运行中"
+    statusMap[Status.Completed] = "已完成"
+    
+    // 测试 map[string]Status（枚举作为值）
+    let reverseMap: map[string]Status = {}
+    reverseMap["pending"] = Status.Pending
+    reverseMap["running"] = Status.Running
+    reverseMap["completed"] = Status.Completed
+    
+    return 0
+}

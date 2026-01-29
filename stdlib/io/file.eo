@@ -1,0 +1,94 @@
+// io/file.eo - File 文件类型
+// 提供文件操作功能，实现 Reader 和 Writer Trait
+
+package io
+
+import core
+
+// FileHandle 文件句柄（底层类型，由运行时提供）
+type FileHandle = int  // 简化为 int，实际应该是运行时定义的类型
+
+// File 文件类型
+struct File {
+    path: string,
+    handle: FileHandle,
+    is_open: bool
+}
+
+// 构造函数：打开文件（只读）
+func open(path: string) -> Result[File] {
+    // 调用运行时函数打开文件
+    // runtime_open_file(path: string) -> Result[FileHandle, string]
+    match runtime_open_file(path) {
+        Ok(handle) => return Ok(File { path: path, handle: handle, is_open: true })
+        Err(e) => return Err("failed to open file: " + path + ": " + e)
+    }
+}
+
+// 构造函数：创建文件（只写）
+func create(path: string) -> Result[File] {
+    // 调用运行时函数创建文件
+    // runtime_create_file(path: string) -> Result[FileHandle, string]
+    match runtime_create_file(path) {
+        Ok(handle) => return Ok(File { path: path, handle: handle, is_open: true })
+        Err(e) => return Err("failed to create file: " + path + ": " + e)
+    }
+}
+
+// 方法实现
+// 关闭文件（需要修改，使用指针接收者）
+func (f *File) close() -> Result[void] {
+    if !f.is_open {
+        return Err("file is not open")
+    }
+    // 调用运行时函数关闭文件
+    // runtime_close_file(handle: FileHandle) -> Result[void, string]
+    match runtime_close_file(f.handle) {
+        Ok(_) => {
+            f.is_open = false
+            return Ok(())
+        }
+        Err(e) => return Err("failed to close file: " + f.path + ": " + e)
+    }
+}
+
+// 实现 Reader Trait
+// 读取数据（实现 Reader Trait）
+func (f File) read(buf: []u8) -> Result[int] {
+    if !f.is_open {
+        return Err("file is not open")
+    }
+    // 调用运行时函数读取文件
+    // runtime_read_file(handle: FileHandle, buf: []u8) -> Result[int, string]
+    match runtime_read_file(f.handle, buf) {
+        Ok(n) => return Ok(n)
+        Err(e) => return Err("failed to read file: " + f.path + ": " + e)
+    }
+}
+
+// 实现 Writer Trait
+// 写入数据（实现 Writer Trait）
+func (f File) write(buf: []u8) -> Result[int] {
+    if !f.is_open {
+        return Err("file is not open")
+    }
+    // 调用运行时函数写入文件
+    // runtime_write_file(handle: FileHandle, buf: []u8) -> Result[int, string]
+    match runtime_write_file(f.handle, buf) {
+        Ok(n) => return Ok(n)
+        Err(e) => return Err("failed to write file: " + f.path + ": " + e)
+    }
+}
+
+// 刷新缓冲区（实现 Writer Trait）
+func (f File) flush() -> Result[void] {
+    if !f.is_open {
+        return Err("file is not open")
+    }
+    // 调用运行时函数刷新文件缓冲区
+    // runtime_flush_file(handle: FileHandle) -> Result[void, string]
+    match runtime_flush_file(f.handle) {
+        Ok(_) => return Ok(())
+        Err(e) => return Err("failed to flush file: " + f.path + ": " + e)
+    }
+}

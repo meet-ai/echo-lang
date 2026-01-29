@@ -1,0 +1,113 @@
+// core/primitives.eo - 基本类型的 Trait 实现
+// 为内置基本类型（int, string等）实现 Hash 和 Eq trait
+// 这些实现使得基本类型可以作为 HashMap 的 key
+
+package core
+
+// ==================== int 类型的 Trait 实现 ====================
+
+// 为 int 实现 Eq trait
+extend int {
+    func eq(other: int) -> bool {
+        return self == other
+    }
+    
+    func ne(other: int) -> bool {
+        return self != other
+    }
+}
+
+// 为 int 实现 Hash trait
+extend int {
+    func hash() -> u64 {
+        // 简单的哈希函数：使用整数值作为哈希值
+        // 使用位操作和乘法来改善哈希分布
+        // 注意：需要将 int 转换为 u64
+        // 这里假设 Echo 支持 int 到 u64 的隐式转换
+        // 如果不行，可能需要使用运行时函数
+        let value: u64 = self  // 假设支持隐式转换
+        // 使用简单的哈希算法（FNV-1a 变体）
+        let hash: u64 = 2166136261  // FNV-1a 初始值
+        hash = hash ^ value
+        hash = hash * 16777619  // FNV-1a 质数
+        return hash
+    }
+}
+
+// ==================== string 类型的 Trait 实现 ====================
+
+// 为 string 实现 Eq trait
+extend string {
+    func eq(other: string) -> bool {
+        // 字符串比较：调用运行时函数或使用内置比较
+        // 注意：Echo 可能支持字符串的 == 操作符
+        return self == other
+    }
+    
+    func ne(other: string) -> bool {
+        return self != other
+    }
+}
+
+// 为 string 实现 Hash trait
+extend string {
+    func hash() -> u64 {
+        // 字符串哈希：使用运行时函数计算 FNV-1a 哈希值
+        // 调用运行时函数 runtime_string_hash 来计算字符串的哈希值
+        // 编译器签名：u64 runtime_string_hash(string) -> u64
+        return runtime_string_hash(self)
+    }
+}
+
+// ==================== bool 类型的 Trait 实现 ====================
+
+// 为 bool 实现 Eq trait
+extend bool {
+    func eq(other: bool) -> bool {
+        return self == other
+    }
+    
+    func ne(other: bool) -> bool {
+        return self != other
+    }
+}
+
+// 为 bool 实现 Hash trait
+extend bool {
+    func hash() -> u64 {
+        // bool 哈希：true -> 1, false -> 0
+        if self {
+            return 1
+        } else {
+            return 0
+        }
+    }
+}
+
+// ==================== float 类型的 Trait 实现 ====================
+
+// 为 float 实现 Eq trait
+extend float {
+    func eq(other: float) -> bool {
+        // 浮点数比较：使用近似相等（考虑浮点误差）
+        // 注意：直接使用 == 可能不准确，应该使用近似比较
+        // 这里简化实现，实际应该使用 epsilon 比较
+        return self == other
+    }
+    
+    func ne(other: float) -> bool {
+        return self != other
+    }
+}
+
+// 为 float 实现 Hash trait
+extend float {
+    func hash() -> u64 {
+        // 浮点数哈希：将浮点数的位表示转换为 u64
+        // 调用运行时函数计算浮点数的哈希值
+        // runtime_float_hash(f: f64) -> u64：返回浮点数的哈希值
+        // 实现：将浮点数的位表示转换为 u64，然后应用哈希算法改善分布
+        // 特殊处理：NaN 和 ±0.0 会产生一致的哈希值
+        return runtime_float_hash(self)
+    }
+}

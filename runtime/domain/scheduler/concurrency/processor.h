@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 #include <pthread.h>
-#include "../task/task.h"
+#include "../../task_execution/aggregate/task.h"  // 使用新的Task聚合根
 
 // 前向声明
 struct Machine;

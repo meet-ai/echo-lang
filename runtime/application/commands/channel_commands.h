@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include <stddef.h>  // for size_t
 
 // 前向声明
 struct ChannelOptions;

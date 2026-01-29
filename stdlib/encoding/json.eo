@@ -1,0 +1,381 @@
+// encoding/json.eo - JSON 序列化和反序列化
+// 提供 JSON 编码和解码功能
+
+package encoding
+
+import core
+import string
+
+// JsonValue JSON 值类型（枚举）
+// 表示 JSON 中的各种数据类型
+enum JsonValue {
+    Null,
+    Bool(bool),
+    Number(f64),
+    String(string),
+    Array([]JsonValue),
+    Object(map[string]JsonValue)
+}
+
+// JsonEncoder JSON 编码器
+// 将 Echo 类型转换为 JSON 字符串
+struct JsonEncoder {
+    indent: int,  // 缩进级别（用于格式化）
+    pretty: bool  // 是否格式化输出
+}
+
+// 构造函数：创建 JSON 编码器
+func new_encoder() -> JsonEncoder {
+    return JsonEncoder { indent: 0, pretty: false }
+}
+
+// 构造函数：创建格式化 JSON 编码器
+func new_pretty_encoder() -> JsonEncoder {
+    return JsonEncoder { indent: 0, pretty: true }
+}
+
+// 方法实现
+// 编码为 JSON 字符串
+func (e JsonEncoder) encode(value: JsonValue) -> string {
+    match value {
+        JsonValue::Null => return "null"
+        JsonValue::Bool(b) => return if b { "true" } else { "false" }
+        JsonValue::Number(n) => return e.encode_number(n)
+        JsonValue::String(s) => return e.encode_string(s)
+        JsonValue::Array(arr) => return e.encode_array(arr)
+        JsonValue::Object(obj) => return e.encode_object(obj)
+    }
+}
+
+// 编码数字
+func (e JsonEncoder) encode_number(n: f64) -> string {
+    // 调用运行时函数格式化数字
+    // runtime_f64_to_string(f: f64) -> string：返回格式化的数字字符串
+    // 实现：使用 snprintf 格式化浮点数，支持整数、浮点数、科学计数法
+    // 特殊值处理：NaN -> "NaN", Infinity -> "Infinity", -Infinity -> "-Infinity"
+    return runtime_f64_to_string(n)
+}
+
+// 编码字符串（转义特殊字符）
+func (e JsonEncoder) encode_string(s: string) -> string {
+    let mut result = "\""
+    for ch in s {
+        match ch {
+            '"' => result = result + "\\\""
+            '\\' => result = result + "\\\\"
+            '\n' => result = result + "\\n"
+            '\r' => result = result + "\\r"
+            '\t' => result = result + "\\t"
+            _ => result = result + string(ch)
+        }
+    }
+    result = result + "\""
+    return result
+}
+
+// 编码数组
+func (e JsonEncoder) encode_array(arr: []JsonValue) -> string {
+    let mut result = "["
+    let mut first = true
+    for item in arr {
+        if !first {
+            result = result + ","
+        }
+        if e.pretty {
+            result = result + "\n" + e.indent_string()
+        }
+        result = result + e.encode(item)
+        first = false
+    }
+    if e.pretty {
+        result = result + "\n"
+    }
+    result = result + "]"
+    return result
+}
+
+// 编码对象
+func (e JsonEncoder) encode_object(obj: map[string]JsonValue) -> string {
+    let mut result = "{"
+    let mut first = true
+    for (key, value) in obj {
+        if !first {
+            result = result + ","
+        }
+        if e.pretty {
+            result = result + "\n" + e.indent_string()
+        }
+        result = result + e.encode_string(key) + ":"
+        if e.pretty {
+            result = result + " "
+        }
+        result = result + e.encode(value)
+        first = false
+    }
+    if e.pretty {
+        result = result + "\n"
+    }
+    result = result + "}"
+    return result
+}
+
+// 生成缩进字符串
+func (e JsonEncoder) indent_string() -> string {
+    let mut result = ""
+    for i in 0..e.indent {
+        result = result + "  "
+    }
+    return result
+}
+
+// JsonDecoder JSON 解码器
+// 将 JSON 字符串解析为 JsonValue
+struct JsonDecoder {
+    input: string,
+    pos: int
+}
+
+// 构造函数：创建 JSON 解码器
+func new_decoder(json: string) -> JsonDecoder {
+    return JsonDecoder { input: json, pos: 0 }
+}
+
+// 方法实现
+// 解码 JSON 字符串
+func (d *JsonDecoder) decode() -> Result[JsonValue] {
+    d.skip_whitespace()
+    return d.decode_value()
+}
+
+// 解码值
+func (d *JsonDecoder) decode_value() -> Result[JsonValue] {
+    d.skip_whitespace()
+    if d.pos >= len(d.input) {
+        return Err("unexpected end of input")
+    }
+    
+    let ch = d.input[d.pos]
+    match ch {
+        'n' => return d.decode_null()
+        't' | 'f' => return d.decode_bool()
+        '"' => return d.decode_string()
+        '[' => return d.decode_array()
+        '{' => return d.decode_object()
+        '-' | '0'..'9' => return d.decode_number()
+        _ => return Err("unexpected character: " + string(ch))
+    }
+}
+
+// 解码 null
+func (d *JsonDecoder) decode_null() -> Result[JsonValue] {
+    if d.consume("null") {
+        return Ok(JsonValue::Null)
+    }
+    return Err("expected null")
+}
+
+// 解码布尔值
+func (d *JsonDecoder) decode_bool() -> Result[JsonValue] {
+    if d.consume("true") {
+        return Ok(JsonValue::Bool(true))
+    }
+    if d.consume("false") {
+        return Ok(JsonValue::Bool(false))
+    }
+    return Err("expected boolean")
+}
+
+// 解码字符串
+func (d *JsonDecoder) decode_string() -> Result[JsonValue] {
+    if d.input[d.pos] != '"' {
+        return Err("expected string")
+    }
+    d.pos = d.pos + 1
+    
+    let mut result = ""
+    while d.pos < len(d.input) {
+        let ch = d.input[d.pos]
+        d.pos = d.pos + 1
+        
+        if ch == '"' {
+            return Ok(JsonValue::String(result))
+        }
+        if ch == '\\' {
+            // 处理转义字符
+            if d.pos >= len(d.input) {
+                return Err("unexpected end of input")
+            }
+            let esc = d.input[d.pos]
+            d.pos = d.pos + 1
+            match esc {
+                '"' => result = result + "\""
+                '\\' => result = result + "\\"
+                'n' => result = result + "\n"
+                'r' => result = result + "\r"
+                't' => result = result + "\t"
+                _ => return Err("invalid escape sequence")
+            }
+        } else {
+            result = result + string(ch)
+        }
+    }
+    return Err("unexpected end of string")
+}
+
+// 解码数字
+func (d *JsonDecoder) decode_number() -> Result[JsonValue] {
+    // TODO: 实现完整的数字解析
+    // 需要处理整数、浮点数、科学计数法等
+    let start = d.pos
+    while d.pos < len(d.input) {
+        let ch = d.input[d.pos]
+        if (ch >= '0' && ch <= '9') || ch == '.' || ch == '-' || ch == '+' || ch == 'e' || ch == 'E' {
+            d.pos = d.pos + 1
+        } else {
+            break
+        }
+    }
+    let num_str = d.input[start:d.pos]
+    // 调用运行时函数解析数字
+    // runtime_string_to_f64(s: string) -> f64：返回解析的浮点数
+    // 实现：使用 strtod 解析字符串，支持整数、浮点数、科学计数法
+    // 注意：如果解析失败，返回 NaN
+    let num = runtime_string_to_f64(num_str)
+    return Ok(JsonValue::Number(num))
+}
+
+// 解码数组
+func (d *JsonDecoder) decode_array() -> Result[JsonValue] {
+    if d.input[d.pos] != '[' {
+        return Err("expected array")
+    }
+    d.pos = d.pos + 1
+    d.skip_whitespace()
+    
+    let mut arr: []JsonValue = []
+    
+    if d.input[d.pos] == ']' {
+        d.pos = d.pos + 1
+        return Ok(JsonValue::Array(arr))
+    }
+    
+    loop {
+        match d.decode_value() {
+            Ok(value) => arr.push(value)
+            Err(e) => return Err(e)
+        }
+        
+        d.skip_whitespace()
+        if d.pos >= len(d.input) {
+            return Err("unexpected end of array")
+        }
+        
+        if d.input[d.pos] == ']' {
+            d.pos = d.pos + 1
+            break
+        }
+        if d.input[d.pos] != ',' {
+            return Err("expected ',' or ']'")
+        }
+        d.pos = d.pos + 1
+        d.skip_whitespace()
+    }
+    
+    return Ok(JsonValue::Array(arr))
+}
+
+// 解码对象
+func (d *JsonDecoder) decode_object() -> Result[JsonValue] {
+    if d.input[d.pos] != '{' {
+        return Err("expected object")
+    }
+    d.pos = d.pos + 1
+    d.skip_whitespace()
+    
+    let mut obj: map[string]JsonValue = {}
+    
+    if d.input[d.pos] == '}' {
+        d.pos = d.pos + 1
+        return Ok(JsonValue::Object(obj))
+    }
+    
+    loop {
+        // 解析键
+        match d.decode_string() {
+            Ok(JsonValue::String(key)) => {
+                d.skip_whitespace()
+                if d.pos >= len(d.input) || d.input[d.pos] != ':' {
+                    return Err("expected ':'")
+                }
+                d.pos = d.pos + 1
+                d.skip_whitespace()
+                
+                // 解析值
+                match d.decode_value() {
+                    Ok(value) => obj[key] = value
+                    Err(e) => return Err(e)
+                }
+            }
+            _ => return Err("expected string key")
+        }
+        
+        d.skip_whitespace()
+        if d.pos >= len(d.input) {
+            return Err("unexpected end of object")
+        }
+        
+        if d.input[d.pos] == '}' {
+            d.pos = d.pos + 1
+            break
+        }
+        if d.input[d.pos] != ',' {
+            return Err("expected ',' or '}'")
+        }
+        d.pos = d.pos + 1
+        d.skip_whitespace()
+    }
+    
+    return Ok(JsonValue::Object(obj))
+}
+
+// 辅助方法：跳过空白字符
+func (d *JsonDecoder) skip_whitespace() {
+    while d.pos < len(d.input) {
+        let ch = d.input[d.pos]
+        if ch == ' ' || ch == '\n' || ch == '\r' || ch == '\t' {
+            d.pos = d.pos + 1
+        } else {
+            break
+        }
+    }
+}
+
+// 辅助方法：消费指定字符串
+func (d *JsonDecoder) consume(s: string) -> bool {
+    if d.pos + len(s) > len(d.input) {
+        return false
+    }
+    if d.input[d.pos:d.pos+len(s)] == s {
+        d.pos = d.pos + len(s)
+        return true
+    }
+    return false
+}
+
+// 便捷函数：编码为 JSON 字符串
+func to_json(value: JsonValue) -> string {
+    let encoder = new_encoder()
+    return encoder.encode(value)
+}
+
+// 便捷函数：编码为格式化的 JSON 字符串
+func to_json_pretty(value: JsonValue) -> string {
+    let encoder = new_pretty_encoder()
+    return encoder.encode(value)
+}
+
+// 便捷函数：从 JSON 字符串解析
+func from_json(json: string) -> Result[JsonValue] {
+    let mut decoder = new_decoder(json)
+    return decoder.decode()
+}

@@ -1,0 +1,64 @@
+// async/task.eo - Task 任务类型
+// 用于管理和执行异步任务
+
+package async
+
+import core
+
+// TaskId 任务 ID（底层类型，由运行时提供）
+type TaskId = int  // 简化为 int，实际应该是运行时定义的类型
+
+// Task[T] 任务类型
+// 表示一个异步任务，可以等待其完成
+struct Task[T] {
+    id: TaskId,
+    future: Future[T]
+}
+
+// 构造函数：创建新任务
+// 将函数包装为异步任务并立即执行
+func spawn[T](f: func() -> T) -> Task[T] {
+    // TODO: 调用运行时函数创建任务
+    // 需要调用运行时函数：runtime_spawn_task(func_ptr, arg_ptr)
+    // 编译器签名：i32 runtime_spawn_task(i8* func_ptr, i8* arg_ptr)
+    // 实现步骤：
+    // 1. 将函数 f 转换为函数指针（需要编译器支持函数指针）
+    // 2. 将函数参数打包为 void*（如果需要）
+    // 3. 调用 runtime_spawn_task(f_ptr, arg_ptr) 获取 task_id
+    // 4. 创建 Future[T] 包装任务结果（需要异步运行时支持）
+    // 5. 返回 Task[T] { id: task_id, future: future }
+    // 参考文档：docs/T-STDLIB-001-运行时函数需求文档.md
+    
+    // 临时实现：直接执行函数（同步执行，非异步）
+    let future = from_fn(f)
+    return Task[T] { id: 0, future: future }
+}
+
+// 方法实现
+// 等待任务完成
+async func (t Task[T]) join() -> T {
+    return await t.future.await()
+}
+
+// 获取任务 ID
+func (t Task[T]) id() -> TaskId {
+    return t.id
+}
+
+// 判断任务是否完成
+func (t Task[T]) is_completed() -> bool {
+    // 调用运行时函数检查任务状态
+    // runtime_task_status(task_id: TaskId) -> string：返回状态字符串
+    let status = runtime_task_status(t.id)
+    return status == "completed" || status == "failed"
+}
+
+// 取消任务
+func (t Task[T]) cancel() -> Result[void] {
+    // 调用运行时函数取消任务
+    // runtime_cancel_task(task_id: TaskId) -> Result[void, string]
+    match runtime_cancel_task(t.id) {
+        Ok(_) => return Ok(())
+        Err(e) => return Err("failed to cancel task: " + e)
+    }
+}

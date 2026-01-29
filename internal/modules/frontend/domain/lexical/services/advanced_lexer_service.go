@@ -116,6 +116,9 @@ func (als *AdvancedLexerService) scanToken() *lexicalVO.EnhancedToken {
 	case ':':
 		if als.match('=') {
 			return als.createToken(lexicalVO.EnhancedTokenTypeDeclare, ":=", startLocation)
+		} else if als.match(':') {
+			// 双冒号操作符 ::（命名空间访问）
+			return als.createToken(lexicalVO.EnhancedTokenTypeNamespace, "::", startLocation)
 		}
 		return als.createToken(lexicalVO.EnhancedTokenTypeColon, ":", startLocation)
 	case ';':
@@ -160,9 +163,8 @@ func (als *AdvancedLexerService) scanToken() *lexicalVO.EnhancedToken {
 		if als.match('&') {
 			return als.createToken(lexicalVO.EnhancedTokenTypeAnd, "&&", startLocation)
 		}
-		// 单&在Echo语言中可能不支持，标记为错误
-		als.addError("unexpected character '&'", startLocation)
-		return nil
+		// 单&用于取地址操作符（函数指针）
+		return als.createToken(lexicalVO.EnhancedTokenTypeAmpersand, "&", startLocation)
 	case '|':
 		if als.match('|') {
 			return als.createToken(lexicalVO.EnhancedTokenTypeOr, "||", startLocation)
@@ -175,6 +177,14 @@ func (als *AdvancedLexerService) scanToken() *lexicalVO.EnhancedToken {
 			return als.createToken(lexicalVO.EnhancedTokenTypeArrow, "->", startLocation)
 		}
 		return als.createToken(lexicalVO.EnhancedTokenTypeMinus, "-", startLocation)
+
+	// ? 错误传播操作符
+	case '?':
+		return als.createToken(lexicalVO.EnhancedTokenTypeErrorPropagation, "?", startLocation)
+
+	// @ 注解字符（用于 @impl 等注解）
+	case '@':
+		return als.scanAnnotation(startLocation)
 
 	// 字符串字面量
 	case '"':
@@ -224,6 +234,13 @@ func (als *AdvancedLexerService) scanNumber(firstChar byte, startLocation shared
 			als.advance()
 		} else if char == '.' && base == lexicalVO.BaseDecimal {
 			// 小数点只在十进制中有效
+			// 检查下一个字符是否是 '.'（范围操作符 ..）
+			nextChar := als.peekNext()
+			if nextChar == '.' {
+				// 这是范围操作符 ..，不应该作为浮点数的一部分
+				// 停止扫描数字，让后续解析器处理 .. 操作符
+				break
+			}
 			als.advance()
 			// 扫描小数部分
 			for !als.isAtEnd() && unicode.IsDigit(rune(als.peek())) {
@@ -348,6 +365,32 @@ func (als *AdvancedLexerService) parseStringValue(lexeme string) string {
 	return content
 }
 
+// scanAnnotation 扫描注解（如 @impl）
+func (als *AdvancedLexerService) scanAnnotation(startLocation sharedVO.SourceLocation) *lexicalVO.EnhancedToken {
+	start := als.position - 1 // 包含 @ 符号
+
+	// 扫描注解名称（标识符）
+	for !als.isAtEnd() {
+		char := als.peek()
+		if unicode.IsLetter(rune(char)) || unicode.IsDigit(rune(char)) || char == '_' {
+			als.advance()
+		} else {
+			break
+		}
+	}
+
+	// 提取注解词素（包含 @）
+	lexeme := als.source[start:als.position]
+
+	// 检查是否是 @impl 注解
+	if lexeme == "@impl" {
+		return als.createToken(lexicalVO.EnhancedTokenTypeImpl, lexeme, startLocation)
+	}
+
+	// 其他注解作为标识符处理（或者可以添加新的 token 类型）
+	return lexicalVO.NewIdentifierToken(lexeme, startLocation)
+}
+
 // scanIdentifierOrKeyword 扫描标识符或关键字
 func (als *AdvancedLexerService) scanIdentifierOrKeyword(startLocation sharedVO.SourceLocation) *lexicalVO.EnhancedToken {
 	start := als.position - 1
@@ -399,6 +442,8 @@ func (als *AdvancedLexerService) getKeywordType(word string) lexicalVO.EnhancedT
 		return lexicalVO.EnhancedTokenTypeWhile
 	case "for":
 		return lexicalVO.EnhancedTokenTypeFor
+	case "loop":
+		return lexicalVO.EnhancedTokenTypeLoop
 	case "return":
 		return lexicalVO.EnhancedTokenTypeReturn
 	case "struct":
@@ -429,6 +474,12 @@ func (als *AdvancedLexerService) getKeywordType(word string) lexicalVO.EnhancedT
 		return lexicalVO.EnhancedTokenTypeSelect
 	case "case":
 		return lexicalVO.EnhancedTokenTypeCase
+	case "sizeof":
+		return lexicalVO.EnhancedTokenTypeSizeOf
+	case "as":
+		return lexicalVO.EnhancedTokenTypeAs
+	case "delete":
+		return lexicalVO.EnhancedTokenTypeDelete
 	case "true", "false":
 		return lexicalVO.EnhancedTokenTypeBool
 	default:

@@ -1,0 +1,17 @@
+// 测试函数调用类型推断
+func add(a: int, b: int) -> int {
+    return a + b
+}
+
+func greet(name: string) -> string {
+    return "Hello, " + name
+}
+
+func main() -> int {
+    // 从函数调用推断返回类型
+    let sum = add(10, 20)           // 推断为 int
+    let message = greet("world")     // 推断为 string
+    
+    print "Function call type inference test passed"
+    return 0
+}

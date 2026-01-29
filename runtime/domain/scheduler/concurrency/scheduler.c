@@ -1,23 +1,43 @@
 #include "scheduler.h"
 #include "processor.h"
+#include "../../coroutine/coroutine.h"  // 包含Coroutine定义
+#include "../../task_execution/aggregate/task.h"  // 包含Task定义和task_start函数
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 
+// 函数声明：task_execute可能在不同的文件中
+// 暂时使用task_start代替，或者直接调用任务的entry_point
+static void task_execute_impl(Task* task) {
+    if (!task || !task->entry_point) return;
+    // 启动任务（这会调用entry_point）
+    task_start(task);
+}
+
 // 全局调度器实例（单例）
 static Scheduler* global_scheduler = NULL;
 static pthread_mutex_t global_scheduler_lock = PTHREAD_MUTEX_INITIALIZER;
 
-// 当前执行任务
-struct Task* current_task = NULL;
+// 当前执行任务（使用新的Task聚合根类型）
+Task* current_task = NULL;
 
-// 获取全局调度器
-Scheduler* get_global_scheduler(void) {
+// 获取全局调度器（已迁移到适配层，此函数改为static避免重复符号）
+// 注意：适配层也有此函数，这里改为static避免链接冲突
+static Scheduler* get_global_scheduler_internal(void) {
     pthread_mutex_lock(&global_scheduler_lock);
     Scheduler* scheduler = global_scheduler;
     pthread_mutex_unlock(&global_scheduler_lock);
     return scheduler;
+}
+
+// 导出函数：调用适配层的实现（避免重复符号）
+Scheduler* get_global_scheduler(void) {
+    // 如果适配层已设置，使用适配层的实现
+    // 否则使用内部实现（向后兼容）
+    extern Scheduler* get_global_scheduler(void);  // 声明适配层的函数
+    // 注意：这里会有链接冲突，需要从scheduler_adapter.c中移除或使用不同的名称
+    return get_global_scheduler_internal();
 }
 
 // 设置全局调度器
@@ -158,8 +178,12 @@ void scheduler_destroy(Scheduler* scheduler) {
 }
 
 // 向调度器添加任务
+// TODO: 阶段5需要更新为接受TaskID而不是Task*，并使用TaskRepository查找Task
 bool scheduler_add_task(Scheduler* scheduler, Task* task) {
     if (!scheduler || !task) return false;
+
+    // 使用新的Task聚合根方法获取TaskID
+    TaskID task_id = task_get_id(task);
 
     // 首先尝试添加到本地队列（轮询分配到处理器）
     static uint32_t next_processor = 0;
@@ -169,44 +193,50 @@ bool scheduler_add_task(Scheduler* scheduler, Task* task) {
         next_processor++;
 
         Processor* processor = scheduler->processors[processor_idx];
+        // TODO: 阶段5需要更新processor_push_local为接受TaskID
         if (processor_push_local(processor, task)) {
             printf("DEBUG: Added task %llu to processor %u local queue\n",
-                   task->id, processor->id);
+                   task_id, processor->id);
             return true;
         }
     }
 
     // 如果所有本地队列都满，添加到全局队列
+    // TODO: 阶段5需要更新scheduler->global_queue为TaskID列表
     pthread_mutex_lock(&scheduler->global_lock);
 
     // 找到全局队列尾部
+    // 注意：新的Task聚合根有next字段（用于队列管理）
     if (scheduler->global_queue == NULL) {
-        scheduler->global_queue = task;
+        scheduler->global_queue = task;  // TODO: 阶段5改为TaskID列表
     } else {
         Task* tail = scheduler->global_queue;
-        while (tail->next) {
+        // TODO: 阶段5改为TaskID列表操作
+        while (tail->next) {  // 新的Task聚合根有next字段
             tail = tail->next;
         }
-        tail->next = task;
+        tail->next = task;  // 新的Task聚合根有next字段
     }
-    task->next = NULL;
+    task->next = NULL;  // 新的Task聚合根有next字段
 
     scheduler->tasks_scheduled++;
-    printf("DEBUG: Added task %llu to global queue\n", task->id);
+    printf("DEBUG: Added task %llu to global queue\n", task_id);
 
     pthread_mutex_unlock(&scheduler->global_lock);
     return true;
 }
 
 // 从调度器获取工作（处理器调用）
-Task* scheduler_get_work(Scheduler* scheduler, Processor* processor) {
+// scheduler_get_work（已迁移到适配层，此函数改为static避免重复符号）
+static Task* scheduler_get_work_internal(Scheduler* scheduler, Processor* processor) {
     if (!scheduler || !processor) return NULL;
 
     // 首先尝试从本地队列获取
     Task* task = processor_pop_local(processor);
     if (task) {
+        TaskID task_id = task_get_id(task);  // 使用新的聚合根方法
         printf("DEBUG: Processor %u got work from local queue: task %llu\n",
-               processor->id, task->id);
+               processor->id, task_id);
         return task;
     }
 
@@ -215,8 +245,9 @@ Task* scheduler_get_work(Scheduler* scheduler, Processor* processor) {
         // 窃取成功，从本地队列重新获取
         task = processor_pop_local(processor);
         if (task) {
+            TaskID task_id = task_get_id(task);  // 使用新的聚合根方法
             printf("DEBUG: Processor %u stole work: task %llu\n",
-                   processor->id, task->id);
+                   processor->id, task_id);
             return task;
         }
     }
@@ -229,8 +260,9 @@ Task* scheduler_get_work(Scheduler* scheduler, Processor* processor) {
         scheduler->global_queue = task->next;
         task->next = NULL;
 
+        TaskID task_id = task_get_id(task);  // 使用新的聚合根方法
         printf("DEBUG: Processor %u got work from global queue: task %llu\n",
-               processor->id, task->id);
+               processor->id, task_id);
     }
 
     pthread_mutex_unlock(&scheduler->global_lock);
@@ -250,8 +282,9 @@ bool scheduler_steal_work(Scheduler* scheduler, Processor* thief) {
         if (stolen_task) {
             // 将窃取的任务添加到自己的本地队列
             if (processor_push_local(thief, stolen_task)) {
+                TaskID stolen_task_id = task_get_id(stolen_task);  // 使用新的聚合根方法
                 printf("DEBUG: Processor %u successfully stole task %llu from processor %u\n",
-                       thief->id, stolen_task->id, victim->id);
+                       thief->id, stolen_task_id, victim->id);
                 return true;
             } else {
                 // 如果添加失败，暂时放弃这个任务
@@ -282,6 +315,8 @@ void scheduler_run(Scheduler* scheduler) {
             uint32_t queue_size = processor_get_queue_size(processor);
             printf("DEBUG: Processor %u queue size: %u\n", processor->id, queue_size);
 
+            // 调用适配层的实现（通过extern声明）
+            extern Task* scheduler_get_work(Scheduler* scheduler, Processor* processor);
             Task* task = scheduler_get_work(scheduler, processor);
 
             if (task) {
@@ -290,7 +325,7 @@ void scheduler_run(Scheduler* scheduler) {
                        task->id, processor->id);
 
                 // 执行任务
-                task_execute(task);
+                task_execute_impl(task);
 
                 // 检查任务是否完成
                 if (task_is_complete(task)) {
@@ -356,4 +391,179 @@ void scheduler_print_stats(Scheduler* scheduler) {
     for (uint32_t i = 0; i < scheduler->num_processors; i++) {
         processor_print_stats(scheduler->processors[i]);
     }
+}
+
+// 检查调度器是否正在运行
+bool scheduler_is_running(Scheduler* scheduler) {
+    if (!scheduler) return false;
+    return scheduler->is_running;
+}
+
+// 通知调度器协程已完成（适配层函数）
+void scheduler_notify_coroutine_completed(Scheduler* scheduler, struct Coroutine* coroutine) {
+    if (!scheduler || !coroutine) return;
+    // 暂时不实现具体逻辑，只是占位函数
+    printf("DEBUG: Coroutine %llu completed\n", coroutine->id);
+}
+
+// 根据索引获取处理器
+struct Processor* scheduler_get_processor_by_index(Scheduler* scheduler, uint32_t index) {
+    if (!scheduler || index >= scheduler->num_processors) return NULL;
+    return scheduler->processors[index];
+}
+
+// 检查全局队列是否有工作
+bool scheduler_has_work_in_global_queue(Scheduler* scheduler) {
+    if (!scheduler) return false;
+    pthread_mutex_lock(&scheduler->global_lock);
+    bool has_work = (scheduler->global_queue != NULL);
+    pthread_mutex_unlock(&scheduler->global_lock);
+    return has_work;
+}
+
+// 获取处理器数量
+uint32_t scheduler_get_num_processors(Scheduler* scheduler) {
+    if (!scheduler) return 0;
+    return scheduler->num_processors;
+}
+
+// 获取机器数量
+uint32_t scheduler_get_num_machines(Scheduler* scheduler) {
+    if (!scheduler) return 0;
+    return scheduler->num_machines;
+}
+
+// runtime_null_ptr 和 runtime_map_get_keys 已迁移到 runtime/api/runtime_map_iter.c
+// 这里不再定义，避免重复符号错误
+// 如果需要使用，请链接 runtime_map_iter.o
+
+// 以下代码已注释，实际实现请使用 runtime/api/runtime_map_iter.c
+/*
+void* runtime_null_ptr(void) {
+    return NULL;
+}
+
+MapIterResult* runtime_map_get_keys(void* map_ptr) {
+    if (!map_ptr) {
+        return NULL;
+    }
+    
+    // 分配结果结构体
+    MapIterResult* result = (MapIterResult*)malloc(sizeof(MapIterResult));
+    if (!result) {
+        return NULL;
+    }
+    
+    // 初始化
+    result->keys = NULL;
+    result->values = NULL;
+    result->count = 0;
+    
+    // 前向声明hash_table_t和hash_entry_t结构
+    // 注意：这些结构定义在runtime/shared/types/common_types.h中
+    // string_t是结构体：{ char* data; size_t length; size_t capacity; }
+    typedef struct {
+        char* data;
+        size_t length;
+        size_t capacity;
+    } string_t;
+    
+    typedef struct hash_entry_internal {
+        string_t key;          // string_t key
+        void* value;          // void* value（对于map[string]string，value是string_t*）
+        struct hash_entry_internal* next;
+    } hash_entry_internal_t;
+    
+    typedef struct {
+        hash_entry_internal_t** buckets;  // hash_entry_t** buckets
+        size_t bucket_count;              // size_t bucket_count
+        size_t entry_count;               // size_t entry_count
+        void* hash_function;              // uint32_t (*hash_function)(const char* key)
+    } hash_table_internal_t;
+    
+    hash_table_internal_t* map = (hash_table_internal_t*)map_ptr;
+    
+    // 如果map为空，返回空结果
+    if (!map || map->entry_count == 0) {
+        return result;
+    }
+    
+    // 分配键数组和值数组
+    // 注意：键和值都是char*（string类型）
+    result->keys = (char**)malloc(sizeof(char*) * map->entry_count);
+    result->values = (char**)malloc(sizeof(char*) * map->entry_count);
+    if (!result->keys || !result->values) {
+        if (result->keys) free(result->keys);
+        if (result->values) free(result->values);
+        free(result);
+        return NULL;
+    }
+    
+    // 遍历所有bucket和entry，收集键值对
+    size_t index = 0;
+    for (size_t i = 0; i < map->bucket_count; i++) {
+        if (!map->buckets) break;
+        hash_entry_internal_t* entry = map->buckets[i];
+        while (entry) {
+            if (index >= map->entry_count) {
+                // 防止数组越界
+                break;
+            }
+            
+            // 复制键（string_t.data是char*）
+            if (entry->key.data && entry->key.length > 0) {
+                size_t key_len = entry->key.length + 1;
+                result->keys[index] = (char*)malloc(key_len);
+                if (result->keys[index]) {
+                    memcpy(result->keys[index], entry->key.data, entry->key.length);
+                    result->keys[index][entry->key.length] = '\0';
+                }
+            } else {
+                result->keys[index] = NULL;
+            }
+            
+            // 复制值（对于map[string]string，value是string_t*）
+            if (entry->value) {
+                string_t* value_str = (string_t*)entry->value;
+                if (value_str->data && value_str->length > 0) {
+                    size_t value_len = value_str->length + 1;
+                    result->values[index] = (char*)malloc(value_len);
+                    if (result->values[index]) {
+                        memcpy(result->values[index], value_str->data, value_str->length);
+                        result->values[index][value_str->length] = '\0';
+                    }
+                } else {
+                    result->values[index] = NULL;
+                }
+            } else {
+                result->values[index] = NULL;
+            }
+            
+            index++;
+            entry = entry->next;
+        }
+    }
+    
+    result->count = (int32_t)index;
+    
+    return result;
+}
+*/
+
+// 获取调度器ID
+uint32_t scheduler_get_id(Scheduler* scheduler) {
+    if (!scheduler) return 0;
+    return scheduler->id;
+}
+
+// 获取已调度任务数
+uint64_t scheduler_get_tasks_scheduled(Scheduler* scheduler) {
+    if (!scheduler) return 0;
+    return scheduler->tasks_scheduled;
+}
+
+// 获取已完成任务数
+uint64_t scheduler_get_tasks_completed(Scheduler* scheduler) {
+    if (!scheduler) return 0;
+    return scheduler->tasks_completed;
 }

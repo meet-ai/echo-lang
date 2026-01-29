@@ -65,6 +65,9 @@ type StatementGenerator interface {
 	// 生成方法定义 - 带接收者的函数
 	GenerateMethodDefinition(irManager IRModuleManager, stmt *entities.MethodDef) (*StatementGenerationResult, error)
 
+	// 编译单态化函数（延迟编译）
+	CompileMonomorphizedFunction(irManager IRModuleManager, funcDef *entities.FuncDef, typeParamMap map[string]string, monoName string) error
+
 	// 验证语句生成上下文
 	ValidateGenerationContext() error
 
@@ -85,6 +88,8 @@ type StatementGenerationStats struct {
 type IRModuleManager interface {
 	// 全局变量管理
 	AddGlobalVariable(name string, value interface{}) error
+	// CreateGlobalVariable 创建模块级全局变量，返回全局指针供符号表注册；任意函数内可 Load/Store。
+	CreateGlobalVariable(typ interface{}, name string) (interface{}, error)
 	AddStringConstant(content string) (*ir.Global, error)
 
 	// 外部函数管理
@@ -96,10 +101,25 @@ type IRModuleManager interface {
 	// 函数管理
 	CreateFunction(name string, returnType interface{}, paramTypes []interface{}) (interface{}, error)
 	GetCurrentFunction() interface{}
+	GetCurrentFunctionName() string // 当前函数名，用于判断是否在 main 中（顶层变量用全局）
 	SetCurrentFunction(fn interface{}) error
+	// 类型参数管理（用于泛型函数中的trait方法调用）
+	SetCurrentFunctionTypeParams(typeParams map[string]string)
+	GetCurrentFunctionTypeParams() map[string]string
+	// 函数定义的类型参数列表管理
+	SetFunctionTypeParamNames(funcName string, typeParams []string)
+	GetFunctionTypeParamNames(funcName string) []string
+
+	// 泛型函数定义管理（用于延迟编译）
+	SaveGenericFunctionDefinition(funcName string, funcDef *entities.FuncDef)
+	GetGenericFunctionDefinition(funcName string) (*entities.FuncDef, bool)
+	// 单态化函数编译状态管理
+	IsMonomorphizedFunctionCompiled(monoName string) bool
+	MarkMonomorphizedFunctionCompiled(monoName string)
 
 	// 基本块管理
 	CreateBasicBlock(name string) (interface{}, error)
+	GetBlockByName(name string) (interface{}, error)
 	GetCurrentBasicBlock() interface{}
 	SetCurrentBasicBlock(block interface{}) error
 
@@ -112,6 +132,10 @@ type IRModuleManager interface {
 	CreateBinaryOp(op string, left interface{}, right interface{}, name string) (interface{}, error)
 	CreateBr(dest interface{}) error
 	CreateCondBr(cond interface{}, trueDest interface{}, falseDest interface{}) error
+	// CreatePointerIsNull 生成 (ptr == null) 的 i1 条件，用于 NULL 检查分支
+	CreatePointerIsNull(ptr interface{}) (condition interface{}, err error)
+	// CreateUnreachable 在当前块插入 unreachable 终止符（用于错误路径）
+	CreateUnreachable() error
 
 	// CreateGetElementPtr 创建GetElementPtr指令
 	CreateGetElementPtr(elemType interface{}, ptr interface{}, indices ...interface{}) (interface{}, error)

@@ -16,3 +16,4 @@ func getColorName(c: Color) -> string {
 let color: Color = Green
 let name: string = getColorName(color)
 print name
+

@@ -1,0 +1,205 @@
+// math/math.eo - 基本数学函数
+// 提供常用的数学运算函数
+
+package math
+
+// 常量定义
+let E = 2.71828182845904523536      // 自然常数 e
+let PI = 3.14159265358979323846     // 圆周率 π
+let SQRT2 = 1.41421356237309504880  // √2
+let SQRT_PI = 1.77245385090551602729 // √π
+
+// 绝对值
+func abs(x: f64) -> f64 {
+    if x < 0.0 {
+        return -x
+    }
+    return x
+}
+
+// 绝对值（整数版本）
+func abs_int(x: i64) -> i64 {
+    if x < 0 {
+        return -x
+    }
+    return x
+}
+
+// 最大值
+func max(a: f64, b: f64) -> f64 {
+    if a > b {
+        return a
+    }
+    return b
+}
+
+// 最大值（整数版本）
+func max_int(a: i64, b: i64) -> i64 {
+    if a > b {
+        return a
+    }
+    return b
+}
+
+// 最小值
+func min(a: f64, b: f64) -> f64 {
+    if a < b {
+        return a
+    }
+    return b
+}
+
+// 最小值（整数版本）
+func min_int(a: i64, b: i64) -> i64 {
+    if a < b {
+        return a
+    }
+    return b
+}
+
+// 向上取整
+func ceil(x: f64) -> f64 {
+    // 调用运行时数学函数
+    // runtime_math_ceil(x: f64) -> f64：向上取整
+    return runtime_math_ceil(x)
+}
+
+// 向下取整
+func floor(x: f64) -> f64 {
+    // 调用运行时数学函数
+    // runtime_math_floor(x: f64) -> f64：向下取整
+    return runtime_math_floor(x)
+}
+
+// 四舍五入
+func round(x: f64) -> f64 {
+    // 调用运行时数学函数
+    // runtime_math_round(x: f64) -> f64：四舍五入
+    return runtime_math_round(x)
+}
+
+// 截断（向零取整）
+func trunc(x: f64) -> f64 {
+    // 调用运行时数学函数
+    // runtime_math_trunc(x: f64) -> f64：截断（向零取整）
+    return runtime_math_trunc(x)
+}
+
+// 平方根
+func sqrt(x: f64) -> f64 {
+    // 调用运行时数学函数
+    // runtime_math_sqrt(x: f64) -> f64：计算平方根
+    return runtime_math_sqrt(x)
+}
+
+// 立方根
+func cbrt(x: f64) -> f64 {
+    // 调用运行时数学函数
+    // runtime_math_cbrt(x: f64) -> f64：计算立方根
+    return runtime_math_cbrt(x)
+}
+
+// 幂运算
+func pow(base: f64, exp: f64) -> f64 {
+    // 调用运行时数学函数（完整浮点指数支持）
+    // runtime_math_pow(base: f64, exp: f64) -> f64：计算 base 的 exp 次幂
+    return runtime_math_pow(base, exp)
+}
+
+// 自然对数
+func ln(x: f64) -> f64 {
+    // 调用运行时数学函数（完整范围支持）
+    // runtime_math_ln(x: f64) -> f64：计算自然对数 ln(x)
+    return runtime_math_ln(x)
+}
+
+// 以 10 为底的对数
+func log10(x: f64) -> f64 {
+    // 调用运行时数学函数
+    // runtime_math_log10(x: f64) -> f64：计算常用对数 log10(x)
+    return runtime_math_log10(x)
+}
+
+// 以 2 为底的对数
+func log2(x: f64) -> f64 {
+    // 调用运行时数学函数
+    // runtime_math_log2(x: f64) -> f64：计算二进制对数 log2(x)
+    return runtime_math_log2(x)
+}
+
+// 指数函数 e^x
+func exp(x: f64) -> f64 {
+    // 调用运行时数学函数（完整范围支持）
+    // runtime_math_exp(x: f64) -> f64：计算自然指数 e^x
+    return runtime_math_exp(x)
+}
+
+// 正弦函数
+func sin(x: f64) -> f64 {
+    // 调用运行时数学函数
+    // runtime_math_sin(x: f64) -> f64：计算正弦函数 sin(x)，x 为弧度
+    return runtime_math_sin(x)
+}
+
+// 余弦函数
+func cos(x: f64) -> f64 {
+    // 调用运行时数学函数
+    // runtime_math_cos(x: f64) -> f64：计算余弦函数 cos(x)，x 为弧度
+    return runtime_math_cos(x)
+}
+
+// 正切函数
+func tan(x: f64) -> f64 {
+    // 调用运行时数学函数
+    // runtime_math_tan(x: f64) -> f64：计算正切函数 tan(x)，x 为弧度
+    return runtime_math_tan(x)
+}
+
+// 反正弦函数
+func asin(x: f64) -> f64 {
+    // 调用运行时数学函数
+    // runtime_math_asin(x: f64) -> f64：计算反正弦函数 asin(x)，x 范围 [-1, 1]，返回弧度
+    return runtime_math_asin(x)
+}
+
+// 反余弦函数
+func acos(x: f64) -> f64 {
+    // 调用运行时数学函数
+    // runtime_math_acos(x: f64) -> f64：计算反余弦函数 acos(x)，x 范围 [-1, 1]，返回弧度
+    return runtime_math_acos(x)
+}
+
+// 反正切函数
+func atan(x: f64) -> f64 {
+    // 调用运行时数学函数
+    // runtime_math_atan(x: f64) -> f64：计算反正切函数 atan(x)，返回弧度
+    return runtime_math_atan(x)
+}
+
+// 反正切函数（两个参数版本）
+func atan2(y: f64, x: f64) -> f64 {
+    // 调用运行时数学函数
+    // runtime_math_atan2(y: f64, x: f64) -> f64：计算 atan2(y, x)，返回弧度，范围 [-π, π]
+    return runtime_math_atan2(y, x)
+}
+
+// 双曲正弦函数
+func sinh(x: f64) -> f64 {
+    // 调用运行时数学函数
+    // runtime_math_sinh(x: f64) -> f64：计算双曲正弦函数 sinh(x)
+    return runtime_math_sinh(x)
+}
+
+// 双曲余弦函数
+func cosh(x: f64) -> f64 {
+    // 调用运行时数学函数
+    // runtime_math_cosh(x: f64) -> f64：计算双曲余弦函数 cosh(x)
+    return runtime_math_cosh(x)
+}
+
+// 双曲正切函数
+func tanh(x: f64) -> f64 {
+    // 调用运行时数学函数
+    // runtime_math_tanh(x: f64) -> f64：计算双曲正切函数 tanh(x)
+    return runtime_math_tanh(x)
+}

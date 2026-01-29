@@ -1,0 +1,88 @@
+// comprehensive_else_test.eo - 全面测试 else 和 else if 的各种场景
+func main() -> int {
+    let x: int = 7
+    
+    // 场景1: 简单的 if-else
+    if x > 10 {
+        print "big"
+    } else {
+        print "small"
+    }
+    
+    // 场景2: if-else if (同一行格式)
+    if x > 10 {
+        print "big"
+    } else if x > 5 {
+        print "medium"
+    } else {
+        print "small"
+    }
+    
+    // 场景3: if-else if (换行格式，} 和 else if 在同一行)
+    if x > 10 {
+        print "big"
+    } else if x > 5 {
+        print "medium"
+    } else {
+        print "small"
+    }
+    
+    // 场景4: if-else if (换行格式，} 和 else if 不在同一行)
+    if x > 10 {
+        print "big"
+    }
+    else if x > 5 {
+        print "medium"
+    }
+    else {
+        print "small"
+    }
+    
+    // 场景5: 多个 else if 链
+    if x > 20 {
+        print "very big"
+    } else if x > 10 {
+        print "big"
+    } else if x > 5 {
+        print "medium"
+    } else if x > 0 {
+        print "small"
+    } else {
+        print "zero or negative"
+    }
+    
+    // 场景6: 嵌套的 if-else if-else
+    if x > 10 {
+        if x > 15 {
+            print "very big"
+        } else if x > 12 {
+            print "big"
+        } else {
+            print "medium-big"
+        }
+    } else if x > 5 {
+        if x > 7 {
+            print "medium-large"
+        } else {
+            print "medium-small"
+        }
+    } else {
+        print "small"
+    }
+    
+    // 场景7: else if 没有 else
+    if x > 10 {
+        print "big"
+    } else if x > 5 {
+        print "medium"
+    }
+    
+    // 场景8: 只有 else，没有 else if
+    if x > 10 {
+        print "big"
+    } else {
+        print "not big"
+    }
+    
+    return 0
+}

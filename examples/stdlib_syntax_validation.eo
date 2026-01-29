@@ -1,0 +1,35 @@
+// stdlib_syntax_validation.eo - 标准库语法验证
+// 导入所有标准库模块，验证语法正确性
+
+// Core 模块
+import core
+
+// Collections 模块
+import collections
+
+// String 模块
+import string
+
+// Time 模块
+import time
+
+// Math 模块
+import math
+
+// IO 模块
+import io
+
+// Sync 模块
+import sync
+
+// Encoding 模块
+import encoding
+
+// Net 模块
+import net
+
+func main() -> int {
+    print "=== Standard Library Syntax Validation ==="
+    print "All modules imported successfully!"
+    return 0
+}

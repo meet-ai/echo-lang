@@ -1,0 +1,115 @@
+// sync/rwlock.eo - RwLock[T] 读写锁
+// 提供多读单写的线程安全访问
+
+package sync
+
+import core
+
+// RwLockHandle 读写锁句柄（底层类型，由运行时提供）
+type RwLockHandle = int  // 简化为 int，实际应该是运行时定义的类型
+
+// RwLock[T] 读写锁
+// 允许多个读操作或单个写操作，提供比 Mutex 更细粒度的并发控制
+struct RwLock[T] {
+    data: T,
+    readers: int,  // 当前读锁数量
+    writer: bool,  // 是否有写锁
+    lock_handle: RwLockHandle
+}
+
+// 构造函数：创建新的读写锁
+func new[T](data: T) -> RwLock[T] {
+    // 调用运行时函数创建读写锁
+    // runtime_create_rwlock() -> RwLockHandle（返回 i32）
+    let handle = runtime_create_rwlock()
+    return RwLock[T] {
+        data: data,
+        readers: 0,
+        writer: false,
+        lock_handle: handle
+    }
+}
+
+// 方法实现
+// 获取读锁（阻塞）
+// 允许多个读锁同时存在
+func (r *RwLock[T]) read() -> RwLockReadGuard[T] {
+    // 调用运行时函数获取读锁（阻塞）
+    // runtime_rwlock_read_lock(handle: RwLockHandle) -> void
+    runtime_rwlock_read_lock(r.lock_handle)
+    r.readers = r.readers + 1
+    return RwLockReadGuard[T] { rwlock: r }
+}
+
+// 尝试获取读锁（非阻塞）
+func (r *RwLock[T]) try_read() -> Option[RwLockReadGuard[T]] {
+    // 调用运行时函数尝试获取读锁（非阻塞）
+    // runtime_rwlock_try_read_lock(handle: RwLockHandle) -> bool
+    if runtime_rwlock_try_read_lock(r.lock_handle) {
+        r.readers = r.readers + 1
+        return Some(RwLockReadGuard[T] { rwlock: r })
+    }
+    return None
+}
+
+// 获取写锁（阻塞）
+// 独占访问，不允许其他读锁或写锁
+func (r *RwLock[T]) write() -> RwLockWriteGuard[T] {
+    // 调用运行时函数获取写锁（阻塞）
+    // runtime_rwlock_write_lock(handle: RwLockHandle) -> void
+    runtime_rwlock_write_lock(r.lock_handle)
+    r.writer = true
+    return RwLockWriteGuard[T] { rwlock: r }
+}
+
+// 尝试获取写锁（非阻塞）
+func (r *RwLock[T]) try_write() -> Option[RwLockWriteGuard[T]] {
+    // 调用运行时函数尝试获取写锁（非阻塞）
+    // runtime_rwlock_try_write_lock(handle: RwLockHandle) -> bool
+    if runtime_rwlock_try_write_lock(r.lock_handle) {
+        r.writer = true
+        return Some(RwLockWriteGuard[T] { rwlock: r })
+    }
+    return None
+}
+
+// RwLockReadGuard[T] 读锁守卫
+struct RwLockReadGuard[T] {
+    rwlock: *RwLock[T]
+}
+
+// 获取数据引用（只读）
+func (g RwLockReadGuard[T]) get() -> &T {
+    return &g.rwlock.data
+}
+
+// 实现 Drop Trait：自动释放读锁
+func (g RwLockReadGuard[T]) drop() {
+    // 调用运行时函数释放读锁
+    // runtime_rwlock_read_unlock(handle: RwLockHandle) -> void
+    runtime_rwlock_read_unlock(g.rwlock.lock_handle)
+    g.rwlock.readers = g.rwlock.readers - 1
+}
+
+// RwLockWriteGuard[T] 写锁守卫
+struct RwLockWriteGuard[T] {
+    rwlock: *RwLock[T]
+}
+
+// 获取数据引用（只读）
+func (g RwLockWriteGuard[T]) get() -> &T {
+    return &g.rwlock.data
+}
+
+// 获取数据可变引用
+func (g RwLockWriteGuard[T]) get_mut() -> &mut T {
+    return &mut g.rwlock.data
+}
+
+// 实现 Drop Trait：自动释放写锁
+func (g RwLockWriteGuard[T]) drop() {
+    // 调用运行时函数释放写锁
+    // runtime_rwlock_write_unlock(handle: RwLockHandle) -> void
+    runtime_rwlock_write_unlock(g.rwlock.lock_handle)
+    g.rwlock.writer = false
+}

@@ -1,0 +1,284 @@
+// collections/hashmap.eo - HashMap[K, V] 哈希映射
+// 提供类似 Rust HashMap 的键值对存储功能
+// 要求 K 实现 Hash 和 Eq Trait
+
+package collections
+
+import core
+
+// Entry[K, V] 键值对条目
+struct Entry[K, V] {
+    key: K,
+    value: V
+}
+
+// Bucket[K, V] 哈希桶（用于处理哈希冲突）
+struct Bucket[K, V] {
+    entries: []Entry[K, V]
+}
+
+// HashMap[K, V] 哈希映射
+// 要求 K 实现 Hash 和 Eq Trait
+struct HashMap[K, V] {
+    buckets: []Bucket[K, V],
+    len: int,
+    load_factor: float
+}
+
+// 构造函数：创建空映射
+func new[K, V]() -> HashMap[K, V] {
+    // 初始化默认容量为 16 个 bucket
+    let initial_cap = 16
+    let buckets = []
+    // 初始化所有 bucket
+    let i = 0
+    while i < initial_cap {
+        buckets.push(Bucket[K, V] { entries: [] })
+        i = i + 1
+    }
+    return HashMap[K, V] {
+        buckets: buckets,
+        len: 0,
+        load_factor: 0.75
+    }
+}
+
+// 构造函数：创建指定容量的映射
+func with_capacity[K, V](cap: int) -> HashMap[K, V] {
+    // 确保容量至少为 1
+    let bucket_count = if cap > 0 { cap } else { 16 }
+    let buckets = []
+    // 初始化所有 bucket
+    let i = 0
+    while i < bucket_count {
+        buckets.push(Bucket[K, V] { entries: [] })
+        i = i + 1
+    }
+    return HashMap[K, V] {
+        buckets: buckets,
+        len: 0,
+        load_factor: 0.75
+    }
+}
+
+// 内部辅助函数：计算 bucket 索引
+// 注意：此函数假设 K 实现了 Hash trait，可以通过 key.hash() 调用
+func bucket_index[K, V](m: HashMap[K, V], key: K) -> int {
+    // 计算 key 的哈希值（假设 K 实现了 Hash trait）
+    // 注意：如果 K 没有实现 Hash trait，这里会导致编译错误或运行时错误
+    // 在实际使用中，需要确保 K 实现了 Hash trait
+    let hash_value: u64 = key.hash()  // 调用 Hash trait 的 hash() 方法，返回 u64
+    let bucket_count: int = m.buckets.len()
+    if bucket_count == 0 {
+        return 0
+    }
+    // 使用取模运算计算 bucket 索引
+    // 注意：u64 和 int 的取模运算，Echo 可能需要类型转换
+    // 为了简化，我们先将 u64 转换为 int（如果值在 int 范围内）
+    // 或者直接使用 u64 进行取模，然后转换为 int
+    // 这里假设 Echo 支持 u64 和 int 之间的隐式转换或显式转换
+    let bucket_count_u64: u64 = bucket_count  // 将 int 转换为 u64
+    let index_u64: u64 = hash_value % bucket_count_u64
+    // 将 u64 转换为 int（假设值在 int 范围内）
+    // 注意：如果 Echo 不支持类型转换，这里可能需要使用运行时函数
+    return index_u64  // 假设 Echo 支持 u64 到 int 的隐式转换
+}
+
+// 内部辅助函数：在 bucket 中查找条目
+// 注意：此函数假设 K 实现了 Eq trait，可以通过 key.eq() 调用
+func find_entry_in_bucket[K, V](bucket: Bucket[K, V], key: K) -> Option[int] {
+    // 在 bucket 的 entries 中查找匹配的 key
+    let i = 0
+    while i < bucket.entries.len() {
+        let entry = bucket.entries[i]
+        // 使用 Eq trait 的 eq() 方法比较 key
+        // 注意：如果 K 没有实现 Eq trait，这里会导致编译错误或运行时错误
+        if entry.key.eq(key) {
+            return Some(i)
+        }
+        i = i + 1
+    }
+    return None
+}
+
+// 方法实现
+// 插入键值对（需要修改，使用指针接收者）
+// 注意：此方法要求 K 实现 Hash 和 Eq trait
+func (m *HashMap[K, V]) insert(key: K, value: V) -> Option[V] {
+    // 1. 如果 buckets 为空，初始化
+    if m.buckets.len() == 0 {
+        let initial_cap = 16
+        m.buckets = []
+        let i = 0
+        while i < initial_cap {
+            m.buckets.push(Bucket[K, V] { entries: [] })
+            i = i + 1
+        }
+    }
+    
+    // 2. 检查负载因子，必要时扩容
+    let bucket_count = m.buckets.len()
+    let current_load = if bucket_count > 0 { float(m.len) / float(bucket_count) } else { 1.0 }
+    if current_load > m.load_factor {
+        m.resize(bucket_count * 2)
+    }
+    
+    // 3. 计算 key 的哈希值并找到对应的 bucket
+    let index = bucket_index(*m, key)
+    let bucket = m.buckets[index]
+    
+    // 4. 在 bucket 中查找是否已存在相同的 key
+    match find_entry_in_bucket(bucket, key) {
+        Some(entry_index) => {
+            // key 已存在，更新值并返回旧值
+            let old_entry = bucket.entries[entry_index]
+            let old_value = old_entry.value
+            // 更新值
+            bucket.entries[entry_index] = Entry[K, V] { key: key, value: value }
+            m.buckets[index] = bucket
+            return Some(old_value)
+        }
+        None => {
+            // key 不存在，插入新条目
+            let new_entry = Entry[K, V] { key: key, value: value }
+            bucket.entries.push(new_entry)
+            m.buckets[index] = bucket
+            m.len = m.len + 1
+            return None
+        }
+    }
+}
+
+// 获取值（只读，使用值接收者）
+// 注意：此方法要求 K 实现 Hash 和 Eq trait
+func (m HashMap[K, V]) get(key: K) -> Option[V] {
+    // 1. 如果 buckets 为空，返回 None
+    if m.buckets.len() == 0 {
+        return None
+    }
+    
+    // 2. 计算 key 的哈希值并找到对应的 bucket
+    let index = bucket_index(m, key)
+    let bucket = m.buckets[index]
+    
+    // 3. 在 bucket 中查找匹配的 key
+    match find_entry_in_bucket(bucket, key) {
+        Some(entry_index) => {
+            // 找到匹配的 key，返回对应的 value
+            let entry = bucket.entries[entry_index]
+            return Some(entry.value)
+        }
+        None => {
+            // 没有找到匹配的 key
+            return None
+        }
+    }
+}
+
+// 移除键值对（需要修改，使用指针接收者）
+// 注意：此方法要求 K 实现 Hash 和 Eq trait
+func (m *HashMap[K, V]) remove(key: K) -> Option[V] {
+    // 1. 如果 buckets 为空，返回 None
+    if m.buckets.len() == 0 {
+        return None
+    }
+    
+    // 2. 计算 key 的哈希值并找到对应的 bucket
+    let index = bucket_index(*m, key)
+    let bucket = m.buckets[index]
+    
+    // 3. 在 bucket 中查找匹配的 key
+    match find_entry_in_bucket(bucket, key) {
+        Some(entry_index) => {
+            // 找到匹配的 key，移除并返回对应的 value
+            let entry = bucket.entries[entry_index]
+            let removed_value = entry.value
+            
+            // 从 bucket 中移除条目
+            // 注意：这里需要实现从切片中移除元素的逻辑
+            // 由于 Echo 可能不支持直接移除切片元素，我们需要创建一个新切片
+            let new_entries = []
+            let i = 0
+            while i < bucket.entries.len() {
+                if i != entry_index {
+                    new_entries.push(bucket.entries[i])
+                }
+                i = i + 1
+            }
+            bucket.entries = new_entries
+            m.buckets[index] = bucket
+            m.len = m.len - 1
+            
+            return Some(removed_value)
+        }
+        None => {
+            // 没有找到匹配的 key
+            return None
+        }
+    }
+}
+
+// 判断是否包含键（只读，使用值接收者）
+func (m HashMap[K, V]) contains_key(key: K) -> bool {
+    return m.get(key).is_some()
+}
+
+// 获取长度（只读，使用值接收者）
+func (m HashMap[K, V]) len() -> int {
+    return m.len
+}
+
+// 判断是否为空（只读，使用值接收者）
+func (m HashMap[K, V]) is_empty() -> bool {
+    return m.len == 0
+}
+
+// 清空映射（需要修改，使用指针接收者）
+func (m *HashMap[K, V]) clear() {
+    m.len = 0
+    m.buckets = []
+}
+
+// 内部方法：扩容（重新哈希所有条目）
+// 注意：此方法要求 K 实现 Hash 和 Eq trait
+func (m *HashMap[K, V]) resize(new_bucket_count: int) {
+    // 1. 保存所有现有条目
+    let old_entries = []
+    let i = 0
+    while i < m.buckets.len() {
+        let bucket = m.buckets[i]
+        let j = 0
+        while j < bucket.entries.len() {
+            old_entries.push(bucket.entries[j])
+            j = j + 1
+        }
+        i = i + 1
+    }
+    
+    // 2. 创建新的 bucket 数组
+    let new_buckets = []
+    let k = 0
+    while k < new_bucket_count {
+        new_buckets.push(Bucket[K, V] { entries: [] })
+        k = k + 1
+    }
+    
+    // 3. 重新哈希所有条目
+    let l = 0
+    while l < old_entries.len() {
+        let entry = old_entries[l]
+        // 计算新的 bucket 索引
+        // 注意：这里需要临时创建一个HashMap来计算索引，或者直接计算哈希值
+        // 为了简化，我们直接使用哈希值计算索引
+        let hash_value = entry.key.hash()
+        let new_index = hash_value % new_bucket_count
+        
+        // 插入到新的 bucket
+        new_buckets[new_index].entries.push(entry)
+        l = l + 1
+    }
+    
+    // 4. 更新 buckets
+    m.buckets = new_buckets
+    // 注意：m.len 保持不变，因为我们只是重新哈希，没有添加或删除条目
+}

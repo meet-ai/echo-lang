@@ -1,0 +1,36 @@
+// HTTP build_response 函数简单测试
+// 只测试 build_response() 函数的核心功能
+
+import http
+
+// 测试函数：构建带headers的响应
+func test_build_response_simple() -> void {
+    // 创建带headers的响应
+    let mut headers: map[string]string = {}
+    headers["Content-Type"] = "application/json"
+    headers["Content-Length"] = "42"
+    
+    let resp: HttpResponse = HttpResponse {
+        status_code: 200,
+        status_text: "OK",
+        headers: headers,
+        body: []
+    }
+    
+    // 调用 build_response 函数
+    let response_data: []u8 = build_response(resp)
+    
+    // 验证响应数据不为空
+    if len(response_data) == 0 {
+        print "ERROR: build_response returned empty data"
+        return
+    }
+    
+    print "PASS: build_response with headers"
+}
+
+func main() -> void {
+    print "Testing HTTP build_response function..."
+    test_build_response_simple()
+    print "Test completed"
+}

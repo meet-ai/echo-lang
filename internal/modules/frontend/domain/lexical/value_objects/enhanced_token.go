@@ -19,6 +19,7 @@ const (
 	EnhancedTokenTypeElse    EnhancedTokenType = "else"
 	EnhancedTokenTypeWhile   EnhancedTokenType = "while"
 	EnhancedTokenTypeFor     EnhancedTokenType = "for"
+	EnhancedTokenTypeLoop    EnhancedTokenType = "loop"  // 无限循环关键字
 	EnhancedTokenTypeReturn  EnhancedTokenType = "return"
 	EnhancedTokenTypeStruct  EnhancedTokenType = "struct"
 	EnhancedTokenTypeEnum    EnhancedTokenType = "enum"
@@ -34,6 +35,9 @@ const (
 	EnhancedTokenTypePackage EnhancedTokenType = "package"
 	EnhancedTokenTypePrivate EnhancedTokenType = "private"
 	EnhancedTokenTypeFrom    EnhancedTokenType = "from"
+	EnhancedTokenTypeSizeOf  EnhancedTokenType = "sizeof"
+	EnhancedTokenTypeAs      EnhancedTokenType = "as"      // 类型转换关键字
+	EnhancedTokenTypeDelete  EnhancedTokenType = "delete"  // Map删除关键字
 
 	// 标识符和字面量
 	EnhancedTokenTypeIdentifier EnhancedTokenType = "identifier"
@@ -58,6 +62,8 @@ const (
 	EnhancedTokenTypeAnd           EnhancedTokenType = "and"
 	EnhancedTokenTypeOr            EnhancedTokenType = "or"
 	EnhancedTokenTypeNot           EnhancedTokenType = "not"
+	EnhancedTokenTypeAmpersand    EnhancedTokenType = "ampersand" // & 取地址操作符
+	EnhancedTokenTypeErrorPropagation EnhancedTokenType = "error_propagation" // ? 错误传播操作符
 	EnhancedTokenTypeChannelReceive EnhancedTokenType = "channel_receive" // <- 通道接收运算符
 	EnhancedTokenTypeChannelSend    EnhancedTokenType = "channel_send"    // -> 通道发送运算符（如果与 arrow 不同）
 
@@ -72,6 +78,7 @@ const (
 	EnhancedTokenTypeDot           EnhancedTokenType = "dot"
 	EnhancedTokenTypeColon         EnhancedTokenType = "colon"
 	EnhancedTokenTypeSemicolon     EnhancedTokenType = "semicolon"
+	EnhancedTokenTypeNamespace     EnhancedTokenType = "namespace"     // :: 命名空间访问操作符
 	EnhancedTokenTypeArrow         EnhancedTokenType = "arrow"         // ->
 	EnhancedTokenTypeFatArrow      EnhancedTokenType = "fat_arrow"     // =>
 
@@ -186,7 +193,8 @@ func determineCategory(tokenType EnhancedTokenType) TokenCategory {
 		 EnhancedTokenTypeTrait, EnhancedTokenTypeImpl, EnhancedTokenTypeMatch,
 		 EnhancedTokenTypeAsync, EnhancedTokenTypeSpawn, EnhancedTokenTypeChan,
 		 EnhancedTokenTypePrint, EnhancedTokenTypePackage, EnhancedTokenTypePrivate,
-		 EnhancedTokenTypeFrom, EnhancedTokenTypeSelect, EnhancedTokenTypeCase:
+		 EnhancedTokenTypeFrom, EnhancedTokenTypeSelect, EnhancedTokenTypeCase,
+		 EnhancedTokenTypeSizeOf, EnhancedTokenTypeAs, EnhancedTokenTypeDelete:
 		return CategoryKeyword
 	case EnhancedTokenTypeIdentifier:
 		return CategoryIdentifier
@@ -196,7 +204,8 @@ func determineCategory(tokenType EnhancedTokenType) TokenCategory {
 		 EnhancedTokenTypeDivide, EnhancedTokenTypeModulo, EnhancedTokenTypeAssign,
 		 EnhancedTokenTypeEqual, EnhancedTokenTypeNotEqual, EnhancedTokenTypeLessThan,
 		 EnhancedTokenTypeGreaterThan, EnhancedTokenTypeLessEqual, EnhancedTokenTypeGreaterEqual,
-		 EnhancedTokenTypeAnd, EnhancedTokenTypeOr, EnhancedTokenTypeNot:
+		 EnhancedTokenTypeAnd, EnhancedTokenTypeOr, EnhancedTokenTypeNot,
+		 EnhancedTokenTypeAmpersand, EnhancedTokenTypeErrorPropagation:
 		return CategoryOperator
 	case EnhancedTokenTypeLeftParen, EnhancedTokenTypeRightParen, EnhancedTokenTypeLeftBrace,
 		 EnhancedTokenTypeRightBrace, EnhancedTokenTypeLeftBracket, EnhancedTokenTypeRightBracket,
@@ -422,4 +431,16 @@ func (ets *EnhancedTokenStream) IsAtEnd() bool {
 // SourceFile 获取源文件
 func (ets *EnhancedTokenStream) SourceFile() *SourceFile {
 	return ets.sourceFile
+}
+
+// Position 获取当前位置
+func (ets *EnhancedTokenStream) Position() int {
+	return ets.position
+}
+
+// SetPosition 设置当前位置
+func (ets *EnhancedTokenStream) SetPosition(pos int) {
+	if pos >= 0 && pos <= len(ets.tokens) {
+		ets.position = pos
+	}
 }

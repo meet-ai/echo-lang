@@ -1,0 +1,26 @@
+// sizeof 结构体类型测试
+
+struct Point {
+    x: int
+    y: int
+}
+
+struct Rectangle {
+    top_left: Point
+    bottom_right: Point
+}
+
+func test_sizeof_struct() {
+    let size_point = sizeof(Point)      // 8 (2 * int)
+    let size_rect = sizeof(Rectangle)   // 16 (2 * Point)
+    
+    assert size_point == 8
+    assert size_rect == 16
+}
+
+func test_sizeof_nested_struct() {
+    let size_rect = sizeof(Rectangle)
+    // Rectangle 包含两个 Point，每个 Point 包含两个 int
+    // 总大小 = 2 * Point = 2 * (2 * int) = 2 * 8 = 16
+    assert size_rect == 16
+}

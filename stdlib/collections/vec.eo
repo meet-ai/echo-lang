@@ -1,0 +1,214 @@
+// collections/vec.eo - Vec[T] 动态数组
+// 提供类似 Rust Vec 的动态数组功能
+
+package collections
+
+// Vec[T] 动态数组
+// 使用切片作为底层存储，支持动态扩容
+struct Vec[T] {
+    data: []T,
+    len: int,
+    cap: int
+}
+
+// 构造函数：创建空向量
+func new[T]() -> Vec[T] {
+    return Vec[T] {
+        data: [],
+        len: 0,
+        cap: 0
+    }
+}
+
+// 构造函数：创建指定容量的向量
+func with_capacity[T](cap: int) -> Vec[T] {
+    return Vec[T] {
+        data: [],
+        len: 0,
+        cap: cap
+    }
+}
+
+// 方法实现
+// 添加元素（需要修改，使用指针接收者）
+func (v *Vec[T]) push(item: T) {
+    // 如果容量不足，扩容
+    if v.len >= v.cap {
+        v.grow()
+    }
+    // 使用切片的 push 方法添加元素
+    v.data.push(item)
+    v.len = v.len + 1
+}
+
+// 移除并返回最后一个元素（需要修改，使用指针接收者）
+func (v *Vec[T]) pop() -> Option[T] {
+    if v.len == 0 {
+        return None
+    }
+    v.len = v.len - 1
+    return Some(v.data[v.len])
+}
+
+// 获取元素（通过索引，只读，使用值接收者）
+func (v Vec[T]) get(index: int) -> Option[T] {
+    if index < 0 || index >= v.len {
+        return None
+    }
+    return Some(v.data[index])
+}
+
+// 获取长度（只读，使用值接收者）
+func (v Vec[T]) len() -> int {
+    return v.len
+}
+
+// 获取容量（只读，使用值接收者）
+func (v Vec[T]) capacity() -> int {
+    return v.cap
+}
+
+// 判断是否为空（只读，使用值接收者）
+func (v Vec[T]) is_empty() -> bool {
+    return v.len == 0
+}
+
+// 清空向量（需要修改，使用指针接收者）
+func (v *Vec[T]) clear() {
+    v.len = 0
+    // 注意：这里不清空底层数组，只重置长度
+}
+
+// 获取第一个元素（只读，使用值接收者）
+func (v Vec[T]) first() -> Option[T] {
+    if v.len == 0 {
+        return None
+    }
+    return Some(v.data[0])
+}
+
+// 获取最后一个元素（只读，使用值接收者）
+func (v Vec[T]) last() -> Option[T] {
+    if v.len == 0 {
+        return None
+    }
+    return Some(v.data[v.len - 1])
+}
+
+// 预留容量（需要修改，使用指针接收者）
+func (v *Vec[T]) reserve(additional: int) {
+    let required = v.len + additional
+    if required > v.cap {
+        // 计算新容量（至少是 required，或者按 2 倍增长）
+        let new_cap = if required > v.cap * 2 { required } else { v.cap * 2 }
+        
+        // 获取元素大小
+        let elem_size = sizeof(T)
+        
+        // 如果当前容量为 0，使用 runtime_alloc_slice 分配新内存
+        if v.cap == 0 {
+            let new_ptr = runtime_alloc_slice(new_cap, elem_size)
+            // 类型转换：将 *i8 指针转换为 []T 类型
+            // 编译器会自动从 v.len 获取长度信息并调用 runtime_slice_from_ptr_len
+            v.data = new_ptr as []T
+            v.cap = new_cap
+            return
+        }
+        
+        // 如果当前容量不为 0，使用 runtime_realloc_slice 重新分配内存
+        // 获取当前切片的底层指针（如果 v.data 不为空）
+        if v.len > 0 {
+            let old_ptr = &v.data[0]  // *i8
+            let new_ptr = runtime_realloc_slice(old_ptr, v.cap, new_cap, elem_size)
+            // 类型转换：将 *i8 指针转换为 []T 类型
+            // 编译器会自动从 v.len 获取长度信息并调用 runtime_slice_from_ptr_len
+            v.data = new_ptr as []T
+            // 保持 v.len 不变（只扩容，不改变长度）
+        } else {
+            // v.data 为空但 v.cap > 0 的情况（不应该发生，但为了安全处理）
+            let new_ptr = runtime_alloc_slice(new_cap, elem_size)
+            // 类型转换：将 *i8 指针转换为 []T 类型
+            // 编译器会自动从 v.len 获取长度信息（此时 v.len = 0）
+            v.data = new_ptr as []T
+        }
+        v.cap = new_cap
+    }
+}
+
+// 收缩到合适大小（需要修改，使用指针接收者）
+func (v *Vec[T]) shrink_to_fit() {
+    // 如果 v.len == v.cap，无需操作
+    if v.len == v.cap {
+        return
+    }
+    
+    // 如果 v.len == 0，释放内存
+    if v.len == 0 {
+        if v.cap > 0 {
+            // 注意：如果 v.data 为空，无法获取指针
+            // 实际实现需要检查 v.data 是否为空
+            // 如果 v.data 不为空，释放内存
+            if v.data.len() > 0 {
+                let old_ptr = &v.data[0]  // *i8
+                runtime_free_slice(old_ptr)
+            }
+            // v.data = []  // 清空切片
+        }
+        v.cap = 0
+        return
+    }
+    
+    // 获取元素大小
+    let elem_size = sizeof(T)
+    
+    // 获取当前切片的底层指针（v.len > 0，所以 v.data 不为空）
+    let old_ptr = &v.data[0]  // *i8
+    let new_ptr = runtime_realloc_slice(old_ptr, v.cap, v.len, elem_size)
+    // 类型转换：将 *i8 指针转换为 []T 类型
+    // 编译器会自动从 v.len 获取长度信息并调用 runtime_slice_from_ptr_len
+    v.data = new_ptr as []T
+    // 保持 v.len 不变
+    v.cap = v.len
+}
+
+// 内部方法：扩容（需要修改，使用指针接收者）
+func (v *Vec[T]) grow() {
+    // 计算新容量
+    let new_cap = if v.cap == 0 { 4 } else { v.cap * 2 }
+    
+    // 获取元素大小
+    let elem_size = sizeof(T)
+    
+    // 如果当前容量为 0，使用 runtime_alloc_slice 分配新内存
+    if v.cap == 0 {
+        let new_ptr = runtime_alloc_slice(new_cap, elem_size)
+        // 类型转换：将 *i8 指针转换为 []T 类型
+        // 编译器会自动从 v.len 获取长度信息并调用 runtime_slice_from_ptr_len
+        v.data = new_ptr as []T
+        v.cap = new_cap
+        return
+    }
+    
+    // 如果当前容量不为 0，使用 runtime_realloc_slice 重新分配内存
+    // 获取当前切片的底层指针（如果 v.data 不为空）
+    if v.len > 0 {
+        let old_ptr = &v.data[0]  // *i8
+        let new_ptr = runtime_realloc_slice(old_ptr, v.cap, new_cap, elem_size)
+        // 类型转换：将 *i8 指针转换为 []T 类型
+        // 编译器会自动从 v.len 获取长度信息并调用 runtime_slice_from_ptr_len
+        v.data = new_ptr as []T
+        // 保持 v.len 不变（只扩容，不改变长度）
+    } else {
+        // v.data 为空但 v.cap > 0 的情况（不应该发生，但为了安全处理）
+        let new_ptr = runtime_alloc_slice(new_cap, elem_size)
+        // 类型转换：将 *i8 指针转换为 []T 类型
+        // 编译器会自动从 v.len 获取长度信息（此时 v.len = 0）
+        v.data = new_ptr as []T
+    }
+    v.cap = new_cap
+}
+
+// 迭代器方法（返回迭代器，后续实现）
+// func (v Vec[T]) iter() -> Iterator[T] {
+//     // TODO: 实现迭代器
+// }

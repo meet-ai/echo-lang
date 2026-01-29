@@ -1,0 +1,5 @@
+package tpk
+
+func test() {
+	print "tpk"
+}

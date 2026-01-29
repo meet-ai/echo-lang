@@ -1,0 +1,21 @@
+// type_inference_len_test.eo - 测试 len() 函数类型推断
+
+func main() -> int {
+    // 测试1：从数组字面量推断 len() 类型
+    let arr1: [int] = [1, 2, 3, 4, 5]
+    let length1 = len(arr1)
+    print "Length 1: " + length1
+
+    // 测试2：从变量推断 len() 类型
+    let arr2: [string] = ["a", "b", "c"]
+    let length2 = len(arr2)
+    print "Length 2: " + length2
+
+    // 测试3：嵌套使用
+    let arr3: [int] = [10, 20, 30]
+    let doubleLength = len(arr3) * 2
+    print "Double length: " + doubleLength
+
+    print "len() type inference test passed"
+    return 0
+}

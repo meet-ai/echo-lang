@@ -2,9 +2,9 @@
 package services
 
 import (
+	"os"
+	"path/filepath"
 	"testing"
-
-	sharedVO "echo/internal/modules/frontend/domain/shared/value_objects"
 )
 
 // TestPackageManager_isInternalPath 测试 internal 路径检测
@@ -147,5 +147,135 @@ func containsMiddle(s, substr string) bool {
 		}
 	}
 	return false
+}
+
+// TestPackageManager_ResolveDependencyPackage 测试依赖包路径解析
+func TestPackageManager_ResolveDependencyPackage(t *testing.T) {
+	// 创建临时项目目录
+	tmpDir := t.TempDir()
+	projectRoot := filepath.Join(tmpDir, "test-project")
+	os.MkdirAll(projectRoot, 0755)
+
+	// 创建 echo.toml 配置文件
+	configFile := filepath.Join(projectRoot, "echo.toml")
+	tomlContent := `name = "test-project"
+version = "1.0.0"
+
+[package]
+entry = "src/main.eo"
+module = "test-module"
+
+[dependencies]
+"mathlib" = "2.1.0"
+"network/http" = { version = "1.0.0", path = "vendor/http" }
+`
+
+	err := os.WriteFile(configFile, []byte(tomlContent), 0644)
+	if err != nil {
+		t.Fatalf("写入配置文件失败: %v", err)
+	}
+
+	// 创建依赖包目录结构
+	// 1. mathlib 使用默认路径 vendor/mathlib
+	mathlibDir := filepath.Join(projectRoot, "vendor", "mathlib")
+	os.MkdirAll(mathlibDir, 0755)
+	mathlibFile := filepath.Join(mathlibDir, "mathlib.eo")
+	os.WriteFile(mathlibFile, []byte("package mathlib"), 0644)
+
+	// 2. network/http 使用配置的路径 vendor/http
+	httpDir := filepath.Join(projectRoot, "vendor", "http")
+	os.MkdirAll(httpDir, 0755)
+	httpFile := filepath.Join(httpDir, "http.eo")
+	os.WriteFile(httpFile, []byte("package http"), 0644)
+
+	// 创建包管理器
+	pm := NewPackageManager(projectRoot)
+
+	// 测试：解析 mathlib 依赖包（使用默认路径）
+	mathlibPath := pm.resolvePackagePath("mathlib")
+	if mathlibPath == "" {
+		t.Error("应该能解析 mathlib 依赖包路径")
+	}
+	if mathlibPath != mathlibFile {
+		t.Errorf("mathlib 路径不匹配: 期望 %q, 得到 %q", mathlibFile, mathlibPath)
+	}
+
+	// 测试：解析 network/http 依赖包（使用配置路径）
+	httpPath := pm.resolvePackagePath("network/http")
+	if httpPath == "" {
+		t.Error("应该能解析 network/http 依赖包路径")
+	}
+	if httpPath != httpFile {
+		t.Errorf("network/http 路径不匹配: 期望 %q, 得到 %q", httpFile, httpPath)
+	}
+
+	// 测试：不存在的依赖包
+	nonexistentPath := pm.resolvePackagePath("nonexistent")
+	if nonexistentPath != "" {
+		t.Errorf("不存在的依赖包应该返回空路径，得到 %q", nonexistentPath)
+	}
+}
+
+// TestPackageManager_LoadDependencyPackage 测试加载依赖包
+func TestPackageManager_LoadDependencyPackage(t *testing.T) {
+	// 创建临时项目目录
+	tmpDir := t.TempDir()
+	projectRoot := filepath.Join(tmpDir, "test-project")
+	os.MkdirAll(projectRoot, 0755)
+
+	// 创建 echo.toml 配置文件
+	configFile := filepath.Join(projectRoot, "echo.toml")
+	tomlContent := `name = "test-project"
+version = "1.0.0"
+
+[package]
+entry = "src/main.eo"
+module = "test-module"
+
+[dependencies]
+"utils" = "1.0.0"
+`
+
+	err := os.WriteFile(configFile, []byte(tomlContent), 0644)
+	if err != nil {
+		t.Fatalf("写入配置文件失败: %v", err)
+	}
+
+	// 创建依赖包
+	utilsDir := filepath.Join(projectRoot, "vendor", "utils")
+	os.MkdirAll(utilsDir, 0755)
+	utilsFile := filepath.Join(utilsDir, "utils.eo")
+	os.WriteFile(utilsFile, []byte("package utils"), 0644)
+
+	// 创建包管理器
+	pm := NewPackageManager(projectRoot)
+
+	// 测试：加载依赖包
+	pkg, err := pm.LoadPackage("utils")
+	if err != nil {
+		t.Fatalf("LoadPackage() 错误 = %v", err)
+	}
+
+	if pkg == nil {
+		t.Fatal("LoadPackage() 返回 nil")
+	}
+
+	if pkg.path != utilsFile {
+		t.Errorf("包路径不匹配: 期望 %q, 得到 %q", utilsFile, pkg.path)
+	}
+
+	if pkg.isInternal {
+		t.Error("依赖包不应该是 internal 包")
+	}
+
+	// 测试：从缓存加载
+	pkg2, err := pm.LoadPackage("utils")
+	if err != nil {
+		t.Fatalf("从缓存加载包错误 = %v", err)
+	}
+
+	if pkg2 != pkg {
+		t.Error("应该从缓存返回同一个包对象")
+	}
 }
 

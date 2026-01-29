@@ -1,0 +1,19 @@
+// map_ops_simple_test.eo - Map操作功能简单测试
+
+func main() -> int {
+    // 测试 map[string]string
+    let m: map[string]string = {}
+    m["a"] = "apple"
+    m["b"] = "banana"
+    
+    // 测试 len()
+    let length: int = len(m)
+    
+    // 测试 contains()
+    let hasA: int = m.contains("a")
+    
+    // 测试 clear()
+    m.clear()
+    
+    return 0
+}

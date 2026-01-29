@@ -1,0 +1,46 @@
+// Map多类型支持测试：map[int]string
+// 测试整数键、字符串值的Map功能
+
+func main() -> void {
+    // 创建map[int]string类型的Map
+    let idToName: map[int]string = {}
+    
+    // 插入键值对
+    idToName[1] = "Alice"
+    idToName[2] = "Bob"
+    idToName[3] = "Charlie"
+    idToName[10] = "David"
+    idToName[20] = "Eve"
+    
+    // 访问值
+    let _ = idToName[1]  // 访问测试
+    let _ = idToName[2]  // 访问测试
+    let _ = idToName[3]  // 访问测试
+    
+    // 测试删除操作
+    delete(idToName, 2)
+    
+    // 再次访问（应该返回NULL，因为已删除）
+    let _ = idToName[2]  // 访问测试（应该为NULL）
+    
+    // 测试扩容（插入更多条目触发扩容）
+    idToName[4] = "Frank"
+    idToName[5] = "Grace"
+    idToName[6] = "Henry"
+    idToName[7] = "Ivy"
+    idToName[8] = "Jack"
+    idToName[9] = "Kate"
+    idToName[11] = "Liam"
+    idToName[12] = "Mia"
+    idToName[13] = "Noah"
+    idToName[14] = "Olivia"
+    idToName[15] = "Paul"
+    idToName[16] = "Quinn"
+    idToName[17] = "Rachel"
+    idToName[18] = "Sam"
+    
+    // 验证所有条目都可以访问
+    let _ = idToName[1]
+    let _ = idToName[3]
+    let _ = idToName[18]
+}

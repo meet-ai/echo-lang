@@ -1,0 +1,13 @@
+// 测试字符串拼接类型推断
+func main() -> int {
+    // 测试字符串拼接
+    let a = "hello" + " " + "world"  // 推断为 string
+    let b = "foo" + "bar"            // 推断为 string
+    
+    // 测试字符串比较
+    let c = "a" == "b"               // 推断为 bool
+    let d = "x" != "y"               // 推断为 bool
+    
+    print "Binary string type inference test passed"
+    return 0
+}
