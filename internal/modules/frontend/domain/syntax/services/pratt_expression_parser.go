@@ -51,17 +51,19 @@ func NewPrattExpressionParser() *PrattExpressionParser {
 // minPrecedence: 最小优先级，用于控制递归深度
 func (pep *PrattExpressionParser) ParseExpression(ctx context.Context, tokenStream *lexicalVO.EnhancedTokenStream, minPrecedence syntaxVO.Precedence) (sharedVO.ASTNode, error) {
 	pep.tokenStream = tokenStream
-
-	// 保存当前位置
-	savedPosition := pep.getCurrentPosition()
-	pep.position = savedPosition
+	// 与流位置同步，便于与 RecursiveDescent 委托及递归调用一致
+	if tokenStream != nil {
+		pep.position = tokenStream.Position()
+	} else {
+		pep.position = pep.getCurrentPosition()
+	}
 
 	if pep.isAtEnd() {
 		return nil, fmt.Errorf("unexpected end of token stream")
 	}
 
 	// 步骤1：解析前缀表达式
-	left, err := pep.parsePrefixExpression()
+	left, err := pep.parsePrefixExpression(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -106,6 +108,27 @@ func (pep *PrattExpressionParser) ParseExpression(ctx context.Context, tokenStre
 		left = pep.createBinaryExpression(left, operatorToken.Lexeme(), right, operatorToken.Location())
 	}
 
+	// 步骤3：后缀函数调用 primary ( args )
+	for !pep.isAtEnd() && pep.currentToken().Type() == lexicalVO.EnhancedTokenTypeLeftParen {
+		pep.advance() // consume '('
+		args := make([]sharedVO.ASTNode, 0)
+		for !pep.isAtEnd() && pep.currentToken().Type() != lexicalVO.EnhancedTokenTypeRightParen {
+			arg, err := pep.ParseExpression(ctx, tokenStream, syntaxVO.PrecedenceAssignment)
+			if err != nil {
+				return nil, err
+			}
+			args = append(args, arg)
+			if pep.currentToken().Type() == lexicalVO.EnhancedTokenTypeComma {
+				pep.advance()
+			}
+		}
+		if pep.isAtEnd() || pep.currentToken().Type() != lexicalVO.EnhancedTokenTypeRightParen {
+			return nil, fmt.Errorf("expected ')' after argument list")
+		}
+		pep.advance() // consume ')'
+		left = sharedVO.NewFunctionCallExpression(left, args, left.Location())
+	}
+
 	return left, nil
 }
 
@@ -130,7 +153,7 @@ func (pep *PrattExpressionParser) getCurrentPosition() int {
 }
 
 // parsePrefixExpression 解析前缀表达式
-func (pep *PrattExpressionParser) parsePrefixExpression() (sharedVO.ASTNode, error) {
+func (pep *PrattExpressionParser) parsePrefixExpression(ctx context.Context) (sharedVO.ASTNode, error) {
 	token := pep.currentToken()
 	pep.advance()
 
@@ -143,8 +166,28 @@ func (pep *PrattExpressionParser) parsePrefixExpression() (sharedVO.ASTNode, err
 	case lexicalVO.EnhancedTokenTypeBool:
 		return pep.createBooleanLiteral(token)
 
-	// 标识符
-	case lexicalVO.EnhancedTokenTypeIdentifier:
+	// 标识符及可作表达式起始的关键字（按标识符处理以便后续中缀/后缀解析）
+	case lexicalVO.EnhancedTokenTypeIdentifier,
+		lexicalVO.EnhancedTokenTypePrint, lexicalVO.EnhancedTokenTypeChan, lexicalVO.EnhancedTokenTypeNil:
+		return pep.createIdentifier(token)
+
+	// spawn <expr>
+	case lexicalVO.EnhancedTokenTypeSpawn:
+		inner, err := pep.ParseExpression(ctx, pep.tokenStream, syntaxVO.PrecedencePrimary)
+		if err != nil {
+			return nil, err
+		}
+		return sharedVO.NewUnaryExpression("spawn", inner, token.Location()), nil
+
+	// await <expr>（lexer 将 await 标为 Async）
+	case lexicalVO.EnhancedTokenTypeAsync:
+		if token.Lexeme() == "await" {
+			inner, err := pep.ParseExpression(ctx, pep.tokenStream, syntaxVO.PrecedencePrimary)
+			if err != nil {
+				return nil, err
+			}
+			return sharedVO.NewUnaryExpression("await", inner, token.Location()), nil
+		}
 		return pep.createIdentifier(token)
 
 	// 前缀运算符
@@ -163,6 +206,14 @@ func (pep *PrattExpressionParser) parsePrefixExpression() (sharedVO.ASTNode, err
 	// 对象字面量
 	case lexicalVO.EnhancedTokenTypeLeftBrace:
 		return pep.parseObjectLiteral()
+
+	// <- ch 通道接收
+	case lexicalVO.EnhancedTokenTypeChannelReceive:
+		inner, err := pep.ParseExpression(ctx, pep.tokenStream, syntaxVO.PrecedencePrimary)
+		if err != nil {
+			return nil, err
+		}
+		return sharedVO.NewUnaryExpression("<-", inner, token.Location()), nil
 
 	default:
 		return nil, fmt.Errorf("unexpected token in expression: %s", token.String())
@@ -359,19 +410,15 @@ func (pep *PrattExpressionParser) previousToken() *lexicalVO.EnhancedToken {
 	return pep.prevToken
 }
 
-// advance 前进到下一个Token
+// advance 前进到下一个Token，与 tokenStream 位置同步，便于与 RecursiveDescent 委托共用同一流；返回消耗掉的 token
 func (pep *PrattExpressionParser) advance() *lexicalVO.EnhancedToken {
-	// 完善实现：保存当前token作为prevToken
-	currentToken := pep.currentToken()
-	
-	// 更新position（注意：这里假设position与tokenStream同步）
-	// 如果tokenStream有Next()方法，应该调用它
+	consumed := pep.currentToken()
+	pep.prevToken = consumed
 	pep.position++
-	
-	// 更新prevToken
-	pep.prevToken = currentToken
-	
-	return currentToken
+	if pep.tokenStream != nil {
+		_ = pep.tokenStream.Next()
+	}
+	return consumed
 }
 
 // isAtEnd 检查是否到达Token流末尾

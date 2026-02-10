@@ -11,35 +11,37 @@ import (
 	sharedVO "echo/internal/modules/frontend/domain/shared/value_objects"
 	syntaxServices "echo/internal/modules/frontend/domain/syntax/services"
 	syntaxVO "echo/internal/modules/frontend/domain/syntax/value_objects"
+	portServices "echo/internal/modules/frontend/ports/services"
 )
 
 // ParserCoordinator 解析协调器
 // 负责协调递归下降、Pratt、LR三种解析器的工作
 type ParserCoordinator struct {
-	// 解析上下文
 	parsingContext *ParsingContext
-
-	// 三种解析器
 	recursiveDescentParser *syntaxServices.RecursiveDescentParser
 	prattParser            *syntaxServices.PrattExpressionParser
 	lrResolver             *syntaxServices.LRAmbiguityResolver
-
-	// 错误恢复服务
-	errorRecoveryService *errorRecoveryServices.AdvancedErrorRecoveryService
-
-	// 状态检查点（用于回退）
-	checkpoints []*ParsingCheckpoint
+	// 错误恢复：优先使用 Application 端口，为 nil 时回退到 domain 实现
+	advancedRecoveryPort  portServices.AdvancedErrorRecoveryPort
+	errorRecoveryService  *errorRecoveryServices.AdvancedErrorRecoveryService
+	checkpoints           []*ParsingCheckpoint
 }
 
-// NewParserCoordinator 创建新的解析协调器
-func NewParserCoordinator() *ParserCoordinator {
-	return &ParserCoordinator{
+// NewParserCoordinator 创建解析协调器。advancedRecoveryPort 可选，非 nil 时错误恢复走 Application 流水线。
+// RecursiveDescent 的表达式语句会委托给本协调器的 ParseExpression（Pratt），共用同一 TokenStream。
+func NewParserCoordinator(advancedRecoveryPort portServices.AdvancedErrorRecoveryPort) *ParserCoordinator {
+	pc := &ParserCoordinator{
 		recursiveDescentParser: syntaxServices.NewRecursiveDescentParser(),
 		prattParser:            syntaxServices.NewPrattExpressionParser(),
 		lrResolver:             syntaxServices.NewLRAmbiguityResolver(),
-		errorRecoveryService:   errorRecoveryServices.NewAdvancedErrorRecoveryService(),
+		advancedRecoveryPort:   advancedRecoveryPort,
 		checkpoints:            make([]*ParsingCheckpoint, 0),
 	}
+	pc.recursiveDescentParser.SetExpressionDelegate(pc)
+	if advancedRecoveryPort == nil {
+		pc.errorRecoveryService = errorRecoveryServices.NewAdvancedErrorRecoveryService()
+	}
+	return pc
 }
 
 // Initialize 初始化解析协调器
@@ -443,12 +445,13 @@ func (pc *ParserCoordinator) handleParseError(
 	// 进入恢复模式
 	pc.parsingContext.EnterRecoveryMode(parseError)
 
-	// 使用错误恢复服务进行恢复
-	recoveryResult, err := pc.errorRecoveryService.RecoverFromError(
-		ctx,
-		parseError,
-		pc.parsingContext.TokenStream(),
-	)
+	var recoveryResult *sharedVO.ErrorRecoveryResult
+	var err error
+	if pc.advancedRecoveryPort != nil {
+		recoveryResult, err = pc.advancedRecoveryPort.RecoverFromError(ctx, parseError, pc.parsingContext.TokenStream())
+	} else {
+		recoveryResult, err = pc.errorRecoveryService.RecoverFromError(ctx, parseError, pc.parsingContext.TokenStream())
+	}
 
 	if err != nil {
 		return nil, err

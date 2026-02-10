@@ -10,6 +10,11 @@ import (
 	sharedVO "echo/internal/modules/frontend/domain/shared/value_objects"
 )
 
+// ExpressionParserDelegate 表达式解析委托，由 ParserCoordinator 等实现，用于在解析表达式语句时委托给 Pratt/TokenBased 解析器
+type ExpressionParserDelegate interface {
+	ParseExpression(ctx context.Context) (sharedVO.ASTNode, error)
+}
+
 // RecursiveDescentParser 递归下降解析器
 // 实现文档中描述的递归下降解析算法，处理顶层结构
 type RecursiveDescentParser struct {
@@ -18,11 +23,17 @@ type RecursiveDescentParser struct {
 	position    int
 	prevToken *lexicalVO.EnhancedToken // 前一个token（完善实现）
 
+	// 表达式解析委托，非 nil 时 parseExpression 委托给其 ParseExpression，否则走桩实现
+	expressionDelegate ExpressionParserDelegate
+
 	// 错误收集
 	errors []*sharedVO.ParseError
 
 	// 解析上下文
 	sourceFile *lexicalVO.SourceFile
+
+	// 当前解析的 context，从 ParseProgram 传入，委托 ParseExpression 时使用
+	parseCtx context.Context
 }
 
 // NewRecursiveDescentParser 创建新的递归下降解析器
@@ -34,6 +45,11 @@ func NewRecursiveDescentParser() *RecursiveDescentParser {
 	}
 }
 
+// SetExpressionDelegate 设置表达式解析委托，委托与 RecursiveDescent 共用同一 TokenStream，从当前位解析
+func (rdp *RecursiveDescentParser) SetExpressionDelegate(delegate ExpressionParserDelegate) {
+	rdp.expressionDelegate = delegate
+}
+
 // ParseProgram 解析整个程序（递归下降的入口点）
 func (rdp *RecursiveDescentParser) ParseProgram(ctx context.Context, tokenStream *lexicalVO.EnhancedTokenStream) (*sharedVO.ProgramAST, error) {
 	rdp.tokenStream = tokenStream
@@ -41,6 +57,7 @@ func (rdp *RecursiveDescentParser) ParseProgram(ctx context.Context, tokenStream
 	rdp.prevToken = nil // 重置前一个token
 	rdp.errors = make([]*sharedVO.ParseError, 0)
 	rdp.sourceFile = tokenStream.SourceFile()
+	rdp.parseCtx = ctx
 
 	// 初始化程序AST
 	sourceFile := tokenStream.SourceFile()
@@ -923,8 +940,8 @@ func (rdp *RecursiveDescentParser) parseTypeAnnotation() (*sharedVO.TypeAnnotati
 		startLocation = rdp.previousToken().Location()
 	}
 
-	// 解析类型名
-	if !rdp.match(lexicalVO.EnhancedTokenTypeIdentifier) {
+	// 解析类型名（identifier 或关键字如 chan）
+	if !rdp.match(lexicalVO.EnhancedTokenTypeIdentifier) && !rdp.match(lexicalVO.EnhancedTokenTypeChan) {
 		return nil, fmt.Errorf("expected type name in type annotation")
 	}
 	typeNameToken := rdp.previousToken()
@@ -934,26 +951,33 @@ func (rdp *RecursiveDescentParser) parseTypeAnnotation() (*sharedVO.TypeAnnotati
 		startLocation = typeNameToken.Location()
 	}
 
-	// 解析泛型参数（可选）
 	var genericArgs []*sharedVO.TypeAnnotation
-	if rdp.match(lexicalVO.EnhancedTokenTypeLessThan) {
-		// 解析泛型参数列表
+	// chan 后接元素类型，如 chan string
+	if typeName == "chan" && (rdp.check(lexicalVO.EnhancedTokenTypeIdentifier) || rdp.check(lexicalVO.EnhancedTokenTypeChan)) {
+		elem, err := rdp.parseTypeAnnotation()
+		if err != nil {
+			return nil, err
+		}
+		genericArgs = []*sharedVO.TypeAnnotation{elem}
+	}
+	// 解析泛型参数（可选）：< T, U > 或 [ T ]（如 Future[string]）
+	if genericArgs == nil && (rdp.match(lexicalVO.EnhancedTokenTypeLessThan) || rdp.match(lexicalVO.EnhancedTokenTypeLeftBracket)) {
+		useBracket := rdp.previousToken().Type() == lexicalVO.EnhancedTokenTypeLeftBracket
 		for {
-			// 递归解析类型注解（可能是嵌套泛型）
 			argType, err := rdp.parseTypeAnnotation()
 			if err != nil {
 				return nil, fmt.Errorf("failed to parse generic argument type: %w", err)
 			}
 			genericArgs = append(genericArgs, argType)
-
-			// 检查是否有更多参数
 			if !rdp.match(lexicalVO.EnhancedTokenTypeComma) {
 				break
 			}
 		}
-
-		// 消耗 '>'
-		if !rdp.match(lexicalVO.EnhancedTokenTypeGreaterThan) {
+		if useBracket {
+			if !rdp.match(lexicalVO.EnhancedTokenTypeRightBracket) {
+				return nil, fmt.Errorf("expected ']' after generic type arguments")
+			}
+		} else if !rdp.match(lexicalVO.EnhancedTokenTypeGreaterThan) {
 			return nil, fmt.Errorf("expected '>' after generic type arguments")
 		}
 	}
@@ -961,34 +985,56 @@ func (rdp *RecursiveDescentParser) parseTypeAnnotation() (*sharedVO.TypeAnnotati
 	return sharedVO.NewTypeAnnotation(typeName, genericArgs, isPointer, startLocation), nil
 }
 
+// parseBlockStatementInner 解析块内单条语句（let/return/const/表达式语句）
+func (rdp *RecursiveDescentParser) parseBlockStatementInner() (sharedVO.ASTNode, error) {
+	token := rdp.currentToken()
+	switch token.Type() {
+	case lexicalVO.EnhancedTokenTypeLet:
+		letLocation := token.Location()
+		rdp.advance()
+		return rdp.parseGlobalVariableDeclaration(letLocation)
+	case lexicalVO.EnhancedTokenTypeReturn:
+		returnLocation := token.Location()
+		rdp.advance()
+		var expr sharedVO.ASTNode
+		if !rdp.isAtEnd() && !rdp.check(lexicalVO.EnhancedTokenTypeSemicolon) && !rdp.check(lexicalVO.EnhancedTokenTypeRightBrace) {
+			var err error
+			expr, err = rdp.parseExpression()
+			if err != nil {
+				return nil, err
+			}
+		}
+		rdp.match(lexicalVO.EnhancedTokenTypeSemicolon)
+		return sharedVO.NewReturnStatement(expr, returnLocation), nil
+	case lexicalVO.EnhancedTokenTypeIdentifier:
+		if token.Lexeme() == "const" {
+			constLocation := token.Location()
+			rdp.advance()
+			return rdp.parseConstantDeclaration(constLocation)
+		}
+	}
+	return rdp.parseExpressionStatement()
+}
+
 func (rdp *RecursiveDescentParser) parseBlockStatement(startLocation sharedVO.SourceLocation) (*sharedVO.BlockStatement, error) {
 	// 已经消耗了 '{'，现在解析块内的语句
-	// 格式：{ statement1; statement2; ... }
 	statements := make([]sharedVO.ASTNode, 0)
 
 	for !rdp.isAtEnd() {
-		// 检查是否到达块结束
 		if rdp.check(lexicalVO.EnhancedTokenTypeRightBrace) {
-			rdp.advance() // 消耗 '}'
+			rdp.advance()
 			break
 		}
-
-		// 跳过分号（语句分隔符）
 		if rdp.match(lexicalVO.EnhancedTokenTypeSemicolon) {
 			continue
 		}
 
-		// 解析语句
-		// 这里需要根据当前token类型决定解析哪种语句
-		// 暂时使用parseExpressionStatement作为通用解析方法
-		stmt, err := rdp.parseExpressionStatement()
+		stmt, err := rdp.parseBlockStatementInner()
 		if err != nil {
-			// 如果解析失败，尝试跳过当前token继续
 			rdp.addError(err.Error(), rdp.currentToken().Location())
 			rdp.advance()
 			continue
 		}
-
 		if stmt != nil {
 			statements = append(statements, stmt)
 		}
@@ -999,34 +1045,32 @@ func (rdp *RecursiveDescentParser) parseBlockStatement(startLocation sharedVO.So
 }
 
 func (rdp *RecursiveDescentParser) parseExpression() (sharedVO.ASTNode, error) {
-	// 表达式解析应该委托给Pratt解析器
-	// 但当前RecursiveDescentParser是独立的，没有协调器引用
-	// 这里返回错误，提示需要通过ParserCoordinator来调用Pratt解析器
-	// 或者可以在这里实现一个简单的表达式解析作为fallback
-
-	// 简单实现：解析基本表达式（标识符、字面量等）
+	if rdp.expressionDelegate != nil {
+		return rdp.expressionDelegate.ParseExpression(rdp.parseContextForDelegate())
+	}
+	// 无委托时的桩行为
 	token := rdp.currentToken()
-
 	switch token.Type() {
 	case lexicalVO.EnhancedTokenTypeIdentifier:
 		rdp.advance()
-		// 创建标识符表达式
-		// 这里需要Identifier表达式节点，暂时返回错误
 		return nil, fmt.Errorf("expression parsing should be delegated to Pratt parser via ParserCoordinator")
-
 	case lexicalVO.EnhancedTokenTypeNumber:
 		rdp.advance()
-		// 创建数字字面量表达式
 		return nil, fmt.Errorf("expression parsing should be delegated to Pratt parser via ParserCoordinator")
-
 	case lexicalVO.EnhancedTokenTypeString:
 		rdp.advance()
-		// 创建字符串字面量表达式
 		return nil, fmt.Errorf("expression parsing should be delegated to Pratt parser via ParserCoordinator")
-
 	default:
 		return nil, fmt.Errorf("unexpected token in expression: %s", token.Type())
 	}
+}
+
+// parseContextForDelegate 返回用于委托解析的 context，流位置由共享 tokenStream 保证
+func (rdp *RecursiveDescentParser) parseContextForDelegate() context.Context {
+	if rdp.parseCtx != nil {
+		return rdp.parseCtx
+	}
+	return context.Background()
 }
 
 func (rdp *RecursiveDescentParser) parseStructField() (*sharedVO.StructField, error) {

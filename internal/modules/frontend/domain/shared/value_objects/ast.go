@@ -1234,6 +1234,36 @@ func (ue *UnaryExpression) String() string {
 	return "UnaryExpression{...}"
 }
 
+// FunctionCallExpression 函数调用表达式
+type FunctionCallExpression struct {
+	callee   ASTNode
+	args     []ASTNode
+	location SourceLocation
+}
+
+// NewFunctionCallExpression 创建函数调用表达式
+func NewFunctionCallExpression(callee ASTNode, args []ASTNode, location SourceLocation) *FunctionCallExpression {
+	if args == nil {
+		args = []ASTNode{}
+	}
+	return &FunctionCallExpression{callee: callee, args: args, location: location}
+}
+
+// Callee 被调用表达式
+func (f *FunctionCallExpression) Callee() ASTNode { return f.callee }
+
+// Args 实参列表
+func (f *FunctionCallExpression) Args() []ASTNode { return f.args }
+
+// Location 位置
+func (f *FunctionCallExpression) Location() SourceLocation { return f.location }
+
+// NodeType 节点类型
+func (f *FunctionCallExpression) NodeType() string { return "FunctionCall" }
+
+// String 字符串表示
+func (f *FunctionCallExpression) String() string { return "FunctionCall{...}" }
+
 // Identifier 标识符
 type Identifier struct {
 	name     string
