@@ -1,43 +1,29 @@
 package providers
 
 import (
-	"echo/internal/modules/backend/application/services"
-	"echo/internal/modules/backend/domain/services"
+	"echo/internal/domain/logger"
+	backendAppServices "echo/internal/modules/backend/application/services"
+	backendDomainServices "echo/internal/modules/backend/domain/services"
 	"echo/internal/modules/backend/infrastructure/codegen"
-	"echo/internal/modules/frontend/application/services"
-	"echo/internal/modules/frontend/domain/services"
-	"echo/internal/modules/frontend/ports/services"
+	frontendAppServices "echo/internal/modules/frontend/application/services"
+	frontendDomainServices "echo/internal/modules/frontend/domain/services"
 
 	"github.com/samber/do"
 )
 
 // ProvideFrontendServices registers frontend services with the DI container
 func ProvideFrontendServices(container *do.Injector) {
-	// Provide parser service
-	do.Provide(container, func(i *do.Injector) services.Parser {
-		return services.NewSimpleParser()
+	// Provide domain parser service
+	do.Provide(container, func(i *do.Injector) (frontendDomainServices.Parser, error) {
+		l := do.MustInvoke[logger.Logger](i)
+		p := frontendDomainServices.NewSimpleParser()
+		if sp, ok := p.(*frontendDomainServices.SimpleParser); ok {
+			sp.SetLogger(l)
+		}
+		return p, nil
 	})
 
-	// Provide domain services
-	do.Provide(container, func(i *do.Injector) services.LexicalAnalyzer {
-		// TODO: Implement actual lexical analyzer
-		return nil // Placeholder
-	})
-
-	do.Provide(container, func(i *do.Injector) services.SyntaxAnalyzer {
-		// TODO: Implement actual syntax analyzer
-		return nil // Placeholder
-	})
-
-	do.Provide(container, func(i *do.Injector) services.SemanticAnalyzer {
-		// TODO: Implement actual semantic analyzer
-		return nil // Placeholder
-	})
-
-	do.Provide(container, func(i *do.Injector) services.ErrorHandler {
-		// TODO: Implement actual error handler
-		return nil // Placeholder
-	})
+	// Domain service providers omitted until concrete implementations exist
 
 	// Provide repositories
 	// TODO: Add actual repository implementations
@@ -46,15 +32,15 @@ func ProvideFrontendServices(container *do.Injector) {
 	// })
 
 	// Provide application services
-	do.Provide(container, func(i *do.Injector) services.IFrontendService {
-		lexicalAnalyzer := do.MustInvoke[services.LexicalAnalyzer](i)
-		syntaxAnalyzer := do.MustInvoke[services.SyntaxAnalyzer](i)
-		semanticAnalyzer := do.MustInvoke[services.SemanticAnalyzer](i)
-		errorHandler := do.MustInvoke[services.ErrorHandler](i)
-		parser := do.MustInvoke[services.Parser](i)
+	do.Provide(container, func(i *do.Injector) (frontendAppServices.IFrontendService, error) {
+		lexicalAnalyzer := do.MustInvoke[frontendDomainServices.LexicalAnalyzer](i)
+		syntaxAnalyzer := do.MustInvoke[frontendDomainServices.SyntaxAnalyzer](i)
+		semanticAnalyzer := do.MustInvoke[frontendDomainServices.SemanticAnalyzer](i)
+		errorHandler := do.MustInvoke[frontendDomainServices.ErrorHandler](i)
+		parser := do.MustInvoke[frontendDomainServices.Parser](i)
 
 		// TODO: Add repository dependencies
-		return services.NewFrontendService(
+		return frontendAppServices.NewFrontendService(
 			lexicalAnalyzer,
 			syntaxAnalyzer,
 			semanticAnalyzer,
@@ -63,24 +49,19 @@ func ProvideFrontendServices(container *do.Injector) {
 			nil, // astRepo
 			nil, // eventPublisher
 			parser,
-		)
+		), nil
 	})
 
-	do.Provide(container, func(i *do.Injector) services.ITokenizerService {
-		// TODO: Add repository dependencies
-		return services.NewTokenizerService(
-			nil, // sourceFileRepo
-			nil, // astRepo
-		)
-	})
+	// TokenizerService provider omitted
 }
 
 // ProvideBackendServices registers backend services with the DI container
 func ProvideBackendServices(container *do.Injector) {
 	// Provide domain services
-	do.Provide(container, func(i *do.Injector) services.TargetCodeGenerator {
+	do.Provide(container, func(i *do.Injector) (backendDomainServices.TargetCodeGenerator, error) {
+		log := do.MustInvoke[logger.Logger](i)
 		// Default to LLVM generator
-		return codegen.NewLLVMGenerator()
+		return codegen.NewLLVMGenerator(log), nil
 	})
 
 	// Provide infrastructure services
@@ -96,15 +77,15 @@ func ProvideBackendServices(container *do.Injector) {
 	// })
 
 	// Provide application services
-	do.Provide(container, func(i *do.Injector) services.CodeGenerationService {
-		codeGenerator := do.MustInvoke[services.TargetCodeGenerator](i)
+	do.Provide(container, func(i *do.Injector) (*backendAppServices.CodeGenerationService, error) {
+		codeGenerator := do.MustInvoke[backendDomainServices.TargetCodeGenerator](i)
 		// TODO: Add other dependencies when available
-		return services.NewCodeGenerationService(
+		return backendAppServices.NewCodeGenerationService(
 			codeGenerator,
 			nil, // assembler
 			nil, // linker
 			nil, // executableRepo
 			nil, // objectFileRepo
-		)
+		), nil
 	})
 }

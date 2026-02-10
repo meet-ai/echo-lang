@@ -15,7 +15,7 @@ import (
 
 // IFrontendService 前端服务接口
 type IFrontendService interface {
-	PerformLexicalAnalysis(ctx context.Context, cmd commands.PerformLexicalAnalysisCommand) (*commands.LexicalAnalysisResult, error)
+	PerformLexicalAnalysis(ctx context.Context, cmd frontend.PerformLexicalAnalysisCommand) (*commands.LexicalAnalysisResult, error)
 	PerformSyntaxAnalysis(ctx context.Context, cmd commands.PerformSyntaxAnalysisCommand) (*commands.SyntaxAnalysisResult, error)
 	PerformSemanticAnalysis(ctx context.Context, cmd commands.PerformSemanticAnalysisCommand) (*commands.SemanticAnalysisResult, error)
 	HandleCompilationErrors(ctx context.Context, cmd commands.HandleCompilationErrorsCommand) (*commands.ErrorHandlingResult, error)
@@ -67,7 +67,7 @@ type frontendService struct {
 	sourceFileRepo   SourceFileRepository
 	astRepo          ASTRepository
 	eventPublisher   EventPublisher
-	parser           services.Parser
+	parser           ParserFacade
 	backendService   BackendService // 后端服务（可选）
 }
 
@@ -80,7 +80,7 @@ func NewFrontendService(
 	sourceFileRepo SourceFileRepository,
 	astRepo ASTRepository,
 	eventPublisher EventPublisher,
-	parser services.Parser,
+	parser ParserFacade,
 ) IFrontendService {
 	return &frontendService{
 		lexicalAnalyzer:  lexicalAnalyzer,
@@ -102,7 +102,7 @@ func (s *frontendService) WithBackendService(backendService BackendService) *fro
 }
 
 // PerformLexicalAnalysis 执行词法分析用例
-func (s *frontendService) PerformLexicalAnalysis(ctx context.Context, cmd commands.PerformLexicalAnalysisCommand) (*commands.LexicalAnalysisResult, error) {
+func (s *frontendService) PerformLexicalAnalysis(ctx context.Context, cmd frontend.PerformLexicalAnalysisCommand) (*commands.LexicalAnalysisResult, error) {
 	// 1. 验证命令
 	if err := s.validateLexicalAnalysisCommand(cmd); err != nil {
 		return nil, fmt.Errorf("invalid command: %w", err)
@@ -338,24 +338,18 @@ func (s *frontendService) CompileFile(filePath string) (*dtos.CompilationResult,
 	// 调用backend服务生成代码
 	var generatedCode string
 	if s.backendService != nil {
-		// 将解析结果转换为Program实体（这里假设parser.Parse返回的是*entities.Program）
-		// 注意：如果parser返回的是其他类型，需要添加转换逻辑
-		if programEntity, ok := program.(*entities.Program); ok {
-			code, err := s.backendService.GenerateCode(programEntity, "ocaml")
-			if err != nil {
-				return &dtos.CompilationResult{
-					SourceFile:    filePath,
-					AST:           program.String(),
-					GeneratedCode: "",
-					Success:       false,
-					Error:         fmt.Sprintf("code generation failed: %v", err),
-				}, nil
-			}
-			generatedCode = code
-		} else {
-			// 如果类型不匹配，返回占位符
-			generatedCode = fmt.Sprintf("(* Warning: Program type mismatch, expected *entities.Program, got %T *)", program)
+		// parser.Parse 已经返回 *entities.Program，直接使用
+		code, err := s.backendService.GenerateCode(program, "ocaml")
+		if err != nil {
+			return &dtos.CompilationResult{
+				SourceFile:    filePath,
+				AST:           program.String(),
+				GeneratedCode: "",
+				Success:       false,
+				Error:         fmt.Sprintf("code generation failed: %v", err),
+			}, nil
 		}
+		generatedCode = code
 	} else {
 		// 如果没有注入backend服务，返回占位符
 		generatedCode = "(* Backend service not configured. Please inject BackendService via WithBackendService() *)"

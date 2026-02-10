@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 
+	"echo/internal/modules/frontend"
 	"echo/internal/modules/frontend/domain/commands"
 	"echo/internal/modules/frontend/domain/dtos"
 )
@@ -11,7 +12,7 @@ import (
 // This interface is exposed to other modules for source code analysis.
 type IFrontendService interface {
 	// PerformLexicalAnalysis performs lexical analysis on source code
-	PerformLexicalAnalysis(ctx context.Context, cmd commands.PerformLexicalAnalysisCommand) (*commands.LexicalAnalysisResult, error)
+	PerformLexicalAnalysis(ctx context.Context, cmd frontend.PerformLexicalAnalysisCommand) (*commands.LexicalAnalysisResult, error)
 
 	// PerformSyntaxAnalysis performs syntax analysis on tokens
 	PerformSyntaxAnalysis(ctx context.Context, cmd commands.PerformSyntaxAnalysisCommand) (*commands.SyntaxAnalysisResult, error)

@@ -7,6 +7,7 @@ import (
 	"os"
 	"time"
 
+	"echo/internal/modules/frontend"
 	"echo/internal/modules/frontend/domain/commands"
 	"echo/internal/modules/frontend/domain/dtos"
 	"echo/internal/modules/frontend/domain/parser"
@@ -20,7 +21,7 @@ type IModernFrontendService interface {
 	ParseSourceCode(ctx context.Context, sourceCode string, filename string) (*dtos.ModernCompilationResult, error)
 
 	// PerformLexicalAnalysis 执行词法分析（使用高级词法分析器）
-	PerformLexicalAnalysis(ctx context.Context, cmd commands.PerformLexicalAnalysisCommand) (*commands.LexicalAnalysisResult, error)
+	PerformLexicalAnalysis(ctx context.Context, cmd frontend.PerformLexicalAnalysisCommand) (*commands.LexicalAnalysisResult, error)
 
 	// PerformSyntaxAnalysis 执行语法分析（使用现代化解析器）
 	PerformSyntaxAnalysis(ctx context.Context, cmd commands.PerformSyntaxAnalysisCommand) (*commands.SyntaxAnalysisResult, error)
@@ -102,7 +103,7 @@ func (s *modernFrontendService) ParseSourceCode(
 // 使用高级词法分析器
 func (s *modernFrontendService) PerformLexicalAnalysis(
 	ctx context.Context,
-	cmd commands.PerformLexicalAnalysisCommand,
+	cmd frontend.PerformLexicalAnalysisCommand,
 ) (*commands.LexicalAnalysisResult, error) {
 
 	startTime := time.Now()

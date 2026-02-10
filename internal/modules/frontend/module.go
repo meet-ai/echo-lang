@@ -5,7 +5,8 @@ package frontend
 import (
 	"fmt"
 
-	"echo/internal/modules/frontend/domain/commands"
+	appcommands "echo/internal/modules/frontend/application/commands"
+	domaincommands "echo/internal/modules/frontend/domain/commands"
 	"echo/internal/modules/frontend/domain/dtos"
 
 	"github.com/samber/do"
@@ -55,16 +56,16 @@ func (m *Module) Validate() error {
 
 // Type aliases for backward compatibility
 type (
-	PerformLexicalAnalysisCommand  = commands.PerformLexicalAnalysisCommand
-	LexicalAnalysisResult          = commands.LexicalAnalysisResult
-	PerformSyntaxAnalysisCommand   = commands.PerformSyntaxAnalysisCommand
-	SyntaxAnalysisResult           = commands.SyntaxAnalysisResult
-	PerformSemanticAnalysisCommand = commands.PerformSemanticAnalysisCommand
-	SemanticAnalysisResult         = commands.SemanticAnalysisResult
-	HandleCompilationErrorsCommand = commands.HandleCompilationErrorsCommand
-	ErrorHandlingResult            = commands.ErrorHandlingResult
-	GetAnalysisStatusQuery         = commands.GetAnalysisStatusQuery
-	AnalysisStatusDTO              = commands.AnalysisStatusDTO
+	PerformLexicalAnalysisCommand  = appcommands.PerformLexicalAnalysisCommand
+	LexicalAnalysisResult          = domaincommands.LexicalAnalysisResult
+	PerformSyntaxAnalysisCommand   = domaincommands.PerformSyntaxAnalysisCommand
+	SyntaxAnalysisResult           = domaincommands.SyntaxAnalysisResult
+	PerformSemanticAnalysisCommand = domaincommands.PerformSemanticAnalysisCommand
+	SemanticAnalysisResult         = domaincommands.SemanticAnalysisResult
+	HandleCompilationErrorsCommand = domaincommands.HandleCompilationErrorsCommand
+	ErrorHandlingResult            = domaincommands.ErrorHandlingResult
+	GetAnalysisStatusQuery         = domaincommands.GetAnalysisStatusQuery
+	AnalysisStatusDTO              = domaincommands.AnalysisStatusDTO
 	CompilationResult              = dtos.CompilationResult
 )
 

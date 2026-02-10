@@ -58,107 +58,8 @@ func (sa *SemanticAnalyzer) buildSymbolTable(
 	programAST *value_objects.ProgramAST,
 	result *value_objects.SemanticAnalysisResult,
 ) error {
-
-	// 遍历AST，收集所有符号定义
-	for _, node := range programAST.Nodes() {
-		err := sa.visitNodeForSymbols(node, result)
-		if err != nil {
-			result.AddError(value_objects.NewParseError(
-				fmt.Sprintf("failed to build symbol table: %v", err),
-				node.Location(),
-				value_objects.ErrorTypeSemantic,
-				value_objects.SeverityError,
-			))
-			return err
-		}
-	}
-
-	// 验证符号表一致性
-	err := sa.symbolTableEntity.ValidateScopes()
-	if err != nil {
-		result.AddError(value_objects.NewParseError(
-			fmt.Sprintf("symbol table validation failed: %v", err),
-			value_objects.NewSourceLocation("", 0, 0, 0),
-			value_objects.ErrorTypeSemantic,
-			value_objects.SeverityError,
-		))
-		return err
-	}
-
-	return nil
-}
-
-// visitNodeForSymbols 访问AST节点，收集符号定义
-func (sa *SemanticAnalyzer) visitNodeForSymbols(node value_objects.ASTNode, result *value_objects.SemanticAnalysisResult) error {
-	switch n := node.(type) {
-	case *value_objects.FunctionDeclaration:
-		// 定义函数符号
-		funcType := value_objects.NewCustomSymbolType(fmt.Sprintf("func(%s)->%s", parametersToString(n.Parameters()), n.ReturnType().String()))
-		err := sa.symbolTableEntity.DefineSymbol(
-			n.Name(),
-			value_objects.SymbolKindFunction,
-			funcType,
-			n.Location(), // 使用节点的位置信息
-		)
-		if err != nil {
-			return err
-		}
-
-		// 进入函数作用域
-		err = sa.symbolTableEntity.EnterScope("function_"+n.Name(), n.Location())
-		if err != nil {
-			return err
-		}
-
-		// 定义参数符号
-		for _, param := range n.Parameters() {
-			paramType := value_objects.NewCustomSymbolType(param.TypeAnnotation().String())
-			err = sa.symbolTableEntity.DefineSymbol(
-				param.Name(),
-				value_objects.SymbolKindParameter,
-				paramType,
-				value_objects.NewSourceLocation("", 0, 0, 0),
-			)
-			if err != nil {
-				return err
-			}
-		}
-
-		// 递归处理函数体
-		for _, stmt := range n.Body().Statements() {
-			err = sa.visitNodeForSymbols(stmt, result)
-			if err != nil {
-				return err
-			}
-		}
-
-		// 退出函数作用域
-		return sa.symbolTableEntity.ExitScope()
-
-	case *value_objects.VariableDeclaration:
-		// 定义变量符号
-		varType := value_objects.NewCustomSymbolType(n.VarType().String())
-		err := sa.symbolTableEntity.DefineSymbol(
-			n.Name(),
-			value_objects.SymbolKindVariable,
-			varType,
-			n.Location(),
-		)
-		if err != nil {
-			return err
-		}
-
-		// 如果有初始化表达式，检查其类型
-		if n.Initializer() != nil {
-			// 这里可以添加类型推断逻辑
-		}
-
-		return nil
-
-	default:
-		// 对于其他类型的节点，默认不处理
-		return nil
-	}
+	builder := NewSymbolTableBuilder(sa.symbolTableEntity)
+	return builder.Build(ctx, programAST, result)
 }
 
 // performTypeChecking 执行类型检查
@@ -318,76 +219,8 @@ func (sa *SemanticAnalyzer) performSymbolResolution(
 	programAST *value_objects.ProgramAST,
 	result *value_objects.SemanticAnalysisResult,
 ) error {
-
-	symbolResolver := result.ResolvedSymbols()
-
-	// 遍历AST，解析所有符号引用
-	for _, node := range programAST.Nodes() {
-		err := sa.resolveNodeSymbols(node, symbolResolver, result)
-		if err != nil {
-			result.AddError(value_objects.NewParseError(
-				fmt.Sprintf("symbol resolution failed: %v", err),
-				node.Location(),
-				value_objects.ErrorTypeSymbol,
-				value_objects.SeverityError,
-			))
-			return err
-		}
-	}
-
-	return nil
-}
-
-// resolveNodeSymbols 解析节点中的符号引用
-func (sa *SemanticAnalyzer) resolveNodeSymbols(node value_objects.ASTNode, symbolResolver *value_objects.ResolvedSymbols, result *value_objects.SemanticAnalysisResult) error {
-	switch n := node.(type) {
-	case *value_objects.Identifier:
-		// 完善实现：解析标识符引用，支持作用域查找
-		symbolName := n.Name()
-		symbol, found := sa.symbolTableEntity.ResolveSymbol(symbolName)
-		if !found {
-			// 尝试在不同作用域中查找符号
-			// 首先在当前作用域查找，然后向上查找父作用域
-			symbol, found = sa.lookupSymbolInScopes(symbolName)
-			if !found {
-				result.AddError(value_objects.NewParseError(
-					fmt.Sprintf("undefined symbol: %s", symbolName),
-					n.Location(),
-					value_objects.ErrorTypeSymbol,
-					value_objects.SeverityError,
-				))
-				return nil
-			}
-		}
-		
-		// 记录已解析的符号
-		// 创建ResolvedSymbol并添加到结果中
-		resolvedSymbol := value_objects.NewResolvedSymbol(symbol, n)
-		symbolResolver.AddResolvedSymbol(resolvedSymbol)
-		
-		// 验证符号是否在正确的作用域中使用
-		// 例如：检查是否在定义之前使用（如果语言要求）
-		// 这里可以根据需要添加更多验证逻辑
-		
-		return nil
-
-	case *value_objects.BinaryExpression:
-		// 递归解析子表达式
-		err := sa.resolveNodeSymbols(n.Left(), symbolResolver, result)
-		if err != nil {
-			return err
-		}
-		return sa.resolveNodeSymbols(n.Right(), symbolResolver, result)
-
-	case *value_objects.UnaryExpression:
-		// 解析一元表达式
-		return sa.resolveNodeSymbols(n.Operand(), symbolResolver, result)
-
-	default:
-		// 对于其他节点类型，尝试递归解析子节点
-		// 这里可以根据需要添加更多特定类型的处理
-		return nil
-	}
+	resolver := NewSymbolResolver(sa.symbolTableEntity)
+	return resolver.Resolve(ctx, programAST, result)
 }
 
 // inferExpressionType 推断表达式的类型
@@ -450,22 +283,6 @@ func (sa *SemanticAnalyzer) canImplicitlyConvert(from, to value_objects.SymbolTy
 	}
 	
 	return false
-}
-
-// lookupSymbolInScopes 在作用域中查找符号
-func (sa *SemanticAnalyzer) lookupSymbolInScopes(name string) (*value_objects.Symbol, bool) {
-	// 完善实现：在多个作用域中查找符号
-	// 首先尝试使用符号表的ResolveSymbol方法（它应该已经支持作用域查找）
-	symbol, found := sa.symbolTableEntity.ResolveSymbol(name)
-	if found {
-		return symbol, true
-	}
-	
-	// 如果ResolveSymbol没有找到，可以尝试其他查找策略
-	// 例如：查找全局作用域、查找导入的符号等
-	// 这里可以根据需要添加更多查找逻辑
-	
-	return nil, false
 }
 
 // canApplyOperator 检查是否可以对给定的类型应用运算符
