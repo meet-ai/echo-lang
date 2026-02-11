@@ -23,37 +23,31 @@ func NewSemanticAnalyzer(symbolTableID string) *SemanticAnalyzer {
 	}
 }
 
+// SymbolTable 返回当前符号表（供 Application 层创建 SemanticAnalysisResult 等使用）
+func (sa *SemanticAnalyzer) SymbolTable() *value_objects.SymbolTable {
+	return sa.symbolTableEntity.SymbolTable()
+}
+
 // AnalyzeSemantics 分析AST的语义正确性
 func (sa *SemanticAnalyzer) AnalyzeSemantics(
 	ctx context.Context,
 	programAST *value_objects.ProgramAST,
 ) (*value_objects.SemanticAnalysisResult, error) {
-
 	result := value_objects.NewSemanticAnalysisResult(sa.symbolTableEntity.SymbolTable())
-
-	// 第一阶段：构建符号表
-	err := sa.buildSymbolTable(ctx, programAST, result)
-	if err != nil {
+	if err := sa.BuildSymbolTable(ctx, programAST, result); err != nil {
 		return result, err
 	}
-
-	// 第二阶段：类型检查
-	err = sa.performTypeChecking(ctx, programAST, result)
-	if err != nil {
+	if err := sa.PerformTypeChecking(ctx, programAST, result); err != nil {
 		return result, err
 	}
-
-	// 第三阶段：符号解析
-	err = sa.performSymbolResolution(ctx, programAST, result)
-	if err != nil {
+	if err := sa.PerformSymbolResolution(ctx, programAST, result); err != nil {
 		return result, err
 	}
-
 	return result, nil
 }
 
-// buildSymbolTable 构建符号表
-func (sa *SemanticAnalyzer) buildSymbolTable(
+// BuildSymbolTable 构建符号表（对外暴露的单步规则方法）
+func (sa *SemanticAnalyzer) BuildSymbolTable(
 	ctx context.Context,
 	programAST *value_objects.ProgramAST,
 	result *value_objects.SemanticAnalysisResult,
@@ -62,8 +56,8 @@ func (sa *SemanticAnalyzer) buildSymbolTable(
 	return builder.Build(ctx, programAST, result)
 }
 
-// performTypeChecking 执行类型检查
-func (sa *SemanticAnalyzer) performTypeChecking(
+// PerformTypeChecking 执行类型检查（对外暴露的单步规则方法）
+func (sa *SemanticAnalyzer) PerformTypeChecking(
 	ctx context.Context,
 	programAST *value_objects.ProgramAST,
 	result *value_objects.SemanticAnalysisResult,
@@ -213,8 +207,8 @@ func (sa *SemanticAnalyzer) checkNodeTypes(node value_objects.ASTNode, typeCheck
 	}
 }
 
-// performSymbolResolution 执行符号解析
-func (sa *SemanticAnalyzer) performSymbolResolution(
+// PerformSymbolResolution 执行符号解析（对外暴露的单步规则方法）
+func (sa *SemanticAnalyzer) PerformSymbolResolution(
 	ctx context.Context,
 	programAST *value_objects.ProgramAST,
 	result *value_objects.SemanticAnalysisResult,

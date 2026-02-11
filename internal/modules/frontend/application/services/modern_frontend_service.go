@@ -12,6 +12,7 @@ import (
 	"echo/internal/modules/frontend/domain/dtos"
 	"echo/internal/modules/frontend/domain/parser"
 	sharedVO "echo/internal/modules/frontend/domain/shared/value_objects"
+	portServices "echo/internal/modules/frontend/ports/services"
 )
 
 // IModernFrontendService 现代化前端服务接口
@@ -32,54 +33,81 @@ type IModernFrontendService interface {
 
 // modernFrontendService 现代化前端服务实现
 type modernFrontendService struct {
-	// 现代化解析器聚合根
-	parserAggregate *parser.ModernParserAggregate
-
-	// 事件发布器（可选）
-	eventPublisher EventPublisher
+	parserAggregate   *parser.ModernParserAggregate
+	parserAppService  portServices.ParserApplicationService // 非 nil 时优先使用，走 Application 编排流水线
+	eventPublisher    EventPublisher
 }
 
-// NewModernFrontendService 创建现代化前端服务
+// NewModernFrontendService 创建现代化前端服务。
+// parserAppService 可选：非 nil 时 ParseSourceCode/CompileFile 走 ParserApplicationService 流水线，否则使用 ModernParserAggregate。
 func NewModernFrontendService(
 	eventPublisher EventPublisher,
+	parserAppService portServices.ParserApplicationService,
 ) IModernFrontendService {
 	return &modernFrontendService{
-		parserAggregate: parser.NewModernParserAggregate(),
+		parserAggregate:  parser.NewModernParserAggregate(nil),
+		parserAppService: parserAppService,
 		eventPublisher:  eventPublisher,
 	}
 }
 
 // ParseSourceCode 解析源代码
-// 使用现代化三层混合解析器架构
+// 若已注入 ParserApplicationService 则走 Application 编排流水线，否则使用 ModernParserAggregate。
 func (s *modernFrontendService) ParseSourceCode(
 	ctx context.Context,
 	sourceCode string,
 	filename string,
 ) (*dtos.ModernCompilationResult, error) {
-
 	startTime := time.Now()
 
-	// 使用现代化解析器聚合根解析源代码
+	if s.parserAppService != nil {
+		sourceFile := sharedVO.NewSourceFile(filename, sourceCode)
+		parseResult, err := s.parserAppService.ParseSourceFile(ctx, sourceFile)
+		duration := time.Since(startTime)
+		if err != nil {
+			return s.buildErrorResult(err, filename, duration), nil
+		}
+		result := &dtos.ModernCompilationResult{
+			Success:      !parseResult.HasErrors(),
+			Filename:     filename,
+			ProgramAST:   parseResult.AST(),
+			Errors:       parseResult.Errors(),
+			Duration:     duration,
+			ParserType:   "application_pipeline",
+			ParseDetails: nil,
+		}
+		if s.eventPublisher != nil {
+			event := &AnalysisCompletedEvent{
+				EventID:      generateModernEventID(),
+				EventType:    "modern_parsing_completed",
+				Timestamp:    time.Now(),
+				SourceFileID: filename,
+				AnalysisType: "application_pipeline",
+				Success:      result.Success,
+				Duration:     result.Duration,
+			}
+			if !result.Success {
+				event.Error = fmt.Sprintf("%d errors found", len(parseResult.Errors()))
+			}
+			_ = s.eventPublisher.Publish(ctx, event)
+		}
+		return result, nil
+	}
+
 	programAST, err := s.parserAggregate.Parse(ctx, sourceCode, filename)
 	if err != nil {
 		return s.buildErrorResult(err, filename, time.Since(startTime)), nil
 	}
-
-	// 收集解析错误
 	errors := s.parserAggregate.GetErrors()
-
-	// 构建结果
 	result := &dtos.ModernCompilationResult{
 		Success:      len(errors) == 0,
 		Filename:     filename,
 		ProgramAST:   programAST,
 		Errors:       errors,
 		Duration:     time.Since(startTime),
-		ParserType:   "modern_hybrid", // 三层混合解析器
+		ParserType:   "modern_hybrid",
 		ParseDetails: s.buildParseDetails(s.parserAggregate),
 	}
-
-	// 发布解析完成事件（如果配置了事件发布器）
 	if s.eventPublisher != nil {
 		event := &AnalysisCompletedEvent{
 			EventID:      generateModernEventID(),
@@ -95,7 +123,6 @@ func (s *modernFrontendService) ParseSourceCode(
 		}
 		_ = s.eventPublisher.Publish(ctx, event)
 	}
-
 	return result, nil
 }
 
@@ -109,7 +136,7 @@ func (s *modernFrontendService) PerformLexicalAnalysis(
 	startTime := time.Now()
 
 	// 创建新的解析器聚合根实例（用于词法分析）
-	lexerAggregate := parser.NewModernParserAggregate()
+	lexerAggregate := parser.NewModernParserAggregate(nil)
 
 	// 执行词法分析（只执行词法分析阶段）
 	_, err := lexerAggregate.Parse(ctx, cmd.SourceCode, cmd.SourceFilePath)

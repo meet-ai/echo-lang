@@ -4,6 +4,7 @@ package services
 import (
 	"context"
 
+	lexicalVO "echo/internal/modules/frontend/domain/lexical/value_objects"
 	"echo/internal/modules/frontend/domain/shared/value_objects"
 )
 
@@ -30,6 +31,12 @@ type SyntaxAnalysisService interface {
 	ResolveAmbiguity(ctx context.Context, ambiguousTokens *value_objects.TokenStream) (*value_objects.ResolvedAST, error)
 }
 
+// AdvancedErrorRecoveryPort 高级错误恢复端口（EnhancedTokenStream 路径）
+// 供 ParserCoordinator 等使用，由 Application 层实现并委托 AdvancedErrorRecoveryService
+type AdvancedErrorRecoveryPort interface {
+	RecoverFromError(ctx context.Context, parseError *value_objects.ParseError, tokenStream *lexicalVO.EnhancedTokenStream) (*value_objects.ErrorRecoveryResult, error)
+}
+
 // ErrorRecoveryService 错误恢复服务接口
 // 职责：处理解析过程中的错误并尝试恢复
 type ErrorRecoveryService interface {
@@ -41,6 +48,11 @@ type ErrorRecoveryService interface {
 
 	// ApplyRecovery 应用恢复策略
 	ApplyRecovery(ctx context.Context, recoveryStrategy *value_objects.RecoveryStrategy) (*value_objects.AppliedRecovery, error)
+}
+
+// ProgramSemanticAnalyzer 语义分析应用层端口：编排“构建符号表→类型检查→符号解析”三阶段，供 ParserApplicationService 调用
+type ProgramSemanticAnalyzer interface {
+	AnalyzeProgram(ctx context.Context, programAST *value_objects.ProgramAST) (*value_objects.SemanticAnalysisResult, error)
 }
 
 // SemanticAnalysisService 语义分析服务接口
