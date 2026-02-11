@@ -61,6 +61,10 @@ func typeAnnotationToString(ta *sharedVO.TypeAnnotation) string {
 	if ta == nil {
 		return ""
 	}
+	// 数组类型 [] 单参表示为 [T]
+	if ta.TypeName() == "[]" && len(ta.GenericArgs()) == 1 {
+		return "[" + typeAnnotationToString(ta.GenericArgs()[0]) + "]"
+	}
 	s := ta.TypeName()
 	if ta.IsPointer() {
 		s = "*" + s

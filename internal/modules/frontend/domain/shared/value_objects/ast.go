@@ -472,6 +472,10 @@ func (ta *TypeAnnotation) NodeType() string {
 
 // String 返回字符串表示
 func (ta *TypeAnnotation) String() string {
+	// 数组类型 [] 单参表示为 [T]
+	if ta.typeName == "[]" && len(ta.genericArgs) == 1 {
+		return "[" + ta.genericArgs[0].String() + "]"
+	}
 	result := ta.typeName
 	if ta.isPointer {
 		result = "*" + result

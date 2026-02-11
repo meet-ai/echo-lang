@@ -929,7 +929,7 @@ func (rdp *RecursiveDescentParser) parseParameterList() ([]*sharedVO.Parameter, 
 
 func (rdp *RecursiveDescentParser) parseTypeAnnotation() (*sharedVO.TypeAnnotation, error) {
 	// 解析类型注解
-	// 格式：typeName 或 *typeName 或 typeName<args> 或 *typeName<args>
+	// 格式：typeName 或 *typeName 或 typeName<args> 或 *typeName<args> 或 [T]（数组类型）
 
 	// 检查是否为指针类型，如果是，从*开始记录位置
 	var startLocation sharedVO.SourceLocation
@@ -938,6 +938,19 @@ func (rdp *RecursiveDescentParser) parseTypeAnnotation() (*sharedVO.TypeAnnotati
 		isPointer = true
 		// 获取*的位置作为起始位置
 		startLocation = rdp.previousToken().Location()
+	}
+
+	// 数组类型 [T]，如 [int]、[string]
+	if rdp.match(lexicalVO.EnhancedTokenTypeLeftBracket) {
+		bracketLoc := rdp.previousToken().Location()
+		elem, err := rdp.parseTypeAnnotation()
+		if err != nil {
+			return nil, err
+		}
+		if !rdp.match(lexicalVO.EnhancedTokenTypeRightBracket) {
+			return nil, fmt.Errorf("expected ']' after array element type")
+		}
+		return sharedVO.NewTypeAnnotation("[]", []*sharedVO.TypeAnnotation{elem}, false, bracketLoc), nil
 	}
 
 	// 解析类型名（identifier 或关键字如 chan）
